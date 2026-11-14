@@ -38,9 +38,9 @@ export const brandSchema = z
 
 export type Brand = z.infer<typeof brandSchema>;
 
-export const DEFAULT_BRAND: Brand = { name: "OpenMausBot" };
-/** The product's name wherever a person reads it. OpenMausBot names only the open-source project and its repository. */
-export const PRODUCT_NAME = "MausBot";
+export const DEFAULT_BRAND: Brand = { name: "Parth Lab" };
+/** The product's name wherever a person reads it. Parth Lab names the cybersecurity company this app runs. */
+export const PRODUCT_NAME = "Parth Lab";
 
 export interface BrandStatus {
   brand: Brand;

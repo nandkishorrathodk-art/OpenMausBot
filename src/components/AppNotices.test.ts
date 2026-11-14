@@ -31,7 +31,7 @@ vi.mock("./cloud-buy/NightCard", () => ({ NightCard: ({ children }: { children: 
 vi.mock("./whats-new/TeamPicture", () => ({ TeamPicture: () => null }));
 // Who MausBot belongs to: unknown (as before the session answers) unless a test says otherwise.
 vi.mock("@/lib/default-bot", async original => ({ ...await original<typeof import("@/lib/default-bot")>(), useViewerEmail: () => f.viewerEmail }));
-vi.mock("@/lib/brand", () => ({ brandStatus: () => ({ brand: { name: "OpenMausBot" }, source: f.brand, file: "" }), productName: () => "MausBot" }));
+vi.mock("@/lib/brand", () => ({ brandStatus: () => ({ brand: { name: "OpenMausBot" }, source: f.brand, file: "" }), productName: () => "Parth Lab" }));
 vi.mock("./Avatar", async original => ({ ...await original<typeof import("./Avatar")>(), MausAvatar: () => null }));
 vi.mock("./lazy-screens", async original => ({ ...await original<typeof import("./lazy-screens")>(), GrokMoveDialog: () => "THE MOVE DIALOG" }));
 vi.mock("@/components/EngineLibrary", () => ({ engineReady: (instance: { snapshot: { state: string; authenticated?: boolean } }) =>
@@ -56,7 +56,7 @@ const plans = [
 const TRIAL_OFFER: CloudOffer = { plans, recommended: "pro", creditUsd: 5, refundDays: 14 };
 const PLAIN_OFFER: CloudOffer = { plans: plans.map(({ trialDays: _days, ...plan }) => plan), recommended: "pro", refundDays: 14 };
 const INTRO = "Keep your bots working when this computer is off";
-const STAR = "Enjoying MausBot?";
+const STAR = "Enjoying Parth Lab?";
 const signedOut: CloudAccountState = { status: "signed-out" };
 const free: CloudAccountState = { status: "connected", account: { id: "a", email: "person@example.test" }, entitlement: { plan: "free", status: "inactive", expiresAt: null, version: 1 } };
 const paid = (extra: Partial<CloudAccountState> = {}): CloudAccountState => ({ ...free, entitlement: { plan: "pro", tier: "pro", status: "active", expiresAt: NOW + 30 * DAY, version: 2 }, ...extra });
@@ -1525,7 +1525,7 @@ describe("ModelGo's sponsor card", () => {
 
   it("a card left up keeps the corner: the card waits for it to close", async () => {
     returning(); storage.delete(STAR_NOTICE); storage.set(CLOUD_INTRO, "1"); storage.set(MODELGO_OFFER_NOTICE, "1");
-    expect(await launch()).toContain("Enjoying MausBot?");
+    expect(await launch()).toContain("Enjoying Parth Lab?");
     due();
     expect(await settle(), "the star took the launch and is still up").not.toContain(TITLE);
     press("Not now"); await flush();
@@ -1639,10 +1639,10 @@ describe("cards from the announcements file", () => {
 
   it("a card left up keeps the corner: a card that arrives meanwhile waits for it to close", async () => {
     returning(); storage.delete(STAR_NOTICE); storage.set(CLOUD_INTRO, "1"); feed = [];
-    expect(await launch()).toContain("Enjoying MausBot?");
+    expect(await launch()).toContain("Enjoying Parth Lab?");
     feed = [card("phone-app")]; forgetAnnouncementCards();
     const still = await settle();
-    expect(still, "the star took the launch and is still up").toContain("Enjoying MausBot?"); expect(still).not.toContain("Title of phone-app");
+    expect(still, "the star took the launch and is still up").toContain("Enjoying Parth Lab?"); expect(still).not.toContain("Title of phone-app");
     press("Not now"); await flush();
     expect(await settle()).toContain("Title of phone-app");
   });
