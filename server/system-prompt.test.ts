@@ -26,6 +26,7 @@ import {
   WEBHOOK_PROMPT,
   AUTOMATION_REPLY_PROMPT,
   SANDBOX_DESKTOP_INPUT,
+  COMPUTER_ONLINE_PROMPT,
   SIGN_IN_PROMPT,
   savedLoginsPrompt,
   savedSecretsPrompt,
@@ -215,6 +216,14 @@ describe("computerPrompt", () => {
   });
   it("is empty with no computer", () => {
     expect(computerPrompt(null)).toBe("");
+  });
+
+  it("tells every computer it can look a fact up online rather than recall it", () => {
+    for (const kind of ["vm-private", "vm-shared", "box", "vps", "local"] as const) {
+      expect(computerPrompt(kind)).toContain(COMPUTER_ONLINE_PROMPT);
+    }
+    expect(COMPUTER_ONLINE_PROMPT).toContain("has internet access");
+    expect(computerPrompt(null)).not.toContain(COMPUTER_ONLINE_PROMPT);
   });
 
   it("shares the authorized sign-in policy across every computer and browser surface", () => {
