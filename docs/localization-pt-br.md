@@ -258,7 +258,7 @@ the whole catalog in the same change.
 | preset | predefinição | “preset bot” → “bot predefinido”. Never `modelo`. |
 | preview | prévia | “View” as a button → `Ver`. |
 | private desktop | desktop privado | |
-| Quit (app menu, tray) | Sair do OpenMausBot | The same label on every platform. Menus use sentence case, like the rest of the app. |
+| Quit (app menu, tray) | Sair do Parth Lab | The same label on every platform. Menus use sentence case, like the rest of the app. |
 | remove | remover | Takes something out without destroying it. |
 | retry, try again | Tentar novamente | Use “novamente” in labels and prose. If it would repeat in one sentence, use “de novo” for the first occurrence. |
 | room | grupo | “group chat” → “chat em grupo”. Not `sala`. |

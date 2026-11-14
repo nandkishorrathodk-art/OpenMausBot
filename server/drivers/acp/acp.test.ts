@@ -493,7 +493,7 @@ describe("ACP turns (fake CLI)", () => {
       .toBe("Standing rules.\n\nMemory: likes quiet hours.\n\nfirst");
     expect(await send("second", "Memory: likes quiet hours.")).toBe("second");
     expect(await send("third", "Memory: moved to Toronto."))
-      .toBe("Context from OpenMausBot updated since this conversation started; it replaces any earlier copy:\n\nMemory: moved to Toronto.\n\nthird");
+      .toBe("Context from Parth Lab updated since this conversation started; it replaces any earlier copy:\n\nMemory: moved to Toronto.\n\nthird");
     expect(await send("fourth", "")).toContain("have been cleared");
     expect(await send("fifth", "")).toBe("fifth");
   });

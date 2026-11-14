@@ -353,7 +353,7 @@ it("T5 reruns a person's cut turn once after a restart, with the restart note fi
   expect(f.roots()[0]).toMatchObject({ id: cut.id, status: "completed", outcome: "done", restarts: 1, executions: 2, result: "T5-FINAL: migrated once." });
   expect(f.eventsOf(cut.id)).toContain("restart_reconciled");
   expect(await f.chips(job, RERUN_CHIP)).toHaveLength(1);
-  expect(await f.chips(job, "turn interrupted — OpenMausBot restarted")).toHaveLength(0);
+  expect(await f.chips(job, "turn interrupted — Parth Lab restarted")).toHaveLength(0);
   await f.settle(500);
   expect(f.turns(f.clive.id).filter((record: any) => record.planKey === "C-RERUN")).toHaveLength(1);
 }), hostTimeout(90_000));
@@ -717,7 +717,7 @@ it("T11 does not rerun a cut turn that already pushed: the root ends with what i
       expect(line.tool.name.startsWith("error: ")).toBe(true);
       expect(line.tool.name).toContain("git push");
       expect(await f.chips(job, RERUN_CHIP)).toHaveLength(0);
-      expect(await f.chips(job, "turn interrupted — OpenMausBot restarted")).toHaveLength(0);
+      expect(await f.chips(job, "turn interrupted — Parth Lab restarted")).toHaveLength(0);
       await f.settle(1_500);
       expect(f.roots()).toHaveLength(1);
       expect(f.roots()[0]).toMatchObject({ status: "failed", executions: 1 });

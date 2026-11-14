@@ -40,6 +40,18 @@ which would delete the rebrand.
   window-title locales) and their tests — not a blanket rename of every source
   string. When a merge brings in a new test that pins the product name, update
   that test.
+- The 16 locale packs in `src/locales/` name the product in their UI strings
+  (~400 entries), and several source constants are exact mirrors of a catalog
+  string rather than reads of `productName()`: the chat/server notices
+  (`server/chat-notices.ts`, `server/user-errors.ts`, `server/routine-lines.ts`,
+  `server/drivers/driver-notices.ts`, `server/host/brief.ts`, `shared/*.ts`) and
+  a few electron sources (`lending-indicator.mjs` tray tip, `lent-screen-failures.mjs`,
+  `cua.mjs`, `cloud-send.mjs`, `one-home-main.mjs`, `update-errors.mjs`). A
+  catalog edit must move those mirrors and their test pins in the same change;
+  `pnpm i18n:check` and `src/lib/server-word-contracts.test.ts` catch drift.
+  Never rename protocol identifiers or data-directory paths: `X-OpenMausBot-*`
+  headers, the `"OpenMausBot tool proxy"` client name, `OPENMAUSBOT_TOKEN`,
+  `electron.app.OpenMausBot`, `~/.openmausbot`.
 - The Parth Lab model-facing prose is about 2% larger than upstream's, so after
   a merge that touches the agents catalog, regenerate the goldens
   (`UPDATE_AGENTS_CATALOG_GOLDENS=1 pnpm vitest run server/drivers/agents-catalog-wire.test.ts

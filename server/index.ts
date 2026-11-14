@@ -4091,7 +4091,7 @@ const handoffTicks = createHandoffTicks(), coordinator: Coordinator = createCoor
     outward: node => {
       const followup = node.parentId || node.groupId ? undefined : followupAtBoot(node.threadId);
       if (followup) {
-        followupEndedRoots.set(node.id, followup === "pending" ? "turn interrupted — OpenMausBot restarted" : undefined);
+        followupEndedRoots.set(node.id, followup === "pending" ? "turn interrupted — Parth Lab restarted" : undefined);
         return [followup === "pending" ? "queued follow-up waiting" : "queued follow-up dispatched"];
       }
       return outwardActions(turnRows(node));

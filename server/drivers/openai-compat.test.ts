@@ -792,7 +792,7 @@ describe("OpenAICompatDriver", () => {
     ]);
     expect(messages.at(-1)).toEqual({
       role: "user",
-      content: "Context from OpenMausBot updated since this conversation started; it replaces any earlier copy:\n\nMemory: likes quiet hours.\n\nhello",
+      content: "Context from Parth Lab updated since this conversation started; it replaces any earlier copy:\n\nMemory: likes quiet hours.\n\nhello",
     });
 
     await inst.adapter.sendTurn({
@@ -809,7 +809,7 @@ describe("OpenAICompatDriver", () => {
   });
 
   describe("replays what each earlier user message actually carried", () => {
-    const NOTE = "Context from OpenMausBot updated since this conversation started; it replaces any earlier copy:\n\n";
+    const NOTE = "Context from Parth Lab updated since this conversation started; it replaces any earlier copy:\n\n";
     // index.ts stamps the turn text (clock, recall) but stores only what the person typed.
     const clock = (minute: string) => `Current time when this message was sent: Friday, 2026-10-09 18:${minute} UTC (UTC+00:00).\n\n`;
 
