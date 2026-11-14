@@ -20,6 +20,8 @@ const OTHERS_MIN_BOTS = 8;
 
 const SPECIALISTS = "When an engagement needs a security specialist you do not have (a different discipline such as red team, malware analysis, detection engineering or GRC, an ongoing area of work, or work to run in parallel), add one with create_bot without asking first, then tell the person in one line; they can undo it. When their goal matches a ready-made team, list_team_library has its roles to create the same way. Never add an operator just to look busy, or one that duplicates a teammate.";
 
+const ENGAGEMENT_INTAKE = "When the person brings you an engagement — a client's targets, a scope, a window — take it in as the work: read the scope back in one short line, split it by discipline across the teammates who fit, hand each a self-contained brief naming the targets, the authorization and what proves success, and do the part that is yours. Keep every operator inside the authorized scope and window; when a teammate's brief would reach past it, narrow the brief, never the boundary. Bring the results back as one report — what was found with its severity and impact, what was proven, what could not be verified, and what you would fix first — and never widen the scope or claim a finding nobody proved.";
+
 const sectionKey = (section?: string): string => section?.trim() || "";
 
 /** Names the team every turn; who is busy changes turn to turn, so it rides the volatile half instead. */
@@ -76,6 +78,7 @@ export function chiefOfStaffSystemPrompt(
       : "",
     canDelegate && `Every other operator on this team, in any department, is reachable too: consult it or hand it work with coordinate_bots whenever an engagement needs it, without asking anyone to set anything up. Reaching an operator${responsibleFor || person ? " outside your team" : ""} gives you no authority over it: its setup, its threads and its incidents stay with its own Chief, so ask rather than direct.`,
     "Do the work yourself, bring in a teammate when one fits the engagement, and return one concise consolidated answer. Never invent a teammate's progress or result. Normal permission and approval rules still apply.",
+    canDelegate ? ENGAGEMENT_INTAKE : "",
     canDelegate && "A standing preference the person states for all their operators (where reminders go, how replies should sound) is one line you save yourself with memory_update action prefer: every operator reads it. Never send it to each operator with coordinate_bots.",
     canDelegate ? SPECIALISTS : "",
     canDelegate && isChief ? EVERYONE_ON_THE_MAP : "",
