@@ -839,7 +839,7 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
       const input = calls.find((c) => c.method === "turn/start")?.params?.input as Array<{ text?: string }> | undefined;
       return input?.[0]?.text;
     };
-    expect(turnText(first)).toBe("Context from OpenMausBot updated since this conversation started; it replaces any earlier copy:\n\nMemory: likes quiet hours.\n\nfirst");
+    expect(turnText(first)).toBe("Context from Parth Lab updated since this conversation started; it replaces any earlier copy:\n\nMemory: likes quiet hours.\n\nfirst");
     expect(turnText(second)).toBe("second");
     expect(turnText(third)).toContain("Memory: moved to Toronto.");
     expect(turnText(third)).toContain("third");
@@ -3182,7 +3182,7 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
     await instance.adapter.sendTurn({ threadId: "t-generic-elicitation", text: "go" });
     await recorder.until((event) => event.type === "turn.completed");
     expect(recorder.events.find((event) => event.type === "runtime.notice")).toMatchObject({
-      message: "An MCP server asked for input OpenMausBot can't show yet, so the request was declined.",
+      message: "An MCP server asked for input Parth Lab can't show yet, so the request was declined.",
       text: { key: "chat.notice.codexElicitationDeclinedGeneric" },
     });
   });
@@ -3221,7 +3221,7 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
     expect(recorder.events.some((event) => event.type === "request.opened")).toBe(false);
     expect(JSON.parse(readFileSync(dump, "utf8")).decision).toEqual({ action: "decline" });
     expect(recorder.events.find((event) => event.type === "runtime.notice")).toMatchObject({
-      message: "example asked for input OpenMausBot can't show yet, so the request was declined.",
+      message: "example asked for input Parth Lab can't show yet, so the request was declined.",
       text: { key: "chat.notice.codexElicitationDeclined", params: { server: "example" } },
     });
   });

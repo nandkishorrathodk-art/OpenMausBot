@@ -224,7 +224,7 @@
     "newer.v3.json": {
       "error": {
         "code": "newer_version",
-        "message": "This file was made by a newer OpenMausBot. Update the app, then import it again."
+        "message": "This file was made by a newer Parth Lab. Update the app, then import it again."
       }
     }
   }

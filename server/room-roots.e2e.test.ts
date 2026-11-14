@@ -22,7 +22,7 @@ const SEAT_FREE = "the computer this conversation waited for is free again";
 const INTERRUPTED_OUTWARD = "Interrupted by an OpenMausBot restart after it already";
 const SETTLED = "Your downstream room requests have settled.";
 const GOAL_RUN_ENDED = "The goal run this step belonged to ended with the restart.";
-const INTERRUPTED_LINE = "turn interrupted — OpenMausBot restarted";
+const INTERRUPTED_LINE = "turn interrupted — Parth Lab restarted";
 
 const jsonl = (path: string): any[] => existsSync(path)
   ? readFileSync(path, "utf8").trim().split("\n").filter(Boolean).map((line) => JSON.parse(line)) : [];
