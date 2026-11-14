@@ -1,5 +1,5 @@
 import { botOwner, nameFromEmail } from "../shared/bot-owner.ts";
-import { canManage, hasAuthority, peerName, renderRoster, reachablePeers, type RosterMember } from "./peer-roster.ts"; import { chiefLevel } from "./chief-level.ts";
+import { canManage, hasAuthority, inChargeOfEvery, peerName, renderRoster, reachablePeers, type RosterMember } from "./peer-roster.ts"; import { chiefLevel } from "./chief-level.ts";
 import type { TaskRecord } from "./store.ts";
 
 export type ChiefTeamMember = RosterMember;
@@ -32,6 +32,7 @@ export function chiefOfStaffSystemPrompt(
   bots: ChiefTeamMember[],
   canDelegate: boolean,
   also?: (bot: ChiefTeamMember) => boolean,
+  departments?: readonly string[],
 ): string {
   const chief = bots.find((bot) => bot.id === chiefId);
   const chiefSection = sectionKey(chief?.section);
@@ -59,6 +60,9 @@ export function chiefOfStaffSystemPrompt(
     : "Your current engine cannot contact teammates. Be honest about that limitation and ask the user to choose a delegation-compatible engine before promising coordinated security work.";
 
   const isChief = !chief?.defaultBot || chief.chiefOfStaff === true;
+  const everywhere = Boolean(chief && departments && inChargeOfEvery(chief, departments));
+  const responsibleFor = everywhere ? "every department, and each new department becomes yours as it is added"
+    : chief?.managedSections?.length ? `these departments: ${chief.managedSections.map(s => peerName(s) || "General").join(", ")}` : "";
   return [
     isChief
       ? person
@@ -67,10 +71,10 @@ export function chiefOfStaffSystemPrompt(
       : chief?.defaultBot?.person
         ? `You hold a Chief of Staff's tools for the ${sectionName} department at Parth Lab, but you are not the Chief: the daily brief and team incidents stay with the Chief.`
         : `You hold a Chief of Staff's tools for the ${sectionName} department at Parth Lab, but you are not the Chief: team incidents stay with the Chief. Keeping an eye on the person's engagements and their daily brief are yours.`,
-    chief?.managedSections?.length
-      ? `The owner also made you responsible for these departments: ${chief.managedSections.map(s => peerName(s) || "General").join(", ")}. You supervise their operators and may propose setup changes there. You remain the user's single point of contact. This does not grant other operators your access, change their tool permissions, or expose unrelated conversation history.`
+    responsibleFor
+      ? `The owner also made you responsible for ${responsibleFor}. You supervise their operators and may propose setup changes there. You remain the user's single point of contact. This does not grant other operators your access, change their tool permissions, or expose unrelated conversation history.`
       : "",
-    canDelegate && "Every other operator on this team, in any department, is reachable too: consult it or hand it work with coordinate_bots whenever an engagement needs it, without asking anyone to set anything up. Reaching an operator gives you no authority over it: its setup, its threads and its incidents stay with its own Chief, so ask rather than direct.",
+    canDelegate && `Every other operator on this team, in any department, is reachable too: consult it or hand it work with coordinate_bots whenever an engagement needs it, without asking anyone to set anything up. Reaching an operator${responsibleFor || person ? " outside your team" : ""} gives you no authority over it: its setup, its threads and its incidents stay with its own Chief, so ask rather than direct.`,
     "Do the work yourself, bring in a teammate when one fits the engagement, and return one concise consolidated answer. Never invent a teammate's progress or result. Normal permission and approval rules still apply.",
     canDelegate && "A standing preference the person states for all their operators (where reminders go, how replies should sound) is one line you save yourself with memory_update action prefer: every operator reads it. Never send it to each operator with coordinate_bots.",
     canDelegate ? SPECIALISTS : "",
@@ -81,7 +85,7 @@ export function chiefOfStaffSystemPrompt(
     delegation,
     canDelegate ? "Housekeeping: list_threads also shows threads one teammate opened on another (marked \"opened by\"), and you may close_thread those once they are idle and their work is done. Threads the person started are theirs: never close them." : "",
     canDelegate ? "When the user asks you to assemble or configure a team, use list_team_setup for the exact authorized teams, operator IDs and model catalog, then propose_team_setup once with all named specialists and their profile/model changes. Include new teams explicitly; the plan covers their creation and your access. Existing thread models and other operators' execution permissions stay unchanged. Follow the tool result: the plan applies immediately at every access level and the person can undo it; after an applied result, continue already-requested work without another confirmation. Only if review is pending, end your turn: the user's decision automatically resumes you once with a structured result. Report failed or cancelled results honestly. Do not ask for another yes, poll, or repeat the proposal. After successful setup, use the available coordination tools for already requested work. For explicitly requested operator deletion, use propose_bot_deletion separately and follow its applied or pending result too." : "",
-    person ? `Security operators that report to ${person} (your team):` : chief?.managedSections?.length ? "Your team, in the departments you are responsible for:" : `Current ${sectionName} department (your team):`,
+    person ? `Security operators that report to ${person} (your team):` : everywhere ? "Your team, in every department:" : chief?.managedSections?.length ? "Your team, in the departments you are responsible for:" : `Current ${sectionName} department (your team):`,
     roster,
     othersRoster && (person ? "Other operators you can reach (they report to someone else):" : "Other operators you can reach, in other departments:"),
     othersRoster,
