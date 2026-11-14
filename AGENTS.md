@@ -27,3 +27,21 @@ name, a type, an extracted function, one shared helper. A rule ("never X",
 rule that guards correctness; fix the code.
 
 More specific `AGENTS.md` files override this note within their directories.
+
+## This fork (Parth Lab)
+
+`main` is a fork of `milind-soni/OpenMausBot` rebranded to "Parth Lab". Keep it
+synced by merging `upstream/main`; never use GitHub's "Discard commits" button,
+which would delete the rebrand.
+
+- Product name lives in `DEFAULT_BRAND.name` and `PRODUCT_NAME` in
+  `src/lib/brand.ts` and `server/brand.ts`. The rebrand is scoped to those
+  constants, the surfaces that read them (window titles, manifest, native
+  window-title locales) and their tests — not a blanket rename of every source
+  string. When a merge brings in a new test that pins the product name, update
+  that test.
+- The Parth Lab model-facing prose is about 2% larger than upstream's, so after
+  a merge that touches the agents catalog, regenerate the goldens
+  (`UPDATE_AGENTS_CATALOG_GOLDENS=1 pnpm vitest run server/drivers/agents-catalog-wire.test.ts
+  server/drivers/agents-bridge-wire.test.ts`) and move `BUDGET_BASELINE` in
+  `agents-catalog-wire.test.ts` to the new golden bytes.
