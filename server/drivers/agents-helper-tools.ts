@@ -14,7 +14,7 @@ export async function callHelperTool(name: string, args: Json, context: ToolCall
 export const HELPER_TOOL_DEFINITIONS = [
   {
     name: "decide",
-    description: "Ask a decision model typed questions about some state; it answers with probabilities and cannot act.",
+    description: "Ask a calibrated decision model typed questions about some state; it returns probabilities and cannot act. Use it for a close judgement that turns on likelihood: whether the evidence really proves a finding, how severe it is, whether a dead avenue is worth another turn, whether a result is trustworthy. Give the state and the exact question and read the probabilities rather than rounding them to a yes or no. It answers and cannot act, and it can be unavailable; when it is, make the call yourself.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
