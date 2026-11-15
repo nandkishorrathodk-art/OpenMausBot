@@ -57,3 +57,16 @@ which would delete the rebrand.
   (`UPDATE_AGENTS_CATALOG_GOLDENS=1 pnpm vitest run server/drivers/agents-catalog-wire.test.ts
   server/drivers/agents-bridge-wire.test.ts`) and move `BUDGET_BASELINE` in
   `agents-catalog-wire.test.ts` to the new golden bytes.
+- The product is an autonomous offensive-security company, and the model-facing
+  prose carries that framing rather than a generic assistant's: the operator
+  identity, engagement discipline and attacker mindset in
+  `server/system-prompt.ts`; the engagement intake and consolidated report in
+  `server/chief-of-staff.ts`; the finding report in `server/reply-habits.ts`;
+  the setup-card capability list in `server/setup-suggestions.ts`; and the
+  default watch in `server/host/default-watch.ts`, whose `runs` check already
+  reads other routines' runs. Keep it autonomy-preserving: state the posture and
+  the reasoning, never a fixed playbook or a tool-name script the model must
+  follow. `server/testing/fixtures/setup-suggestions-eval.json` records the
+  exact prompt for each scenario, so a change to `setupSuggestionPrompt` means
+  regenerating those `prompts` entries (they are a pure function of the
+  scenario) while leaving the recorded `replies` alone.
