@@ -78,3 +78,16 @@ which would delete the rebrand.
   (`server/routes/engagement-findings.ts`) resolves the room from the caller's own
   conversation rather than the body, and its path is not in
   `server/host/outside-fence.ts`'s list, so a confined turn cannot reach it yet.
+- The engagement scope (`server/engagement-scope.ts`) and the findings ledger are
+  backend-only so far: `createCommandScope` refuses a shell command outside the
+  authorized targets and injects the scope into the room's turn, and the
+  `engagement_finding` tool is the only reader of the ledger. Nothing in `src/`
+  yet sets a room's scope (`PUT /api/groups/:id/scope`, owner or admin) or shows
+  its findings, so an engagement is configured through the API and read through
+  the tool. That person-facing surface is the open gap.
+- When a rebrand reaches a string, move its verbatim twin in the same change.
+  `src/lib/phone-setup.ts`'s `PUBLIC_ACCOUNT_MESSAGES` matches
+  `electron/companion-account-messages.mjs`'s `FRIENDLY_MESSAGES` by regex, and
+  `electron/data-dir-lease.mjs` keeps a hardcoded fallback of the catalog's
+  `native.boot.sharedFolderAdvice`, so renaming one half leaves the pair broken
+  or the app showing two names on one surface.
