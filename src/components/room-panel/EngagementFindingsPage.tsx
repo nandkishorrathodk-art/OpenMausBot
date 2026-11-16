@@ -12,15 +12,15 @@ import { Card, ColRow, NoteRow, RowText } from "../bot-panel/rows";
 
 const SEVERITY_TONE: Record<FindingSeverity, string> = {
   critical: "bg-danger/15 text-danger",
-  high: "bg-danger/12 text-danger",
+  high: "bg-danger/15 text-danger",
   medium: "bg-warning/15 text-warning",
   low: "bg-ink/[0.06] text-ink-secondary",
   info: "bg-ink/[0.04] text-ink-secondary",
 };
 const STATUS_TONE: Record<FindingStatus, string> = {
   suspected: "bg-ink/[0.06] text-ink-secondary",
-  proven: "bg-accent/12 text-accent",
-  fixed: "bg-accent/12 text-accent",
+  proven: "bg-success/15 text-success",
+  fixed: "bg-success/15 text-success",
   "wont-fix": "bg-ink/[0.04] text-ink-tertiary",
 };
 const SEVERITY_WORD: Record<FindingSeverity, LocaleKey> = {
@@ -43,7 +43,7 @@ const when = (at: number): string =>
   new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(at));
 
 function Chip({ tone, children }: { tone: string; children: string }) {
-  return <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium", tone)}>{children}</span>;
+  return <span className={cn("ui-chip shrink-0", tone)}>{children}</span>;
 }
 
 function FindingRow({ finding }: { finding: EngagementFinding }) {
@@ -52,29 +52,29 @@ function FindingRow({ finding }: { finding: EngagementFinding }) {
       <span className="block text-[13px] font-medium text-ink" title={finding.title}>{finding.title}</span>
       <div className="flex items-start gap-2">
         <span className="min-w-0 flex-1">
-          <span className="mb-0.5 block text-[11px] font-medium text-ink-tertiary">{t("room.findings.target")}</span>
+          <span className="mb-0.5 block text-[12px] font-medium text-ink-tertiary">{t("room.findings.target")}</span>
           <span dir="ltr" className="block truncate font-mono text-[12px] text-ink-secondary" title={finding.target}>{finding.target}</span>
         </span>
-        <span className="shrink-0 space-y-1 text-right">
-          <span className="block text-[11px] font-medium text-ink-tertiary">{t("room.findings.severity")}</span>
+        <span className="shrink-0 space-y-1 text-end">
+          <span className="block text-[12px] font-medium text-ink-tertiary">{t("room.findings.severity")}</span>
           <Chip tone={SEVERITY_TONE[finding.severity]}>{t(SEVERITY_WORD[finding.severity])}</Chip>
         </span>
-        <span className="shrink-0 space-y-1 text-right">
-          <span className="block text-[11px] font-medium text-ink-tertiary">{t("room.findings.status")}</span>
+        <span className="shrink-0 space-y-1 text-end">
+          <span className="block text-[12px] font-medium text-ink-tertiary">{t("room.findings.status")}</span>
           <Chip tone={STATUS_TONE[finding.status]}>{t(STATUS_WORD[finding.status])}</Chip>
         </span>
       </div>
       <div className="text-[12px] leading-relaxed text-ink-secondary">
-        <div className="mb-0.5 text-[11px] font-medium text-ink-tertiary">{t("room.findings.evidence")}</div>
+        <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.evidence")}</div>
         <ExpandableText text={finding.evidence} className="font-mono" />
       </div>
       {finding.detail && (
         <div className="text-[12px] leading-relaxed text-ink-secondary">
-          <div className="mb-0.5 text-[11px] font-medium text-ink-tertiary">{t("room.findings.detail")}</div>
+          <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.detail")}</div>
           <ExpandableText text={finding.detail} />
         </div>
       )}
-      <div className="text-[11px] text-ink-tertiary">
+      <div className="text-[12px] text-ink-tertiary">
         {finding.updatedAt > finding.reportedAt
           ? t("room.findings.updated", { when: when(finding.updatedAt) })
           : t("room.findings.reported", { when: when(finding.reportedAt) })}
@@ -97,7 +97,11 @@ export function EngagementFindingsPage({ group }: { group: Group }) {
     return () => { live = false; };
   }, [group.id]);
 
-  if (error) return <Card><NoteRow tone="warn">{error}</NoteRow></Card>;
+  if (error) return (
+    <Card>
+      <div role="alert" data-panel-row="findings-error" className="text-[12px] leading-relaxed text-danger">{error}</div>
+    </Card>
+  );
   if (findings === null) return <Card><NoteRow>{t("room.findings.loading")}</NoteRow></Card>;
   if (!findings.length) return (
     <Card>
