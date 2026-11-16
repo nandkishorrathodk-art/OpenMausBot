@@ -70,3 +70,11 @@ which would delete the rebrand.
   exact prompt for each scenario, so a change to `setupSuggestionPrompt` means
   regenerating those `prompts` entries (they are a pure function of the
   scenario) while leaving the recorded `replies` alone.
+- The engagement ledger (`server/engagement-findings.ts`) is the room-scoped
+  record of what the team has found, validated and fixed. Its `engagement_finding`
+  tool is room-only: the catalog shows it through `ROOM_ONLY_TOOL_NAMES`, so
+  adding such a tool moves only the two room goldens and their `BUDGET_BASELINE`
+  entries while every other profile stays byte-identical. Its internal route
+  (`server/routes/engagement-findings.ts`) resolves the room from the caller's own
+  conversation rather than the body, and its path is not in
+  `server/host/outside-fence.ts`'s list, so a confined turn cannot reach it yet.
