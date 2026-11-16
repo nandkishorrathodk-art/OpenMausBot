@@ -22,6 +22,7 @@ const EVERY_TOOL = new Set([
   ...names(FULLEST),
   ...names({ ...FULLEST, OMB_TEAM_PEOPLE: "0", OMB_CLOUD_HOME: "1" }),
   ...names({ ...FULLEST, OMB_BOT_ID: WATCHER_OPTIONS_CARD_BOT_ID }),
+  ...names({ ...FULLEST, OMB_ROOM: "1" }),
 ]);
 const buckets: Array<[string, ReadonlySet<string>]> = [
   ...TOOL_GROUPS.map((group): [string, ReadonlySet<string>] => [group, TOOL_GROUP_MEMBERS[group].tools]),

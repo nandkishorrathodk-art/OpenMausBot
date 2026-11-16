@@ -5,11 +5,15 @@ import { WATCHER_OPTIONS_CARD_BOT_ID } from "../shared/options-card.ts";
 import { bridgedCallTitle } from "./drivers/agents-bridge.ts";
 import { availableTools } from "./drivers/agents-catalog.ts";
 
-/** Every catalog tool's name, whoever may call it, and every alias a call may still use. */
-export const CATALOG_TOOL_NAMES: ReadonlySet<string> = new Set([...availableTools({
-  skillAuthoring: true, sharedComputers: true, voiceNotes: true, xResearch: true, research: true, team: true,
-  computerSelection: true, cloudHome: false, chief: true, mausbot: true, botId: WATCHER_OPTIONS_CARD_BOT_ID,
-}).map((tool) => tool.name), ...Object.keys(AGENTS_TOOL_ALIASES)]);
+/** Every catalog tool's name, whoever may call it, and every alias a call may still use. The room profiles add what a
+ * room-only tool shows and leave out what a room refuses, so both are read here. */
+export const CATALOG_TOOL_NAMES: ReadonlySet<string> = new Set([
+  ...[{ room: false }, { room: true }].flatMap((room) => availableTools({
+    skillAuthoring: true, sharedComputers: true, voiceNotes: true, xResearch: true, research: true, team: true,
+    computerSelection: true, cloudHome: false, chief: true, mausbot: true, botId: WATCHER_OPTIONS_CARD_BOT_ID, ...room,
+  }).map((tool) => tool.name)),
+  ...Object.keys(AGENTS_TOOL_ALIASES),
+]);
 
 /** A call's name with a bridged call read as the tool it ran. With `serverNamed`, only a title that names
  * the agents server is read: a bare `use_tool` on an engine that omits the server (Codex) could be any server's. */

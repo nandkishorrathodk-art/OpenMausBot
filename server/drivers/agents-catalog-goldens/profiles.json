@@ -1423,8 +1423,8 @@
     ]
   },
   "default+room": {
-    "bytes": 52979,
-    "sha256": "26a30168f547a101ab316222e4c9fa20dd44511c183106a24b8a2e3d8a215ab4",
+    "bytes": 54763,
+    "sha256": "56a33a07320fc3540f2c2d0261ad19eba3472214371e6cd07cc26c8fa76f4349",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1469,12 +1469,13 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "engagement_finding"
     ]
   },
   "non-chief+room": {
-    "bytes": 44542,
-    "sha256": "42dec09303eec062497c35ca22032cb755611aa6964997aa9803769f4316c881",
+    "bytes": 46326,
+    "sha256": "471cf85609dad1825c4ce6e0db382a159c57cff4f6c7c5d288339239b69145e1",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -1512,7 +1513,8 @@
       "propose_model",
       "propose_team_memory",
       "mcp_server",
-      "app_settings"
+      "app_settings",
+      "engagement_finding"
     ]
   },
   "default+images": {

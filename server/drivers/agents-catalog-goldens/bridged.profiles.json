@@ -588,8 +588,8 @@
     ]
   },
   "default+room": {
-    "bytes": 15759,
-    "sha256": "5327d0fffc94ca97073b86cdea39658ec4e18a7c983225019b9536f5324bd815",
+    "bytes": 15779,
+    "sha256": "4d9b84c679dc03ff097ebf76d7b275e7f2bfc20eedc8a4daf7f55c68e0f5ae03",
     "tools": [
       "tool_result_read",
       "list_room_targets",
@@ -610,8 +610,8 @@
     ]
   },
   "non-chief+room": {
-    "bytes": 15642,
-    "sha256": "33de604df87e73ad34ab1699eed38d0ae9bb2063905352ed8ba31952ac68e9ca",
+    "bytes": 15662,
+    "sha256": "49aaba4754bf888f33131314523aa6172e048cd6983d82ade8565265c6f0b24d",
     "tools": [
       "tool_result_read",
       "list_room_targets",

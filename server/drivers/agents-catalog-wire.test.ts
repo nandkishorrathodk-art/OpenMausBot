@@ -111,8 +111,8 @@ const BUDGET_BASELINE: Record<string, number> = {
   "skills+shared+voice+x": 65605,
   "skills+shared+voice+x+team": 65605,
   "default+no-computer-pick": 55422,
-  "default+room": 52418,
-  "non-chief+room": 44001,
+  "default+room": 54763,
+  "non-chief+room": 46326,
   "skills+shared+voice+x+team+images": 66378,
   "default+images": 57407,
   "skills+shared+voice+x+team+images+hosting": 68241,
@@ -221,6 +221,7 @@ describe("agents proxy tools/list golden", () => {
         if (profile.env.OMB_CLOUD_HOME === "1" && (tool.name === "select_computer" || OWN_CLOUD_TOOLS.includes(tool.name))) continue;
         if (profile.env.OMB_CHIEF_OF_STAFF === "0" && CHIEF_TARGET_TOOLS.includes(tool.name)) continue;
         if (profile.env.OMB_MAUSBOT === "1" && MAUSBOT_TOOLS.includes(tool.name)) continue;
+        if (profile.env.OMB_ROOM === "1" && tool.name === "engagement_finding") continue;
         expect(JSON.stringify(tool), `${name}: ${tool.name}`).toBe(full.get(tool.name));
       }
     }
@@ -354,13 +355,17 @@ describe("agents proxy tools/list golden", () => {
     const names = (name: string) => toolsOf(wires[name]!).map((tool) => tool.name);
     expect(names("default+no-computer-pick")).toEqual(names("default").filter((tool) => tool !== "select_computer"));
     for (const name of ["default", "non-chief"]) {
-      expect(names(`${name}+room`), name).toEqual(names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "burst", "rename_thread"].includes(tool)));
+      expect(names(`${name}+room`), name).toEqual([
+        ...names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "burst", "rename_thread"].includes(tool)),
+        "engagement_finding",
+      ]);
     }
     for (const [name, profile] of Object.entries(PROFILES)) {
       expect(names(name).includes("select_computer"), name).toBe(profile.env.OMB_COMPUTER_SELECTION === "1");
       expect(names(name).includes("show_widget"), name).toBe(true);
       expect(names(name).includes("show_html"), name).toBe(profile.env.OMB_TOOLS_OFF === undefined);
       expect(names(name).includes("wait_until"), name).toBe(profile.env.OMB_ROOM !== "1");
+      expect(names(name).includes("engagement_finding"), name).toBe(profile.env.OMB_ROOM === "1");
     }
   });
 
