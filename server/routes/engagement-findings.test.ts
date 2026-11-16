@@ -17,7 +17,7 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-function harness(options: { room?: { id: string; memberIds: string[] } | null; body?: unknown } = {}) {
+function harness(options: { room?: { id: string; memberIds: string[]; dm?: boolean } | null; body?: unknown } = {}) {
   const sent: Array<{ status: number; body: unknown }> = [];
   const res = {} as ServerResponse;
   const json = (_res: ServerResponse, status: number, body: unknown) => { sent.push({ status, body }); };
@@ -43,6 +43,12 @@ describe("the engagement findings internal route", () => {
     const { call, sent } = harness({ room: null, body: { action: "list" } });
     await call(FINDINGS_PATH);
     expect(sent).toEqual([{ status: 409, body: { error: expect.stringContaining("engagement room") } }]);
+  });
+
+  it("refuses a direct message, which holds no findings", async () => {
+    const { call, sent } = harness({ room: { id: "dm", memberIds: ["bot-a"], dm: true } as never, body: { action: "list" } });
+    await call(FINDINGS_PATH);
+    expect(sent).toEqual([{ status: 409, body: { error: expect.stringContaining("direct message") } }]);
   });
 
   it("records, lists and updates in the caller's room", async () => {

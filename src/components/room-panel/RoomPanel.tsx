@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { ChevronRight, FileText, Folder, MessagesSquare, Users, X } from "lucide-react";
+import { Bug, ChevronRight, Crosshair, FileText, Folder, MessagesSquare, Users, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { t } from "@/lib/i18n";
@@ -16,13 +16,17 @@ import { RoomMoreMenu } from "../RoomMoreMenu";
 import { RoomWorkingFolder, roomWorkingFolder } from "../RoomWorkingFolder";
 import { buttonCls, Card, ColRow, NavRow, PageHeader, roundButtonCls, rowCls, RowText } from "../bot-panel/rows";
 import { sidePanelCls } from "../bot-panel/side-panel";
+import { EngagementFindingsPage } from "./EngagementFindingsPage";
+import { EngagementScopePage } from "./EngagementScopePage";
 import { ResponderPage } from "./ResponderPage";
 
-type RoomPage = "responder" | "folder";
+type RoomPage = "responder" | "folder" | "engagement-scope" | "engagement-findings";
 
 const PAGES: Record<RoomPage, { title: LocaleKey; intro: LocaleKey }> = {
   responder: { title: "room.panel.whoResponds", intro: "room.panel.responder.intro" },
   folder: { title: "room.folder.title", intro: "room.folder.detail" },
+  "engagement-scope": { title: "room.engagement.scope", intro: "room.engagement.scope.intro" },
+  "engagement-findings": { title: "room.findings", intro: "room.findings.intro" },
 };
 
 function RoomHero({ group, members }: { group: Group; members: Bot[] }) {
@@ -217,13 +221,32 @@ export function RoomPanel({ group, overlay = false }: { group: Group; overlay?: 
                   onClick={() => setMembersOpen(true)}
                 />
               </Card>
+              {!group.dm && (
+                <Card label={t("room.engagement")}>
+                  <NavRow
+                    data-panel-page="engagement-scope"
+                    icon={Crosshair}
+                    title={t("room.engagement.scope")}
+                    onClick={() => openPage("engagement-scope")}
+                  />
+                  <NavRow
+                    data-panel-page="engagement-findings"
+                    icon={Bug}
+                    title={t("room.findings")}
+                    onClick={() => openPage("engagement-findings")}
+                  />
+                </Card>
+              )}
             </>
           ) : (
             <div data-panel-page-view={page}>
               <span id="room-panel-title" className="sr-only">{group.name}</span>
               <PageHeader back={group.name} title={t(PAGES[page].title)} intro={t(PAGES[page].intro)} onBack={back} />
               <div className="mt-4 flex flex-col gap-3">
-                {page === "responder" ? <ResponderPage group={group} members={members} /> : <RoomWorkingFolder group={group} heading={false} />}
+                {page === "responder" ? <ResponderPage group={group} members={members} />
+                  : page === "folder" ? <RoomWorkingFolder group={group} heading={false} />
+                  : page === "engagement-scope" ? <EngagementScopePage group={group} />
+                  : <EngagementFindingsPage group={group} />}
               </div>
             </div>
           )}

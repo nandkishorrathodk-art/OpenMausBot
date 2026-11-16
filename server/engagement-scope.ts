@@ -1,6 +1,7 @@
 import { lstatSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 
+import type { EngagementScope } from "../shared/engagement.ts";
 import { writeFileAtomic } from "./atomic.ts";
 import type { GroupRecord } from "./store.ts";
 
@@ -10,16 +11,7 @@ import type { GroupRecord } from "./store.ts";
 // reveal (an address built inside a script, a host behind a redirect) is not seen here. It stops the ordinary
 // mistake of pointing an authorized engagement's tooling at the wrong host, and it is honest about that limit.
 
-export interface EngagementScope {
-  /** What the client authorized: a host, `*.example.com`, an IPv4 address or a CIDR block. */
-  targets: string[];
-  /** What the client put off-limits, matched the same way. It beats `targets`. */
-  offLimits: string[];
-  /** Epoch ms. Absent means the authorization has no start. */
-  startsAt?: number;
-  /** Epoch ms. Absent means the authorization has no end. */
-  endsAt?: number;
-}
+export type { EngagementScope };
 
 export type ParsedEngagementScope =
   | { ok: true; scope: EngagementScope | undefined }

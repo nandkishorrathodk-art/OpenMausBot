@@ -12200,6 +12200,7 @@ ROUTES.push(createGroupRoutes({
   groupFor: personRooms.groupForAuth,
   scope: engagementScopes,
   canManageScope: canManageCommandAllowlist,
+  findings: engagementFindings,
 }));
 ROUTES.push(createChannelRoutes({
   store, threadRead: teamMessages.seen, runOwners, runActor,

@@ -22,6 +22,13 @@ vi.mock("../DesktopCapabilities", async (importOriginal) => ({
 }));
 vi.mock("../Avatar", () => ({ BotAvatar: () => null, MausAvatar: () => null }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
+vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => true }));
+const engagement = vi.hoisted(() => ({ readScope: vi.fn(), saveScope: vi.fn(), readFindings: vi.fn() }));
+vi.mock("@/lib/engagement", () => ({
+  readRoomScope: engagement.readScope,
+  saveRoomScope: engagement.saveScope,
+  readRoomFindings: engagement.readFindings,
+}));
 
 const bot = (id: string, name: string): Bot => ({
   id, threadId: `${id}-thread`, name, title: "", description: "", color: "green",
@@ -76,6 +83,9 @@ const patches = () => fixture.dispatch.mock.calls.map(([action]) => action).filt
 
 beforeEach(() => {
   fixture.dispatch.mockReset();
+  engagement.readScope.mockReset().mockResolvedValue(null);
+  engagement.saveScope.mockReset().mockResolvedValue(null);
+  engagement.readFindings.mockReset().mockResolvedValue([]);
   fixture.config = jev(true);
   document.documentElement.dataset.reducedMotion = "true";
   vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(() => {});
@@ -215,6 +225,22 @@ describe("Members", () => {
     render(room());
     click($('[data-panel-row="members"]'));
     expect($('[role="dialog"][aria-label="Manage members of Desk HQ"]')).not.toBeNull();
+  });
+});
+
+describe("Engagement", () => {
+  it("offers the room's scope and findings, and keeps them off a direct message", async () => {
+    render(room());
+    expect($('[data-panel-page="engagement-scope"]')).not.toBeNull();
+    click($('[data-panel-page="engagement-findings"]'));
+    await settle();
+    expect(page()).toBe("engagement-findings");
+    expect($('[data-panel-page-view="engagement-findings"] h3')?.textContent).toBe("Findings");
+    flushSync(() => root.render([
+      createElement(RoomPanel, { key: "panel", group: room({ dm: true }) }),
+      createElement(Probe, { key: "probe" }),
+    ]));
+    expect($('[data-panel-page="engagement-scope"]')).toBeNull();
   });
 });
 

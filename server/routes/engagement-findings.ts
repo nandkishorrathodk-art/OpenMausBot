@@ -39,6 +39,9 @@ export function createEngagementFindingInternalRoutes(deps: EngagementFindingInt
     if (!room) {
       return ctx.json(ctx.res, 409, { error: "Findings live in an engagement room. This conversation is not in one." });
     }
+    if (room.dm) {
+      return ctx.json(ctx.res, 409, { error: "Findings live in an engagement room. A direct message holds none." });
+    }
     try {
       if (action === "list") return ctx.json(ctx.res, 200, { findings: deps.findings.list(room.id) });
       if (action === "record") return ctx.json(ctx.res, 200, { finding: deps.findings.record(room.id, body) });

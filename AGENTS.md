@@ -79,12 +79,18 @@ which would delete the rebrand.
   conversation rather than the body, and its path is not in
   `server/host/outside-fence.ts`'s list, so a confined turn cannot reach it yet.
 - The engagement scope (`server/engagement-scope.ts`) and the findings ledger are
-  backend-only so far: `createCommandScope` refuses a shell command outside the
-  authorized targets and injects the scope into the room's turn, and the
-  `engagement_finding` tool is the only reader of the ledger. Nothing in `src/`
-  yet sets a room's scope (`PUT /api/groups/:id/scope`, owner or admin) or shows
-  its findings, so an engagement is configured through the API and read through
-  the tool. That person-facing surface is the open gap.
+  wired to a person-facing surface in the room panel: `EngagementScopePage` and
+  `EngagementFindingsPage` under `src/components/room-panel/` read and write
+  `GET/PUT /api/groups/:id/scope` (owner or admin; a bot's shell is refused) and
+  `GET /api/groups/:id/findings`, reached from the room card's Engagement section.
+  A direct message has neither, and both the room card and the server enforce it:
+  the scope and findings routes answer 400 for a DM, and the internal findings
+  route answers 409, so no path records a finding a person can never read. The
+  two records' shapes live in `shared/engagement.ts`, which both the server
+  modules and the pages import, so a field change moves one file. What is still
+  open: the panel reads and writes the scope but nothing shows a command being
+  refused, and `createCommandScope`'s check is a heuristic on command text rather
+  than a sandbox.
 - When a rebrand reaches a string, move its verbatim twin in the same change.
   `src/lib/phone-setup.ts`'s `PUBLIC_ACCOUNT_MESSAGES` matches
   `electron/companion-account-messages.mjs`'s `FRIENDLY_MESSAGES` by regex, and

@@ -1,5 +1,6 @@
 import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../shared/wire.ts";
 import type { EngagementScope } from "../engagement-scope.ts";
+import type { EngagementFinding } from "../engagement-findings.ts";
 import { validateBotCwd } from "../bot-cwd.ts";
 import type { VisibleSet } from "../bot-visibility.ts";
 import type { RequestAuth } from "../request-auth.ts";
@@ -23,6 +24,8 @@ export interface GroupRouteDeps {
   scope: { get(roomId: string): EngagementScope | null; set(roomId: string, value: unknown): EngagementScope | null };
   /** Whether this caller is a person who may set a room's engagement scope, never a bot's shell. */
   canManageScope(auth: RequestAuth): boolean;
+  /** The flaws the engagement has recorded, for the room panel to show. */
+  findings: { list(roomId: string): EngagementFinding[] };
 }
 
 /** A room's default responder from a request body; null when it is not one, or names a bot outside the room. */
@@ -111,6 +114,14 @@ export function createGroupRoutes(deps: GroupRouteDeps): RouteHandler {
       } catch (error) {
         return json(res, (error as { status?: number }).status ?? 400, { error: error instanceof Error ? error.message : "invalid engagement scope" });
       }
+    }
+    m = path.match(/^\/api\/groups\/([\w-]+)\/findings$/);
+    if (m && method === "GET") {
+      const group = store.group(m[1]);
+      if (!group) return json(res, 404, { error: "no such room" });
+      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement findings" });
+      if (!visible.group(group.id)) return json(res, 403, { error: "This room's findings are not yours to read." });
+      return json(res, 200, { findings: deps.findings.list(group.id) });
     }
     return PASS;
   };

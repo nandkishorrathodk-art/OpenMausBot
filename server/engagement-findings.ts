@@ -1,33 +1,21 @@
 import { lstatSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 
+import {
+  FINDING_SEVERITIES,
+  FINDING_STATUSES,
+  type EngagementFinding,
+  type FindingSeverity,
+  type FindingStatus,
+} from "../shared/engagement.ts";
 import { writeFileAtomic } from "./atomic.ts";
 
 // The flaws one engagement has found, as the team recorded them: an asset, what is wrong, how bad, and what
 // proves it. A finding is a claim until evidence is attached, which is what separates this ledger from a
 // scanner's raw output. Room-scoped like the scope, and never a place a command runs from.
 
-export const FINDING_SEVERITIES = ["critical", "high", "medium", "low", "info"] as const;
-export const FINDING_STATUSES = ["suspected", "proven", "fixed", "wont-fix"] as const;
-export type FindingSeverity = (typeof FINDING_SEVERITIES)[number];
-export type FindingStatus = (typeof FINDING_STATUSES)[number];
-
-export interface EngagementFinding {
-  id: string;
-  /** The asset the flaw is in: a host, an endpoint, a path. Kept as written so it matches the report. */
-  target: string;
-  /** What is wrong, one line. Two findings with the same target and title are the same finding. */
-  title: string;
-  severity: FindingSeverity;
-  /** `suspected` until evidence proves it; `proven` is what the client can act on. */
-  status: FindingStatus;
-  /** How it was shown: the command and its output, a request and its response, an artifact path. */
-  evidence: string;
-  /** Impact and reproduce steps, optional at first. */
-  detail?: string;
-  reportedAt: number;
-  updatedAt: number;
-}
+export { FINDING_SEVERITIES, FINDING_STATUSES };
+export type { EngagementFinding, FindingSeverity, FindingStatus };
 
 export type ParsedFinding =
   | { ok: true; finding: Omit<EngagementFinding, "id" | "reportedAt" | "updatedAt"> }
