@@ -1,4 +1,5 @@
 import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../shared/wire.ts";
+import type { EngagementScope } from "../engagement-scope.ts";
 import { validateBotCwd } from "../bot-cwd.ts";
 import type { VisibleSet } from "../bot-visibility.ts";
 import type { RequestAuth } from "../request-auth.ts";
@@ -17,6 +18,11 @@ export interface GroupRouteDeps {
   publicGroupState(record: GroupRecord): WireGroup;
   /** A room as this person has read it (a Team Cloud); the room itself anywhere else. */
   groupFor?(auth: RequestAuth, group: WireGroup): WireGroup;
+  /** The engagement's authorized targets; null when the room has none. Only the person who holds the
+   * authorization may set it, so no bot's tool can widen the scope it is then checked against. */
+  scope: { get(roomId: string): EngagementScope | null; set(roomId: string, value: unknown): EngagementScope | null };
+  /** Whether this caller is a person who may set a room's engagement scope, never a bot's shell. */
+  canManageScope(auth: RequestAuth): boolean;
 }
 
 /** A room's default responder from a request body; null when it is not one, or names a bot outside the room. */
@@ -91,6 +97,20 @@ export function createGroupRoutes(deps: GroupRouteDeps): RouteHandler {
       const updated = store.patchGroup(m[1], patch);
       if (!updated) return json(res, 404, { error: "no such room" });
       return json(res, 200, { group: own(publicGroupState(updated)) } satisfies RoomUpdateResponse);
+    }
+    m = path.match(/^\/api\/groups\/([\w-]+)\/scope$/);
+    if (m && (method === "GET" || method === "PUT")) {
+      if (!deps.canManageScope(auth)) return json(res, 403, { error: "Only the owner or an admin can set an engagement scope." });
+      const group = store.group(m[1]);
+      if (!group) return json(res, 404, { error: "no such room" });
+      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold an engagement scope" });
+      if (method === "GET") return json(res, 200, { scope: deps.scope.get(group.id) });
+      const body = await readBody(req);
+      try {
+        return json(res, 200, { scope: deps.scope.set(group.id, body?.scope ?? null) });
+      } catch (error) {
+        return json(res, (error as { status?: number }).status ?? 400, { error: error instanceof Error ? error.message : "invalid engagement scope" });
+      }
     }
     return PASS;
   };

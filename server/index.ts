@@ -52,6 +52,7 @@ import { RoomMemberLock } from "./room-member-lock.ts";
 import { approvalHeldNote, approvalHeldReason, approvalModeForOrigin, autoVerdict, deliverFullAccessApproval, undeliveredApprovalTool } from "./auto-approve.ts"; import { readsOwnFiles } from "./own-file-reads.ts";
 import { bindSafetyFloor, denyAtSafetyFloor, heldAtSafetyFloor, safetyFloorOn } from "./safety-floor-gate.ts";
 import { CommandAllowlistStore, commandAllowlistCandidate } from "./command-allowlist.ts";
+import { createCommandScope, EngagementScopeStore } from "./engagement-scope.ts"; import { createThreadSource } from "./host/thread-source.ts";
 import { providerMcpTool, providerToolAllowKey } from "./provider-tool-allow.ts";
 import type { CommandAllowlistCandidate, CommandAllowlistResponse } from "../shared/command-allowlist.ts";
 import { claudeAccountInfo } from "./claude-accounts.ts";
@@ -741,6 +742,7 @@ if (CLOUD_HOME && Object.keys(CLOUD_SECRETS).length === 0) {
 }
 const threadStarters = new ThreadStarters(join(DATA_DIR, "thread-starters.json")); const conversationShares = createConversationShares({ dataDir: DATA_DIR, team: Boolean(CLOUD_TEAM) });
 const commandAllowlist = new CommandAllowlistStore(join(DATA_DIR, "command-allowlist.json"));
+const engagementScopes = new EngagementScopeStore(join(DATA_DIR, "engagement-scopes.json"));
 // Every value saved in the Vault is scrubbed from whatever a bot or a transcript can read.
 const logins = new VaultStore({ dataDir: DATA_DIR, secretChanged: (item) => mcpServersHost.keyChanged(item) });
 removeRetiredAppFiles(DATA_DIR); const emailService = createEmailService({ dataDir: DATA_DIR, publicOnly: Boolean(CLOUD_HOME), refusal: CLOUD_TEAM ? "Email isn't on a Team Cloud yet: every bot there would read the same mailbox." : null }); addHeldSecretScrubber((text) => emailService.scrub(text));
@@ -2803,6 +2805,7 @@ const store = new Store(
   () => appLanguage() ?? Intl.DateTimeFormat().resolvedOptions().locale,
   () => sharedMembership() ? undefined : cfg.profile?.name,
 );
+const threadSource = createThreadSource(store); const { connectorThread, directChatOf, roomOfThread } = threadSource; const commandScope = createCommandScope({ roomOfThread, scopes: engagementScopes });
 const sharedVm = createSharedVmControl({ control: computerControl, store, mode: () => CLOUD_HOME ? null : localVmMode(cfg), botForThread, turnBots: directTurnBots,
   teamTurns: teamComputerTurns, teamComputer: (bot) => inheritedTeamComputer(bot)?.id, place: (bot, threadId) => turnSurfacePlan(bot, undefined, threadId).computer,
   turnVmTargets: { get: (threadId) => localVmThreadTargets.get(threadId) }, busy: () => localVmModeChangeBusy || localVmImageBusy || localVmLifecycleBusy.has(SHARED_LOCAL_VM_TARGET.key) });
@@ -10085,6 +10088,7 @@ async function runClaimedGroupMemberTurn(
     bot.description && `About: ${bot.description}`,
     `Room members: ${roster}, and ${typeof userName === "string" ? `${userName} (the human)` : roomPeople(threadId, userName)}.`,
     readyGroup.bulletin.trim() && `Room bulletin (shared instructions for everyone):\n${readyGroup.bulletin.trim()}`,
+    commandScope.prompt(readyGroup.id),
     `Reply as yourself, briefly and conversationally. To bring a teammate in, mention them like @Name — they'll see the conversation and respond.${readyGroup.dm ? "" : ` To get ${typeof userName === "string" ? `${userName}'s` : "a person's"} attention or ask them something blocking, write @you.`} A "[reacted 👍 to …]" line is that person's whole reply to the message it names: 👍 means yes, go ahead when that message asked them something or offered to do something, and only got it (start no new work) when it just told them something; 👎 means no.`,
     outsideRoom.length > 0 && roomPeerRosterSystemPrompt(outsideRoom), sharedNamesNote(roomMembers.filter((member) => member.id !== bot.id), Boolean(integrations.agents)),
     integrations.agents && (CREDENTIAL_PROMPT + savedSecretsPrompt(botLogins.secretNamesFor(bot.id, vaultReaders.turn(threadId))) + (orchestration && !orchestration.roomHandoffId ? THREADS_PROMPT : "")).trim(),
@@ -11099,16 +11103,6 @@ async function attachmentVmForTurn(capability: InternalCapability): Promise<Loca
   return vm;
 }
 
-function connectorThread(botId: string, threadId: string) {
-  const bot = store.bot(botId);
-  if (!bot) return null;
-  if (bot.threadId === threadId) return { bot, group: undefined };
-  if (store.taskByThread(botId, threadId)) return { bot, group: undefined };
-  const group = store.groupByThread(threadId);
-  if (group?.memberIds.includes(botId)) return { bot, group };
-  return null;
-}
-function directChatOf(botId: string, threadId: string): boolean { const source = connectorThread(botId, threadId); return source !== null && !source.group; }
 function waitTurnChecks(capability: InternalCapability, sender: BotRecord): Pick<WaitRouteContext, "sourceRefusal" | "assignmentId" | "hostRefusal" | "guest" | "peer" | "elsewhere"> { const { threadId } = capability, place = () => { const turn = turnPlaces.get(threadId); return turn?.botId === sender.id ? turn.place : null; }, assignmentId = () => handedAssignment(capability.roomHandoffId ?? directCoordinationSettlers.get(capability.generation)?.nodeId, (id) => coordinator.node(id));
   return { assignmentId, sourceRefusal: (op, assignment) => { const source = connectorThread(sender.id, threadId); return waitSourceRefusal({ owned: source !== null, room: Boolean(source?.group), depth: capability.depth, handedOff: Boolean(capability.roomHandoffId), routineRun: Boolean(activeRoutineRunForThread(threadId)), outsideDriven: outsideDrivenThread(threadId), personStarted: turnOrigin(capability).kind === "user", guest: cloudGuestDriven(threadId), op, assignmentId: assignment }); }, hostRefusal: () => hostWaitRefusal({ cloudHome: Boolean(CLOUD_HOME), hosted: HOSTED_WORKSPACE, guest: cloudGuestDriven(threadId), place: place() }), guest: () => cloudGuestDriven(threadId), peer: (name) => findWaitPeer(reachablePeers(store.bots, sender), sender.id, name), elsewhere: placesElsewhere.explain }; }
 
@@ -12197,6 +12191,8 @@ ROUTES.push(createGroupRoutes({
   createChannel,
   publicGroupState,
   groupFor: personRooms.groupForAuth,
+  scope: engagementScopes,
+  canManageScope: canManageCommandAllowlist,
 }));
 ROUTES.push(createChannelRoutes({
   store, threadRead: teamMessages.seen, runOwners, runActor,
@@ -13226,7 +13222,8 @@ const handleRequest = async (req: IncomingMessage, res: ServerResponse) => {
       }
       if (method === "POST" && path === "/api/internal/vm-exec") {
         const threadId = internalCapability.threadId;
-        if (!connectorThread(internalSender.id, threadId)) {
+        const owner = connectorThread(internalSender.id, threadId);
+        if (!owner) {
           return json(res, 403, { error: "source conversation does not belong to sender" });
         }
         const body = await readInternalBody();
@@ -13239,7 +13236,10 @@ const handleRequest = async (req: IncomingMessage, res: ServerResponse) => {
               sharedVm.snapshot(internalSender.id, threadId).held) {
             return json(res, 409, { error: "The Local VM is no longer available to this turn." });
           }
-          const result = await containerExec(vm, typeof body.command === "string" ? body.command : "", {
+          const command = typeof body.command === "string" ? body.command : "";
+          const refusal = commandScope.refusal(internalSender.id, threadId, command);
+          if (refusal) return json(res, 403, { error: refusal });
+          const result = await containerExec(vm, command, {
             runtime,
             timeoutSeconds: typeof body.timeout_seconds === "number" ? body.timeout_seconds : undefined,
           });

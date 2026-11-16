@@ -437,6 +437,41 @@ describe("Group Local VM ownership on the real isolated server", () => {
     expect((await exec()).status).toBe(401);
   });
 
+  it("refuses a command that reaches outside the room's engagement scope, before the VM runs it", async () => {
+    const { bots, group } = await room();
+    await send(group.id);
+    const mounted: any = await dump();
+    const token = mounted.mcpConfig.mcpServers.agents.env.OMB_COMMS_TOKEN;
+    const exec = (command: string) => fetch(base + "/api/internal/vm-exec", {
+      method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: JSON.stringify({ command }),
+    });
+    const ran = () => existsSync(stateFile + ".exec") ? JSON.parse(readFileSync(stateFile + ".exec", "utf8")).command : null;
+    try {
+      // A room with no scope runs as before: nothing is checked.
+      rmSync(stateFile + ".exec", { force: true });
+      expect((await exec("curl http://outside.test/")).status).toBe(200);
+      expect(ran()).toBe("curl http://outside.test/");
+
+      await api("PUT", `/api/groups/${group.id}/scope`, { scope: { targets: ["example.com", "*.acme.test"] } });
+
+      rmSync(stateFile + ".exec", { force: true });
+      expect((await exec("curl https://example.com/")).status).toBe(200);
+      expect(ran()).toBe("curl https://example.com/");
+
+      rmSync(stateFile + ".exec", { force: true });
+      const refused = await exec("curl https://outside.test/");
+      expect(refused.status).toBe(403);
+      expect(((await refused.json()) as { error: string }).error).toContain("outside.test");
+      expect(ran()).toBeNull();
+
+      await api("PUT", `/api/groups/${group.id}/scope`, { scope: null });
+      expect((await exec("curl https://outside.test/")).status).toBe(200);
+    } finally {
+      await stop(group.id); await idle(bots[0].id); vmState();
+    }
+  });
+
   it("claims an Auto VM on its first shell command without needing a screenshot", async () => {
     vmState(); rmSync(dumpFile, { force: true }); rmSync(finishFile, { force: true });
     const { bot } = await api("POST", "/api/bots", { name: "Auto VM shell" });

@@ -37,6 +37,8 @@ export function restoredWorkspaceConfig(portable: unknown, destination: unknown)
 export function excludedWorkspaceAuthPath(path: string): boolean {
   if (inSecretFolder(path)) return true;
   if (/^command-allowlist\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
+  // A client's authorization to test their systems is theirs: a restored copy must never be read as one for the destination.
+  if (/^engagement-scopes\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
   if (/^mcp-oauth\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
   // Saved website logins and their key never leave the computer they were saved on, nor does the key sealing webhook secrets.
   if (/^(?:logins\.json\.enc|member-secrets\.json\.enc|logins-key|webhook-key)(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
