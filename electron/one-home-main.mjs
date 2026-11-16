@@ -37,7 +37,7 @@ export function installationOf(environmentId) {
  * none) and what it is (server/routes/move-freeze.ts). */
 export function freezeAnswer(got) {
   if (got.status === 409 && typeof got.body?.busy === "string") return { busy: got.body.busy, ...(typeof got.body.what === "string" ? { what: got.body.what } : {}) };
-  if (!got.ok || got.body?.frozen !== true) throw Object.assign(new Error("OpenMausBot on this computer could not pause."), { status: got.status });
+  if (!got.ok || got.body?.frozen !== true) throw Object.assign(new Error("Parth Lab on this computer could not pause."), { status: got.status });
   return { frozen: true };
 }
 

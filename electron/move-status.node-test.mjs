@@ -156,7 +156,7 @@ test("every phase's failure has its own code", async () => {
     { name: "My Cloud refusing the final pass", moves: [undefined, new CloudSendError("refused", "My Cloud could not add the chats.")], expect: { phase: "final", code: "refused" } },
     { name: "something unforeseen", moves: [new Error("Cannot read properties of undefined (reading 'items')")], expect: { phase: "copy", code: "error" } },
     { name: "the check still missing things after three passes", checks: [false, false, false], expect: { phase: "check", code: "incomplete", message: "Missing: something. " + INCOMPLETE } },
-    { name: "this computer's server refusing to pause", freezeError: Object.assign(new Error("OpenMausBot on this computer could not pause."), { status: 500 }), expect: { phase: "freeze", code: "freeze" } },
+    { name: "this computer's server refusing to pause", freezeError: Object.assign(new Error("Parth Lab on this computer could not pause."), { status: 500 }), expect: { phase: "freeze", code: "freeze" } },
     { name: "My Cloud refusing to switch an automation on", cloudAnswer: (method) => (method === "PATCH" ? reply(500, { error: "Routines are busy." }) : null), expect: { phase: "switch", code: "switch_refused", message: "Routines are busy." } },
   ];
   for (const { name, moves = [], checks = [], freezeError = null, cloudAnswer = null, expect } of cases) {
