@@ -70,6 +70,18 @@ which would delete the rebrand.
   exact prompt for each scenario, so a change to `setupSuggestionPrompt` means
   regenerating those `prompts` entries (they are a pure function of the
   scenario) while leaving the recorded `replies` alone.
+- An engagement runs in a room, and only a room: the scope, findings and
+  refusals stores are keyed by `groupId`, `GET/PUT /api/groups/:id/scope` answers
+  400 for a DM, and the scope line reaches a turn only through
+  `commandScope.prompt(readyGroup.id)` in the room prompt. The Chief's intake in
+  `server/chief-of-staff.ts` therefore tells it to create the room with
+  `manage_room` when an engagement arrives, and `manage_room`'s description in
+  `server/drivers/agents-catalog.ts` allows creation for that reason too — keep
+  the two in step, since the description is a golden
+  (`server/drivers/agents-catalog-goldens/`) and the intake text is pinned by
+  `server/chief-of-staff.test.ts` and budgeted in `turn-prompt-budget.test.ts`.
+  Only a person who holds the authorization may set a scope: never make the
+  scope bot-writable, or a bot could widen the boundary it is checked against.
 - The engagement ledger (`server/engagement-findings.ts`) is the room-scoped
   record of what the team has found, validated and fixed. Its `engagement_finding`
   tool is room-only: the catalog shows it through `ROOM_ONLY_TOOL_NAMES`, so

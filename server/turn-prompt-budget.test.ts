@@ -67,7 +67,7 @@ const PROMPT_BUDGET_BASELINE: Record<string, number> = {
   "reply-habits": 3620,
   "tool-bridge": 593,
   "sign-in": 2552,
-  "chief-of-staff": 6276,
+  "chief-of-staff": 6633,
   "memory-rules": 2246,
   "setup": 2584,
   "meetings": 296,
