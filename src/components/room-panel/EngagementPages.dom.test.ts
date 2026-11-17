@@ -10,6 +10,7 @@ const fixture = vi.hoisted(() => ({
   readScope: vi.fn(),
   saveScope: vi.fn(),
   readFindings: vi.fn(),
+  readRefusals: vi.fn(),
   ownerOrAdmin: true as boolean | null,
 }));
 
@@ -17,11 +18,13 @@ vi.mock("@/lib/engagement", () => ({
   readRoomScope: fixture.readScope,
   saveRoomScope: fixture.saveScope,
   readRoomFindings: fixture.readFindings,
+  readRoomRefusals: fixture.readRefusals,
 }));
 vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => fixture.ownerOrAdmin }));
 
 const { EngagementScopePage } = await import("./EngagementScopePage");
 const { EngagementFindingsPage } = await import("./EngagementFindingsPage");
+const { EngagementRefusalsPage } = await import("./EngagementRefusalsPage");
 
 const group = { id: "desk", name: "Desk HQ" } as unknown as Group;
 
@@ -43,6 +46,7 @@ beforeEach(() => {
   fixture.readScope.mockReset();
   fixture.saveScope.mockReset();
   fixture.readFindings.mockReset();
+  fixture.readRefusals.mockReset();
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -111,5 +115,37 @@ describe("the engagement findings page", () => {
     flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));
     await settle();
     expect(document.body.textContent).toContain("The team records each flaw here");
+  });
+});
+
+describe("the engagement refusals page", () => {
+  it("lists the most recent refusal first with its command and the host it reached for", async () => {
+    fixture.readRefusals.mockResolvedValue([
+      { id: "1", command: "curl https://evil.test/", reason: "targets", hosts: ["evil.test"], attempts: 1, at: 1 },
+      { id: "2", command: "nmap example.com", reason: "window", hosts: [], window: "ended", attempts: 1, at: 2 },
+    ]);
+    flushSync(() => root.render(createElement(EngagementRefusalsPage, { group })));
+    await settle();
+    const rows = [...document.querySelectorAll("[data-refusal]")];
+    expect(rows.map((row) => row.getAttribute("data-refusal"))).toEqual(["2", "1"]);
+    expect(rows[1]!.textContent).toContain("curl https://evil.test/");
+    expect(rows[1]!.textContent).toContain("evil.test");
+    expect(rows[0]!.textContent).toContain("after the authorization window closed");
+  });
+
+  it("says how often a repeated command was refused", async () => {
+    fixture.readRefusals.mockResolvedValue([
+      { id: "1", command: "curl https://evil.test/", reason: "targets", hosts: ["evil.test"], attempts: 3, at: 1 },
+    ]);
+    flushSync(() => root.render(createElement(EngagementRefusalsPage, { group })));
+    await settle();
+    expect(document.body.textContent).toContain("Refused 3 times");
+  });
+
+  it("says nothing was refused when the ledger is empty", async () => {
+    fixture.readRefusals.mockResolvedValue([]);
+    flushSync(() => root.render(createElement(EngagementRefusalsPage, { group })));
+    await settle();
+    expect(document.body.textContent).toContain("Every command the team ran stayed inside the authorized scope.");
   });
 });

@@ -52,7 +52,7 @@ import { RoomMemberLock } from "./room-member-lock.ts";
 import { approvalHeldNote, approvalHeldReason, approvalModeForOrigin, autoVerdict, deliverFullAccessApproval, undeliveredApprovalTool } from "./auto-approve.ts"; import { readsOwnFiles } from "./own-file-reads.ts";
 import { bindSafetyFloor, denyAtSafetyFloor, heldAtSafetyFloor, safetyFloorOn } from "./safety-floor-gate.ts";
 import { CommandAllowlistStore, commandAllowlistCandidate } from "./command-allowlist.ts";
-import { createCommandScope, EngagementScopeStore } from "./engagement-scope.ts"; import { EngagementFindingsStore } from "./engagement-findings.ts"; import { createThreadSource } from "./host/thread-source.ts";
+import { createCommandScope, EngagementScopeStore } from "./engagement-scope.ts"; import { EngagementFindingsStore } from "./engagement-findings.ts"; import { EngagementRefusalsStore } from "./engagement-refusals.ts"; import { createThreadSource } from "./host/thread-source.ts";
 import { providerMcpTool, providerToolAllowKey } from "./provider-tool-allow.ts";
 import type { CommandAllowlistCandidate, CommandAllowlistResponse } from "../shared/command-allowlist.ts";
 import { claudeAccountInfo } from "./claude-accounts.ts";
@@ -730,7 +730,7 @@ if (CLOUD_HOME && Object.keys(CLOUD_SECRETS).length === 0) {
 }
 const threadStarters = new ThreadStarters(join(DATA_DIR, "thread-starters.json")); const conversationShares = createConversationShares({ dataDir: DATA_DIR, team: Boolean(CLOUD_TEAM) }); const personalSlackMessages = CLOUD_PERSONAL ? createTeamSlackMessages({ dataDir: DATA_DIR }) : null;
 const commandAllowlist = new CommandAllowlistStore(join(DATA_DIR, "command-allowlist.json"));
-const engagementScopes = new EngagementScopeStore(join(DATA_DIR, "engagement-scopes.json")); const engagementFindings = new EngagementFindingsStore(join(DATA_DIR, "engagement-findings.json"));
+const engagementScopes = new EngagementScopeStore(join(DATA_DIR, "engagement-scopes.json")); const engagementFindings = new EngagementFindingsStore(join(DATA_DIR, "engagement-findings.json")); const engagementRefusals = new EngagementRefusalsStore(join(DATA_DIR, "engagement-refusals.json"));
 // Every value saved in the Vault is scrubbed from whatever a bot or a transcript can read.
 const logins = new VaultStore({ dataDir: DATA_DIR, secretChanged: (item) => mcpServersHost.keyChanged(item) });
 removeRetiredAppFiles(DATA_DIR); const emailService = createEmailService({ dataDir: DATA_DIR, publicOnly: Boolean(CLOUD_HOME), refusal: CLOUD_TEAM ? "Email isn't on a Team Cloud yet: every bot there would read the same mailbox." : null }); addHeldSecretScrubber((text) => emailService.scrub(text));
@@ -2764,7 +2764,7 @@ const store = new Store(
   () => appLanguage() ?? Intl.DateTimeFormat().resolvedOptions().locale,
   () => sharedMembership() ? undefined : cfg.profile?.name,
 );
-const threadSource = createThreadSource(store); const { connectorThread, directChatOf, roomOfThread } = threadSource; const commandScope = createCommandScope({ roomOfThread, scopes: engagementScopes });
+const threadSource = createThreadSource(store); const { connectorThread, directChatOf, roomOfThread } = threadSource; const commandScope = createCommandScope({ roomOfThread, scopes: engagementScopes, onRefusal: (roomId, check, command) => engagementRefusals.record(roomId, check, command) });
 const sharedVm = createSharedVmControl({ control: computerControl, store, mode: () => CLOUD_HOME ? null : localVmMode(cfg), botForThread, turnBots: directTurnBots,
   teamTurns: teamComputerTurns, teamComputer: (bot) => inheritedTeamComputer(bot)?.id, place: (bot, threadId) => turnSurfacePlan(bot, undefined, threadId).computer,
   turnVmTargets: { get: (threadId) => localVmThreadTargets.get(threadId) }, busy: () => localVmModeChangeBusy || localVmImageBusy || localVmLifecycleBusy.has(SHARED_LOCAL_VM_TARGET.key) });
@@ -12163,6 +12163,7 @@ ROUTES.push(createGroupRoutes({
   scope: engagementScopes,
   canManageScope: canManageCommandAllowlist,
   findings: engagementFindings,
+  refusals: engagementRefusals,
 }));
 ROUTES.push(createChannelRoutes({
   store, threadRead: teamMessages.seen, runOwners, runActor,

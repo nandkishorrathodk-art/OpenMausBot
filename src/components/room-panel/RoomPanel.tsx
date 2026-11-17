@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { Bug, ChevronRight, Crosshair, FileText, Folder, MessagesSquare, Users, X } from "lucide-react";
+import { Bug, ChevronRight, Crosshair, FileText, Folder, MessagesSquare, ShieldX, Users, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { t } from "@/lib/i18n";
@@ -17,16 +17,18 @@ import { RoomWorkingFolder, roomWorkingFolder } from "../RoomWorkingFolder";
 import { buttonCls, Card, ColRow, NavRow, PageHeader, roundButtonCls, rowCls, RowText } from "../bot-panel/rows";
 import { sidePanelCls } from "../bot-panel/side-panel";
 import { EngagementFindingsPage } from "./EngagementFindingsPage";
+import { EngagementRefusalsPage } from "./EngagementRefusalsPage";
 import { EngagementScopePage } from "./EngagementScopePage";
 import { ResponderPage } from "./ResponderPage";
 
-type RoomPage = "responder" | "folder" | "engagement-scope" | "engagement-findings";
+type RoomPage = "responder" | "folder" | "engagement-scope" | "engagement-findings" | "engagement-refusals";
 
 const PAGES: Record<RoomPage, { title: LocaleKey; intro: LocaleKey }> = {
   responder: { title: "room.panel.whoResponds", intro: "room.panel.responder.intro" },
   folder: { title: "room.folder.title", intro: "room.folder.detail" },
   "engagement-scope": { title: "room.engagement.scope", intro: "room.engagement.scope.intro" },
   "engagement-findings": { title: "room.findings", intro: "room.findings.intro" },
+  "engagement-refusals": { title: "room.refusals", intro: "room.refusals.intro" },
 };
 
 function RoomHero({ group, members }: { group: Group; members: Bot[] }) {
@@ -235,6 +237,12 @@ export function RoomPanel({ group, overlay = false }: { group: Group; overlay?: 
                     title={t("room.findings")}
                     onClick={() => openPage("engagement-findings")}
                   />
+                  <NavRow
+                    data-panel-page="engagement-refusals"
+                    icon={ShieldX}
+                    title={t("room.refusals")}
+                    onClick={() => openPage("engagement-refusals")}
+                  />
                 </Card>
               )}
             </>
@@ -246,6 +254,7 @@ export function RoomPanel({ group, overlay = false }: { group: Group; overlay?: 
                 {page === "responder" ? <ResponderPage group={group} members={members} />
                   : page === "folder" ? <RoomWorkingFolder group={group} heading={false} />
                   : page === "engagement-scope" ? <EngagementScopePage group={group} />
+                  : page === "engagement-refusals" ? <EngagementRefusalsPage group={group} />
                   : <EngagementFindingsPage group={group} />}
               </div>
             </div>

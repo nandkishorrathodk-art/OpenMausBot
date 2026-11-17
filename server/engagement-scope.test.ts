@@ -232,4 +232,16 @@ describe("command scope", () => {
     expect(prompt).toContain("example.com");
     expect(prompt).toContain("admin.example.com");
   });
+
+  it("reports each refusal once, with the room, the reason and the command, and stays quiet for an allowed one", () => {
+    mkdirSync(directory, { recursive: true });
+    const scopes = new EngagementScopeStore(filename);
+    scopes.set("room-a", { targets: ["example.com"] });
+    const seen: Array<{ roomId: string; reason: string; command: string }> = [];
+    const roomOfThread = (botId: string, threadId: string) => (botId === "member" && threadId === "room-a" ? ({ id: "room-a", memberIds: ["member"] } as never) : null);
+    const commandScope = createCommandScope({ roomOfThread, scopes, onRefusal: (roomId, check, command) => seen.push({ roomId, reason: check.reason, command }) });
+    commandScope.refusal("member", "room-a", "curl https://example.com/");
+    commandScope.refusal("member", "room-a", "curl https://evil.test/");
+    expect(seen).toEqual([{ roomId: "room-a", reason: "targets", command: "curl https://evil.test/" }]);
+  });
 });

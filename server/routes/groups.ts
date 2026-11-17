@@ -1,6 +1,7 @@
 import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../shared/wire.ts";
 import type { EngagementScope } from "../engagement-scope.ts";
 import type { EngagementFinding } from "../engagement-findings.ts";
+import type { EngagementRefusal } from "../engagement-refusals.ts";
 import { validateBotCwd } from "../bot-cwd.ts";
 import type { VisibleSet } from "../bot-visibility.ts";
 import type { RequestAuth } from "../request-auth.ts";
@@ -26,6 +27,8 @@ export interface GroupRouteDeps {
   canManageScope(auth: RequestAuth): boolean;
   /** The flaws the engagement has recorded, for the room panel to show. */
   findings: { list(roomId: string): EngagementFinding[] };
+  /** The commands the engagement's scope refused, for the room panel to show. */
+  refusals: { list(roomId: string): EngagementRefusal[] };
 }
 
 /** A room's default responder from a request body; null when it is not one, or names a bot outside the room. */
@@ -122,6 +125,14 @@ export function createGroupRoutes(deps: GroupRouteDeps): RouteHandler {
       if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement findings" });
       if (!visible.group(group.id)) return json(res, 403, { error: "This room's findings are not yours to read." });
       return json(res, 200, { findings: deps.findings.list(group.id) });
+    }
+    m = path.match(/^\/api\/groups\/([\w-]+)\/refusals$/);
+    if (m && method === "GET") {
+      const group = store.group(m[1]);
+      if (!group) return json(res, 404, { error: "no such room" });
+      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement refusals" });
+      if (!visible.group(group.id)) return json(res, 403, { error: "This room's refusals are not yours to read." });
+      return json(res, 200, { refusals: deps.refusals.list(group.id) });
     }
     return PASS;
   };

@@ -339,7 +339,12 @@ function scopePrompt(scope: EngagementScope | null): string | false {
 
 /** Ties a scope store to the rooms that own it. `roomOfThread` resolves a room job's own thread to its room, so
  * the check reaches every member's commands before the container runs anything. */
-export function createCommandScope(deps: { roomOfThread(botId: string, threadId: string): GroupRecord | null; scopes: EngagementScopeStore }) {
+export function createCommandScope(deps: {
+  roomOfThread(botId: string, threadId: string): GroupRecord | null;
+  scopes: EngagementScopeStore;
+  /** Every refusal, at the one place commands are checked, so the room's surface can show what the team reached for. */
+  onRefusal?(roomId: string, check: ScopeRefusal, command: string): void;
+}) {
   return {
     /** The line a room's members read; false when the room holds no authorization. */
     prompt(groupId: string): string | false {
@@ -351,7 +356,9 @@ export function createCommandScope(deps: { roomOfThread(botId: string, threadId:
       const scope = room ? deps.scopes.get(room.id) : null;
       if (!scope) return null;
       const verdict = checkCommand(scope, command);
-      return verdict.ok ? null : scopeRefusalText(verdict, scope);
+      if (verdict.ok) return null;
+      if (room) deps.onRefusal?.(room.id, verdict, command);
+      return scopeRefusalText(verdict, scope);
     },
   };
 }

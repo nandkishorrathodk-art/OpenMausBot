@@ -47,3 +47,24 @@ export interface EngagementFinding {
 export interface RoomFindingsResponse {
   findings: EngagementFinding[];
 }
+
+/** One command an engagement's scope refused before it ran: the record of what the team reached for. */
+export interface EngagementRefusal {
+  id: string;
+  /** The command as the operator sent it. */
+  command: string;
+  reason: "targets" | "window";
+  /** The hosts outside the scope the command reached for; empty for a window refusal. */
+  hosts: string[];
+  /** For a window refusal: which side of the window. */
+  window?: "not started" | "ended";
+  /** How many times this same command was refused. */
+  attempts: number;
+  /** Epoch ms of the most recent refusal. */
+  at: number;
+}
+
+/** GET /api/groups/:id/refusals. */
+export interface RoomRefusalsResponse {
+  refusals: EngagementRefusal[];
+}

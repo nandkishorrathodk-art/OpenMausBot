@@ -1,4 +1,4 @@
-import type { EngagementScope, RoomFindingsResponse, RoomScopeResponse } from "../../shared/engagement";
+import type { EngagementRefusal, EngagementScope, RoomFindingsResponse, RoomRefusalsResponse, RoomScopeResponse } from "../../shared/engagement";
 import { api } from "@/state/store";
 
 /** The room's engagement scope, or null when it has none. Owner or admin only; the server refuses anyone else. */
@@ -17,4 +17,9 @@ export async function saveRoomScope(roomId: string, scope: EngagementScope | nul
 /** The flaws the engagement has recorded, worst first. */
 export async function readRoomFindings(roomId: string): Promise<RoomFindingsResponse["findings"]> {
   return (await api<RoomFindingsResponse>(`/api/groups/${encodeURIComponent(roomId)}/findings`)).findings;
+}
+
+/** The commands the engagement's scope refused, most recent first. */
+export async function readRoomRefusals(roomId: string): Promise<EngagementRefusal[]> {
+  return (await api<RoomRefusalsResponse>(`/api/groups/${encodeURIComponent(roomId)}/refusals`)).refusals;
 }

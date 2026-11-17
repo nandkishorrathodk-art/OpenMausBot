@@ -88,10 +88,17 @@ which would delete the rebrand.
   the scope and findings routes answer 400 for a DM, and the internal findings
   route answers 409, so no path records a finding a person can never read. The
   two records' shapes live in `shared/engagement.ts`, which both the server
-  modules and the pages import, so a field change moves one file. What is still
-  open: the panel reads and writes the scope but nothing shows a command being
-  refused, and `createCommandScope`'s check is a heuristic on command text rather
-  than a sandbox.
+  modules and the pages import, so a field change moves one file.
+- What a refused command reached for is itself a record: `EngagementRefusalsStore`
+  (`server/engagement-refusals.ts`) keeps, per room, the commands the scope refused,
+  with the hosts they reached for or which side of the window they fell outside. The
+  store is fed from the one place commands are checked — `createCommandScope`'s
+  `onRefusal` callback, called from `server/index.ts` — so a refusal can never run
+  unrecorded, and it is best-effort: a damaged store never blocks a command.
+  `EngagementRefusalsPage` reads `GET /api/groups/:id/refusals` (400 for a DM, 403
+  for a room this caller may not read) and shows the most recent refusal first.
+  What is still open: `createCommandScope`'s check is a heuristic on command text
+  rather than a sandbox.
 - When a rebrand reaches a string, move its verbatim twin in the same change.
   `src/lib/phone-setup.ts`'s `PUBLIC_ACCOUNT_MESSAGES` matches
   `electron/companion-account-messages.mjs`'s `FRIENDLY_MESSAGES` by regex, and
