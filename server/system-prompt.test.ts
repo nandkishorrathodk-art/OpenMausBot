@@ -126,11 +126,24 @@ describe("buildSystemPrompt", () => {
 
     expect(built.stable).toBe(`You are Kiwi. Search past sessions.${REPLY_HABITS_PROMPT}`);
     // A German person once read "Now the edits." between a bot's German lines: every line they see is in their language.
-    expect(REPLY_HABITS_PROMPT).toContain("in the language they use with you, including a short note between steps and a message you pass on for them");
+    expect(REPLY_HABITS_PROMPT).toContain("write every line they can see in the language they use with you, including a short note between steps");
     expect(built.volatile).toContain("likes tea");
     expect(built.volatile).toContain("@Fig");
     expect(built.volatile).toContain("today 20:48");
     expect(built.volatile).not.toContain("Search past sessions");
+  });
+
+  // How memory works and how to choose a computer are the same every turn, so they are cached; what memory holds and
+  // whether this turn may choose are not.
+  it("keeps the memory and computer-selection rules stable and their turn's facts volatile", () => {
+    const built = buildSystemPrompt("You are Kiwi.", "", [
+      { id: "plan", label: "Surface", text: " This turn you may choose." },
+      { id: "computer-selection", label: "Choosing a computer", text: " Choosing a computer: rules." },
+      { id: "memory-rules", label: "How memory works", text: " Memory rules." },
+      { id: "memory", label: "Memory", text: " Your memory: likes tea." },
+    ]);
+    expect(built.stable).toBe(`You are Kiwi. Choosing a computer: rules. Memory rules.${REPLY_HABITS_PROMPT}`);
+    expect(built.volatile).toBe(" This turn you may choose. Your memory: likes tea.");
   });
 
   it("keeps a turn's switched-on instructions volatile, and setup and the webhook's untrusted-data rule stable", () => {
@@ -138,10 +151,13 @@ describe("buildSystemPrompt", () => {
       { id: "setup", label: "Setup", text: " Set yourself up." },
       { id: "skill-instructions", label: "Skill instructions", text: " Use the deploy skill." },
       { id: "routine-execution", label: "Routine execution", text: ROUTINE_EXECUTION_PROMPT },
+      { id: "automation-reply", label: "Automation reply", text: AUTOMATION_REPLY_PROMPT },
       { id: "webhook", label: "Webhook provenance", text: WEBHOOK_PROMPT },
     ]);
     expect(built.volatile).toContain("Use the deploy skill.");
     expect(built.volatile).toContain(ROUTINE_EXECUTION_PROMPT);
+    // a routine run that reports elsewhere reads the bot's own cached prefix
+    expect(built.volatile).toContain(AUTOMATION_REPLY_PROMPT);
     expect(built.stable).toBe(`You are Kiwi. Set yourself up.${WEBHOOK_PROMPT}${REPLY_HABITS_PROMPT}`);
   });
 
@@ -481,9 +497,9 @@ describe("longCommandsPrompt", () => {
   it("names Bash's limit everywhere and vm_exec's own limit only with a Local VM", () => {
     for (const kind of [null, "local", "vps", "box"] as const) {
       const text = longCommandsPrompt(kind);
-      expect(text).toContain("`timeout` in milliseconds, up to 86400000, which is 1440 minutes, unless a lower limit is set here");
-      expect(text).toContain("Never wait inside a command for CI, a deploy or any other job to finish (no sleep loops or repeated polls): check it once");
-      expect(text).toContain("tell the person what you made (with links). Only on a turn the person started in their own chat, set wait_until or a one-time trigger to check back and end your turn");
+      expect(text).toContain("pass `timeout` in milliseconds, up to 86400000, which is 1440 minutes, unless a lower limit is set here");
+      expect(text).toContain("Never wait inside a command for CI, a deploy or any other job to finish (no sleep loops or polls): check once");
+      expect(text).toContain("tell the person what you made, with links. Only on a turn the person started in their own chat, set wait_until or a one-time trigger to check back and end your turn");
       expect(text).toContain("When the person writes while you work, answer them first.");
       expect(text).not.toContain("vm_exec");
     }
@@ -495,13 +511,13 @@ describe("longCommandsPrompt", () => {
   it("keeps a long command in the foreground, and trusts only its own fresh exit code", () => {
     for (const kind of [null, "local", "vps", "box"] as const) {
       const text = longCommandsPrompt(kind);
-      expect(text).toContain("keep the command in the foreground until it exits");
-      expect(text).toContain("split work that cannot finish within that into shorter pieces");
-      expect(text).toContain("A detached job may be killed when the call ends");
+      expect(text).toContain("stay in the foreground until it exits");
+      expect(text).toContain("split work that cannot finish within that");
+      expect(text).toContain("A detached job may die when the call ends");
       expect(text).not.toContain("nohup");
       expect(text).toContain("trust only the command's own fresh exit code and output");
-      expect(text).toContain("cannot set a wait, so finish it in this turn");
-      expect(text).toContain("Work an operator handed you for the person's own request may set one wait_until (not a trigger), cannot cancel it");
+      expect(text).toContain("cannot set a wait, so finish in this turn");
+      expect(text).toContain("work an operator handed you for the person's own request may set one wait_until (not a trigger), cannot cancel it");
     }
   });
 
@@ -576,7 +592,7 @@ describe("how every bot replies", () => {
   });
 
   it("asks one thing with tap-to-answer choices, keeps forms for real edits, and confirms a routine in plain words", () => {
-    expect(WIDGET_PROMPT).toContain("Unless the person asked you, in this chat or in your instructions, to check with them first, ask only what you cannot find or sensibly default yourself, and one thing at a time.");
+    expect(WIDGET_PROMPT).toContain("Unless the person asked (here or in your instructions) to check with them first, ask only what you cannot find or sensibly default, one thing at a time.");
     expect(WIDGET_PROMPT).toContain("a Card with a Row of Buttons, one per option, whose onClickAction sends that option in one tap");
     expect(WIDGET_PROMPT).not.toContain("never end a turn with a question in text that a form could ask");
     expect(TRIGGER_PROMPT).toContain("weekdays at 9:00 AM India time\", never a zone id such as Asia/Kolkata");
