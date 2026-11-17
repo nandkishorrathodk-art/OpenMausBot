@@ -24,6 +24,11 @@ describe("what a confined turn reaches of OpenMausBot's own routes", () => {
     expect(outsideRouteRefused("POST", "/api/internal/mcp-http/server-a")).toBe(false);
   });
 
+  it("lets a confined turn keep its engagement's ledger, whose room comes from this conversation", () => {
+    expect(outsideRouteRefused("POST", "/api/internal/findings")).toBe(false);
+    expect(outsideRouteRefused("GET", "/api/internal/findings")).toBe(true);
+  });
+
   it("speaks plainly and tells the bot to finish where it is", () => {
     expect(OUTSIDE_REFUSAL).toContain("came in from outside");
     expect(OUTSIDE_REFUSAL).toContain("Finish what you can in this conversation");

@@ -37,6 +37,8 @@ const EXACT: ReadonlySet<string> = new Set([
   // Each decides for itself, in plain words: what a confined turn may do there waits on a card, stays confined or is refused.
   "POST /api/internal/coordinate-bots",
   "POST /api/internal/post-to-room",
+  // The engagement's own ledger: the room comes from this conversation, never the body, so a confined turn writes only where it speaks.
+  "POST /api/internal/findings",
   "POST /api/internal/retry-thread",
   "POST /api/internal/trigger-requests",
   "POST /api/internal/manage-room",

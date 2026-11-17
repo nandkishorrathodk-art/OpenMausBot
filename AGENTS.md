@@ -76,8 +76,9 @@ which would delete the rebrand.
   adding such a tool moves only the two room goldens and their `BUDGET_BASELINE`
   entries while every other profile stays byte-identical. Its internal route
   (`server/routes/engagement-findings.ts`) resolves the room from the caller's own
-  conversation rather than the body, and its path is not in
-  `server/host/outside-fence.ts`'s list, so a confined turn cannot reach it yet.
+  conversation rather than the body, and its path is in
+  `server/host/outside-fence.ts`'s list, so a confined turn writes and reads only
+  where it speaks.
 - The engagement scope (`server/engagement-scope.ts`) and the findings ledger are
   wired to a person-facing surface in the room panel: `EngagementScopePage` and
   `EngagementFindingsPage` under `src/components/room-panel/` read and write
