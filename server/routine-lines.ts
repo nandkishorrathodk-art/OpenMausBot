@@ -33,7 +33,7 @@ export const ROUTINE_LINE = {
   "routines.server.part.notStarted": "the previous run of this routine has not started yet",
   "routines.server.part.computerNoStart": "its cloud desktop has not started, so its next tries are spaced out",
   "routines.server.part.runsFailed": "its last runs failed, so its next tries are spaced out",
-  "routines.server.part.restartedSoon": "OpenMausBot started again soon after the start that last ran it",
+  "routines.server.part.restartedSoon": "Parth Lab started again soon after the start that last ran it",
   "routines.server.capSkippedOne": "Skipped: {why} ({amount}) is reached. Runs start again after {resets}",
   "routines.server.capSkippedMany": "Skipped {count} runs: {why} ({amount}) is reached. Runs start again after {resets}",
   "routines.server.part.capServerDay": "the daily usage cap for all bots",

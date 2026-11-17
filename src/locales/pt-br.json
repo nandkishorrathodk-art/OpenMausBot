@@ -9981,7 +9981,7 @@
   "routines.server.part.notStarted": "a execução anterior desta rotina ainda não começou",
   "routines.server.part.computerNoStart": "o desktop na nuvem dela não iniciou, então as próximas tentativas ficam mais espaçadas",
   "routines.server.part.runsFailed": "as últimas execuções dela falharam, então as próximas tentativas ficam mais espaçadas",
-  "routines.server.part.restartedSoon": "o OpenMausBot iniciou novamente logo depois da inicialização em que ela rodou pela última vez",
+  "routines.server.part.restartedSoon": "o Parth Lab iniciou novamente logo depois da inicialização em que ela rodou pela última vez",
   "routines.server.missedOne": "Não rodou porque {why}",
   "routines.server.missedMany": "{count} execuções agendadas não rodaram porque {why}",
   "routines.server.missedTooLate": "Não rodou porque {why} até mais de {hours} horas depois do horário",
