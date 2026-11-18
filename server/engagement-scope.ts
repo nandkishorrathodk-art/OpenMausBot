@@ -10,6 +10,9 @@ import type { GroupRecord } from "./store.ts";
 // This is a heuristic on a command's text, not a sandbox: a destination written in a way the text does not
 // reveal (an address built inside a script, a host behind a redirect) is not seen here. It stops the ordinary
 // mistake of pointing an authorized engagement's tooling at the wrong host, and it is honest about that limit.
+// An address spelled as one integer (`0xc0a80101`, `3232235777`) and bash's `/dev/tcp/host/port` redirection
+// are read, since both name a destination plainly; a bare integer token elsewhere is not, since it is far more
+// often a timestamp or an id than an address.
 
 export type { EngagementScope };
 
@@ -59,6 +62,17 @@ function ipv4Number(value: string): number | null {
 
 function ipv4Text(value: number): string {
   return [24, 16, 8, 0].map((shift) => (value >>> shift) & 255).join(".");
+}
+
+/** An address written as one integer: `0xc0a80101` and `3232235777` both mean 192.168.1.1, and a command that
+ * wants past a check on host names writes one. A lone `0x`, a leading zero (octal to a shell) or a value past
+ * the address range is not read as an address. */
+function ipv4FromInteger(value: string): string | null {
+  const hex = /^0x([0-9a-f]{1,8})$/.exec(value);
+  const decimal = /^(?:0|[1-9]\d{0,9})$/.test(value) ? value : null;
+  if (!hex && decimal === null) return null;
+  const n = hex ? Number.parseInt(hex[1]!, 16) : Number(decimal);
+  return Number.isInteger(n) && n >= 0 && n <= 0xffffffff ? ipv4Text(n) : null;
 }
 
 /** A dotted host of at least two labels, lowercased. A single label is not a client host. */
@@ -178,6 +192,9 @@ export function scopeActive(scope: EngagementScope, now: number): boolean {
 const URL_AUTHORITY = /\b[a-z][a-z0-9+.-]*:\/\/([^\s/?#"'`<>()\\]+)/gi;
 const IPV4_IN_TEXT = /\b(\d{1,3}(?:\.\d{1,3}){3})(?:\/\d{1,2})?\b/g;
 const HOST_IN_TEXT = /\b((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,})\b/gi;
+/** Bash's own network redirection, `/dev/tcp/host/port`: the host is a destination the path rule below would
+ * otherwise read as a file inside `/dev`. */
+const DEV_NET = /\/dev\/(?:tcp|udp)\/([^\s/?#]+)/gi;
 
 function authorityHost(authority: string): string | null {
   let value = authority;
@@ -190,7 +207,8 @@ function authorityHost(authority: string): string | null {
   const colon = value.indexOf(":");
   if (colon >= 0) value = value.slice(0, colon);
   if (!value) return null;
-  return ipv4Number(value) !== null ? value : (ipv6Literal(value) ?? hostName(value));
+  if (ipv4Number(value) !== null) return value;
+  return ipv4FromInteger(value) ?? ipv6Literal(value) ?? hostName(value);
 }
 
 /** Every host a command's text could send traffic to, lowercased and deduplicated. */
@@ -201,6 +219,10 @@ export function commandDestinations(command: string): string[] {
     if (host) found.add(host);
   }
   for (const match of command.matchAll(IPV4_IN_TEXT)) found.add(match[1]!);
+  for (const match of command.matchAll(DEV_NET)) {
+    const host = ipv4Number(match[1]!) !== null ? match[1]! : (ipv4FromInteger(match[1]!) ?? hostName(match[1]!));
+    if (host) found.add(host);
+  }
   for (const match of command.matchAll(HOST_IN_TEXT)) {
     const before = command[(match.index ?? 0) - 1];
     // Inside a path it is a file, not a host: /usr/lib/libc.so, ./notes/findings.md.

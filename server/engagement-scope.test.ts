@@ -167,6 +167,32 @@ describe("reading a command's destinations", () => {
   it("deduplicates a host that appears many times", () => {
     expect(commandDestinations("curl a.com && curl a.com && nmap a.com").sort()).toEqual(["a.com"]);
   });
+
+  it("reads an address written as one integer, in hex or decimal, as the address it is", () => {
+    expect(commandDestinations("curl http://0xc0a80101/").sort()).toEqual(["192.168.1.1"]);
+    expect(commandDestinations("curl http://3232235777/").sort()).toEqual(["192.168.1.1"]);
+    expect(commandDestinations("curl http://0x7f000001/").sort()).toEqual(["127.0.0.1"]);
+    expect(commandDestinations("exec 3<>/dev/tcp/3232235777/443").sort()).toEqual(["192.168.1.1"]);
+  });
+
+  it("does not read a lone 0x, an octal address or a value past the address range as an address", () => {
+    for (const command of ["echo 0x", "cat 0xdeadbeef.log", "curl http://0177.0.0.1/", "curl http://4294967296/"]) {
+      expect(commandDestinations(command), command).not.toContain("127.0.0.1");
+    }
+    expect(commandDestinations("curl http://0177.0.0.1/")).toEqual(["0177.0.0.1"]);
+  });
+
+  it("reads the host of bash's own network redirection", () => {
+    expect(commandDestinations("cat < /dev/tcp/evil.com/80").sort()).toEqual(["evil.com"]);
+    expect(commandDestinations("exec 3<>/dev/tcp/10.0.0.9/443").sort()).toEqual(["10.0.0.9"]);
+    expect(commandDestinations("echo hi >/dev/udp/0xc0a80101/53").sort()).toEqual(["192.168.1.1"]);
+  });
+
+  it("leaves an ordinary device file alone", () => {
+    for (const command of ["cat /dev/null", "head -c 16 /dev/urandom", "dd if=/dev/zero of=out.bin"]) {
+      expect(commandDestinations(command), command).toEqual([]);
+    }
+  });
 });
 
 describe("checking a command against a scope", () => {
@@ -178,6 +204,13 @@ describe("checking a command against a scope", () => {
     expect(checkCommand(scope(["example.com"]), "curl https://evil.test/")).toEqual({ ok: false, reason: "targets", hosts: ["evil.test"] });
     expect(checkCommand(scope(["example.com"], ["admin.example.com"]), "curl https://admin.example.com/"))
       .toEqual({ ok: false, reason: "targets", hosts: ["admin.example.com"] });
+  });
+
+  it("refuses an out-of-scope address however it is written, and a redirection to one", () => {
+    const scoped = scope(["example.com"]);
+    expect(checkCommand(scoped, "curl http://0xc0a80101/")).toEqual({ ok: false, reason: "targets", hosts: ["192.168.1.1"] });
+    expect(checkCommand(scoped, "curl http://3232235777/")).toEqual({ ok: false, reason: "targets", hosts: ["192.168.1.1"] });
+    expect(checkCommand(scoped, "cat < /dev/tcp/10.0.0.9/80")).toEqual({ ok: false, reason: "targets", hosts: ["10.0.0.9"] });
   });
 
   it("refuses every command outside the authorization window, and says which side", () => {
