@@ -120,3 +120,57 @@ which would delete the rebrand.
   `electron/data-dir-lease.mjs` keeps a hardcoded fallback of the catalog's
   `native.boot.sharedFolderAdvice`, so renaming one half leaves the pair broken
   or the app showing two names on one surface.
+
+## Building the Windows installer locally
+
+`pnpm package:win` assumes Windows x64. On Linux it works if wine can run the
+Windows NSIS stub (32-bit) and rcedit. Install both wine bitnesses first:
+
+```sh
+sudo dpkg --add-architecture i386 && sudo apt-get update
+sudo apt-get install -y --no-install-recommends wine64 wine32:i386 unzip
+```
+
+Debian ships the loaders as `/usr/lib/wine/wine64` and `/usr/lib/wine/wine`
+without a `wine` command on `PATH`, and electron-builder spawns bare `wine`.
+Install a shim and initialise the prefix once with the 32-bit loader so
+`syswow64/ntdll.dll` exists:
+
+```sh
+printf '#!/bin/sh\nexport WINEDEBUG=-all\nexport XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp}\nexec /usr/lib/wine/wine64 "$@"\n' \
+  | sudo tee /usr/local/bin/wine && sudo chmod +x /usr/local/bin/wine
+rm -rf ~/.wine && WINEDEBUG=-all /usr/lib/wine/wine wineboot --init
+```
+
+Two prepare scripts refuse to run off Windows and stage only the host platform,
+so stage those targets by hand before `electron-builder`:
+
+- `scripts/prepare-android-tools.mjs` — unzip `platform-tools-latest-windows.zip`
+  (dl.google.com) into `dist-native/android-platform-tools/win32/`.
+- `scripts/prepare-cua-win.mjs` — it throws on non-win32 and unpacks a Windows
+  SDK. The Windows CUA tree (`cua-driver.exe`, `cua-driver-background.exe`,
+  `cua-sdk/cua-sdk.mjs`, `cua-sdk/native/*`) can be staged from the published
+  release zip (`trycua/cua` tag `cua-driver-rs-v0.45.4`,
+  `...windows-x86_64-binary.zip`) plus the `@trycua/cua-driver-win32-x64-msvc`
+  npm package. Verify the executable with `wine cua-driver.exe --version` and
+  esbuild the `@trycua/cua-driver/embedded` entry, patching the same
+  `resolveLibPath` override the script patches.
+
+Then:
+
+```sh
+pnpm build && pnpm build:server && pnpm build:companion && pnpm build:updater
+pnpm build:cloudflared --target win32-x64
+pnpm build:browser --target win32-x64
+pnpm build:duckdb --target win32-x64
+pnpm build:cua:win   # only on Windows; otherwise stage the tree as above
+WINEDEBUG=-all electron-builder --win --publish never
+```
+
+`electron-builder` emits `release/OpenMausBot-<version>-setup.exe`. The
+`productName`/`artifactName` in `electron-builder.yml` still read `OpenMausBot`,
+which is the installer's filename and shortcut name; the in-app name a person
+sees comes from `PRODUCT_NAME` in `src/lib/brand.ts`. Check the payload with
+`7za l release/*-setup.exe` (it is an NSIS archive) before publishing. The build
+is unsigned, so Windows SmartScreen warns on first run.
+
