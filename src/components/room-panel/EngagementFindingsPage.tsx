@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Bug } from "lucide-react";
+import { Bug, Download } from "lucide-react";
 
 import type { EngagementFinding, FindingSeverity, FindingStatus } from "../../../shared/engagement";
 import { cn } from "@/lib/cn";
-import { readRoomFindings } from "@/lib/engagement";
+import { downloadRoomReport, readRoomFindings } from "@/lib/engagement";
 import { t } from "@/lib/i18n";
 import type { LocaleKey } from "@/locales";
 import type { Group } from "@/state/store";
@@ -86,6 +86,8 @@ function FindingRow({ finding }: { finding: EngagementFinding }) {
 export function EngagementFindingsPage({ group }: { group: Group }) {
   const [findings, setFindings] = useState<EngagementFinding[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -97,17 +99,45 @@ export function EngagementFindingsPage({ group }: { group: Group }) {
     return () => { live = false; };
   }, [group.id]);
 
+  const download = async () => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await downloadRoomReport(group.id, group.name);
+    } catch (cause) {
+      setSaveError(cause instanceof Error ? cause.message : t("room.report.failed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (error) return (
     <Card>
       <div role="alert" data-panel-row="findings-error" className="text-[12px] leading-relaxed text-danger">{error}</div>
     </Card>
   );
   if (findings === null) return <Card><NoteRow>{t("room.findings.loading")}</NoteRow></Card>;
+
+  const reportButton = (
+    <button
+      type="button"
+      data-panel-row="report-download"
+      onClick={() => void download()}
+      disabled={saving}
+      className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[12px] text-ink-secondary hover:text-ink disabled:opacity-50"
+    >
+      <Download size={14} aria-hidden="true" />
+      {t("room.report.download")}
+    </button>
+  );
+
   if (!findings.length) return (
     <Card>
       <ColRow data-panel-row="findings-empty">
         <RowText title={t("room.findings.none")} hint={t("room.findings.noneHint")} />
       </ColRow>
+      <ColRow data-panel-row="report-row">{reportButton}</ColRow>
+      {saveError && <div role="alert" data-panel-row="report-error" className="px-3 pb-2 text-[12px] leading-relaxed text-danger">{saveError}</div>}
     </Card>
   );
 
@@ -125,6 +155,8 @@ export function EngagementFindingsPage({ group }: { group: Group }) {
         />
       </ColRow>
       {sorted.map((finding) => <FindingRow key={finding.id} finding={finding} />)}
+      <ColRow data-panel-row="report-row">{reportButton}</ColRow>
+      {saveError && <div role="alert" data-panel-row="report-error" className="px-3 pb-2 text-[12px] leading-relaxed text-danger">{saveError}</div>}
     </Card>
   );
 }

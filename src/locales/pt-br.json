@@ -4914,6 +4914,8 @@
   "room.refusals.windowEnded": "Rodou depois de a janela de autorização fechar",
   "room.refusals.at": "Recusado {when}",
   "room.refusals.attempts": "Recusado {count} vezes, mais recentemente {when}",
+  "room.report.download": "Baixar relatório",
+  "room.report.failed": "Não foi possível salvar o relatório.",
   "room.setup.title": "Configurar {name}",
   "room.setup.detail": "Antes da primeira conversa, escolha uma pasta compartilhada e um estilo de resposta para o grupo e dê um pouco de contexto.",
   "room.setup.folderDetail": "Onde os membros do grupo executam as ferramentas de arquivo e shell.",

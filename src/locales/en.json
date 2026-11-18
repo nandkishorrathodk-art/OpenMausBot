@@ -5231,6 +5231,8 @@
   "room.refusals.windowEnded": "Ran after the authorization window closed",
   "room.refusals.at": "Refused {when}",
   "room.refusals.attempts": "Refused {count} times, most recently {when}",
+  "room.report.download": "Download report",
+  "room.report.failed": "The report could not be saved.",
   "room.engagement.adminOnly": "Only the owner or an admin can set an engagement's scope.",
   "room.setup.title": "Set up {name}",
   "room.setup.detail": "Give this group a shared folder, response style, and a little context before the first thread starts.",

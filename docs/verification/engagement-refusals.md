@@ -72,6 +72,36 @@ The chain test proves, over one real store:
 - a bot's own thread answers to no room, so a record there is refused 409 and
   the room's ledger stays empty.
 
+## The client report
+
+The **Findings** page's **Download report** button saves the room's scope and
+findings as one markdown document the client keeps. The server renders it
+(`shared/engagement-report.ts`) and hands it over from
+`GET /api/groups/:id/report` as `text/markdown` with an attachment filename, so
+the download and any other reader of the route see the same words. The report
+is English only, like the transcript export: it is a document, not UI copy. A
+room with no findings still reports its scope, so the document says what was
+authorized even when nothing was found.
+
+```sh
+node_modules/.bin/vitest run shared/engagement-report.test.ts \
+  server/routes/groups-report.test.ts
+```
+
+They prove:
+
+- the report names the room, the authorized targets, the off-limits list and
+  the window, and says so plainly when no scope was set;
+- findings are worst first, `proven` counted apart from `suspected`, each with
+  its target, status, evidence and detail, and an update time only once it has
+  moved past its report;
+- a title or target with a newline or a `|` cannot break the table;
+- `GET /api/groups/:id/report` answers 404 for an unknown room, 403 for a room
+  this caller may not read, 400 for a direct message, and passes an unknown
+  method on so routing continues;
+- the page saves the room's report from the button, offers it even with nothing
+  found, and says so when the download is refused.
+
 To see a real refusal end to end, launch a fixture
 ([README](README.md)), give a room a scope that excludes a host, and have a
 member run a command that reaches it. The command is refused, the room's
