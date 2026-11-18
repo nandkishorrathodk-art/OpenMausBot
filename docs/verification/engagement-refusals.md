@@ -39,6 +39,15 @@ node_modules/.bin/vitest run server/engagement-refusals.test.ts \
   src/components/room-panel/EngagementPages.dom.test.ts
 ```
 
+The two ends of a finding — the bot's `engagement_finding` call and the person's
+read of the room — are joined in one test over one real store and the store's own
+room resolution, so a finding recorded where a bot speaks is read where the person
+looks:
+
+```sh
+node_modules/.bin/vitest run server/routes/engagement-findings-chain.test.ts
+```
+
 They prove, against the real store and the real route handler:
 
 - a command outside the scope is refused with the host it reached for, and one
@@ -52,6 +61,16 @@ They prove, against the real store and the real route handler:
 - a held secret in a command is masked before it reaches the ledger;
 - the page lists the most recent refusal first and says nothing was refused
   when the ledger is empty.
+
+The chain test proves, over one real store:
+
+- a finding a bot records in the room's own thread is read through
+  `GET /api/groups/:id/findings` in that room;
+- a finding a parallel room job records in its own thread is read in the room
+  its opener ties it to;
+- an update by id changes the one finding the person then reads;
+- a bot's own thread answers to no room, so a record there is refused 409 and
+  the room's ledger stays empty.
 
 To see a real refusal end to end, launch a fixture
 ([README](README.md)), give a room a scope that excludes a host, and have a
