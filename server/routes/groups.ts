@@ -1,4 +1,5 @@
 import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../shared/wire.ts";
+import { buildEngagementReport, engagementReportFilename } from "../../shared/engagement-report.ts";
 import type { EngagementScope } from "../engagement-scope.ts";
 import type { EngagementFinding } from "../engagement-findings.ts";
 import type { EngagementRefusal } from "../engagement-refusals.ts";
@@ -133,6 +134,20 @@ export function createGroupRoutes(deps: GroupRouteDeps): RouteHandler {
       if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement refusals" });
       if (!visible.group(group.id)) return json(res, 403, { error: "This room's refusals are not yours to read." });
       return json(res, 200, { refusals: deps.refusals.list(group.id) });
+    }
+    m = path.match(/^\/api\/groups\/([\w-]+)\/report$/);
+    if (m && method === "GET") {
+      const group = store.group(m[1]);
+      if (!group) return json(res, 404, { error: "no such room" });
+      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement findings" });
+      if (!visible.group(group.id)) return json(res, 403, { error: "This room's findings are not yours to read." });
+      const markdown = buildEngagementReport({ room: group.name, scope: deps.scope.get(group.id), findings: deps.findings.list(group.id) });
+      res.writeHead(200, {
+        "content-type": "text/markdown; charset=utf-8",
+        "content-disposition": `attachment; filename="${engagementReportFilename(group.name)}"`,
+      });
+      res.end(markdown);
+      return;
     }
     return PASS;
   };

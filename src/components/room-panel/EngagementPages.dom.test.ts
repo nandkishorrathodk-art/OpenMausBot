@@ -11,6 +11,7 @@ const fixture = vi.hoisted(() => ({
   saveScope: vi.fn(),
   readFindings: vi.fn(),
   readRefusals: vi.fn(),
+  downloadReport: vi.fn(),
   ownerOrAdmin: true as boolean | null,
 }));
 
@@ -19,6 +20,7 @@ vi.mock("@/lib/engagement", () => ({
   saveRoomScope: fixture.saveScope,
   readRoomFindings: fixture.readFindings,
   readRoomRefusals: fixture.readRefusals,
+  downloadRoomReport: fixture.downloadReport,
 }));
 vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => fixture.ownerOrAdmin }));
 
@@ -47,6 +49,7 @@ beforeEach(() => {
   fixture.saveScope.mockReset();
   fixture.readFindings.mockReset();
   fixture.readRefusals.mockReset();
+  fixture.downloadReport.mockReset();
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -115,6 +118,26 @@ describe("the engagement findings page", () => {
     flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));
     await settle();
     expect(document.body.textContent).toContain("The team records each flaw here");
+  });
+
+  it("saves the room's report from the button, and offers it even with nothing found", async () => {
+    fixture.readFindings.mockResolvedValue([]);
+    fixture.downloadReport.mockResolvedValue(undefined);
+    flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));
+    await settle();
+    click($("[data-panel-row='report-download']"));
+    await settle();
+    expect(fixture.downloadReport).toHaveBeenCalledWith(group.id, group.name);
+  });
+
+  it("says the report could not be saved when the download is refused", async () => {
+    fixture.readFindings.mockResolvedValue([]);
+    fixture.downloadReport.mockRejectedValue(new Error("nope"));
+    flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));
+    await settle();
+    click($("[data-panel-row='report-download']"));
+    await settle();
+    expect($("[data-panel-row='report-error']")?.textContent).toContain("nope");
   });
 });
 

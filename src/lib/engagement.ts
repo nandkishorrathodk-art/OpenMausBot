@@ -1,5 +1,7 @@
 import type { EngagementRefusal, EngagementScope, RoomFindingsResponse, RoomRefusalsResponse, RoomScopeResponse } from "../../shared/engagement";
-import { api } from "@/state/store";
+import { engagementReportFilename } from "../../shared/engagement-report";
+import { downloadMarkdownTranscript } from "./export-transcript";
+import { api, ApiError } from "@/state/store";
 
 /** The room's engagement scope, or null when it has none. Owner or admin only; the server refuses anyone else. */
 export async function readRoomScope(roomId: string): Promise<EngagementScope | null> {
@@ -22,4 +24,16 @@ export async function readRoomFindings(roomId: string): Promise<RoomFindingsResp
 /** The commands the engagement's scope refused, most recent first. */
 export async function readRoomRefusals(roomId: string): Promise<EngagementRefusal[]> {
   return (await api<RoomRefusalsResponse>(`/api/groups/${encodeURIComponent(roomId)}/refusals`)).refusals;
+}
+
+/** Saves the engagement's client report as a markdown file. The server renders it, so the download and any
+ * other reader of the route see the same words. */
+export async function downloadRoomReport(roomId: string, roomName: string): Promise<void> {
+  const response = await fetch(`/api/groups/${encodeURIComponent(roomId)}/report`);
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const error = (body as { error?: unknown }).error;
+    throw new ApiError(typeof error === "string" ? error : `${response.status} ${response.statusText}`, response.status);
+  }
+  downloadMarkdownTranscript(engagementReportFilename(roomName), await response.text());
 }
