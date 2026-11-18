@@ -1,4 +1,4 @@
-import type { EngagementRefusal, EngagementScope, RoomFindingsResponse, RoomRefusalsResponse, RoomScopeResponse } from "../../shared/engagement";
+import type { EngagementRefusal, EngagementScope, RoomAssetsResponse, RoomFindingsResponse, RoomRefusalsResponse, RoomScopeResponse } from "../../shared/engagement";
 import { engagementReportFilename } from "../../shared/engagement-report";
 import { downloadMarkdownTranscript } from "./export-transcript";
 import { api, ApiError } from "@/state/store";
@@ -19,6 +19,11 @@ export async function saveRoomScope(roomId: string, scope: EngagementScope | nul
 /** The flaws the engagement has recorded, worst first. */
 export async function readRoomFindings(roomId: string): Promise<RoomFindingsResponse["findings"]> {
   return (await api<RoomFindingsResponse>(`/api/groups/${encodeURIComponent(roomId)}/findings`)).findings;
+}
+
+/** What the engagement has found inside its scope, with each asset flagged against the room's current scope. */
+export async function readRoomAssets(roomId: string): Promise<RoomAssetsResponse["assets"]> {
+  return (await api<RoomAssetsResponse>(`/api/groups/${encodeURIComponent(roomId)}/assets`)).assets;
 }
 
 /** The commands the engagement's scope refused, most recent first. */

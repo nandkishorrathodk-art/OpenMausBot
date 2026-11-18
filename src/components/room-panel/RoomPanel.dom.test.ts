@@ -23,11 +23,12 @@ vi.mock("../DesktopCapabilities", async (importOriginal) => ({
 vi.mock("../Avatar", () => ({ BotAvatar: () => null, MausAvatar: () => null }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => true }));
-const engagement = vi.hoisted(() => ({ readScope: vi.fn(), saveScope: vi.fn(), readFindings: vi.fn(), readRefusals: vi.fn() }));
+const engagement = vi.hoisted(() => ({ readScope: vi.fn(), saveScope: vi.fn(), readFindings: vi.fn(), readAssets: vi.fn(), readRefusals: vi.fn() }));
 vi.mock("@/lib/engagement", () => ({
   readRoomScope: engagement.readScope,
   saveRoomScope: engagement.saveScope,
   readRoomFindings: engagement.readFindings,
+  readRoomAssets: engagement.readAssets,
   readRoomRefusals: engagement.readRefusals,
 }));
 
@@ -87,6 +88,7 @@ beforeEach(() => {
   engagement.readScope.mockReset().mockResolvedValue(null);
   engagement.saveScope.mockReset().mockResolvedValue(null);
   engagement.readFindings.mockReset().mockResolvedValue([]);
+  engagement.readAssets.mockReset().mockResolvedValue([]);
   engagement.readRefusals.mockReset().mockResolvedValue([]);
   fixture.config = jev(true);
   document.documentElement.dataset.reducedMotion = "true";
@@ -231,9 +233,15 @@ describe("Members", () => {
 });
 
 describe("Engagement", () => {
-  it("offers the room's scope, findings and refused commands, and keeps them off a direct message", async () => {
+  it("offers the room's scope, assets, findings and refused commands, and keeps them off a direct message", async () => {
     render(room());
     expect($('[data-panel-page="engagement-scope"]')).not.toBeNull();
+    click($('[data-panel-page="engagement-assets"]'));
+    await settle();
+    expect(page()).toBe("engagement-assets");
+    expect($('[data-panel-page-view="engagement-assets"] h3')?.textContent).toBe("Assets");
+    click($("[data-panel-back]"));
+    await settle();
     click($('[data-panel-page="engagement-findings"]'));
     await settle();
     expect(page()).toBe("engagement-findings");
@@ -249,6 +257,7 @@ describe("Engagement", () => {
       createElement(Probe, { key: "probe" }),
     ]));
     expect($('[data-panel-page="engagement-scope"]')).toBeNull();
+    expect($('[data-panel-page="engagement-assets"]')).toBeNull();
     expect($('[data-panel-page="engagement-refusals"]')).toBeNull();
   });
 });

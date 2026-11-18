@@ -48,6 +48,32 @@ export interface RoomFindingsResponse {
   findings: EngagementFinding[];
 }
 
+export const ASSET_KINDS = ["host", "service", "web-app", "endpoint", "other"] as const;
+export type AssetKind = (typeof ASSET_KINDS)[number];
+
+/** One thing the engagement found in the authorized scope: the attack surface it discovered before testing it.
+ * The findings say what is wrong; this says what exists to be wrong. */
+export interface EngagementAsset {
+  id: string;
+  /** Where it is: a host, `host:port`, or a URL. Two assets at the same location are the same asset. */
+  location: string;
+  kind: AssetKind;
+  /** The product and version it runs, when they are known: `nginx 1.25.3`, `OpenSSH 9.6`. */
+  service?: string;
+  /** The fingerprint that identified it: a banner, an HTTP title, a certificate subject. */
+  banner?: string;
+  /** How it was found: the command, scan or source that turned it up. */
+  discoveredBy: string;
+  notes?: string;
+  firstSeenAt: number;
+  lastSeenAt: number;
+}
+
+/** GET /api/groups/:id/assets. `inScope` is read against the room's current scope, not stored. */
+export interface RoomAssetsResponse {
+  assets: Array<EngagementAsset & { inScope: boolean }>;
+}
+
 /** One command an engagement's scope refused before it ran: the record of what the team reached for. */
 export interface EngagementRefusal {
   id: string;

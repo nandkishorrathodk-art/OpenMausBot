@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { waitForExit } from "../testing/cleanup.ts";
-import { availableTools, catalogProfileFromEnv } from "./agents-catalog.ts";
+import { availableTools, catalogProfileFromEnv, ROOM_ONLY_TOOL_NAMES } from "./agents-catalog.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PROXY_SOURCE = join(HERE, "agents-proxy.ts");
@@ -111,8 +111,8 @@ const BUDGET_BASELINE: Record<string, number> = {
   "skills+shared+voice+x": 67574,
   "skills+shared+voice+x+team": 67574,
   "default+no-computer-pick": 57386,
-  "default+room": 56166,
-  "non-chief+room": 47637,
+  "default+room": 57847,
+  "non-chief+room": 49318,
   "skills+shared+voice+x+team+images": 68347,
   "default+images": 59371,
   "skills+shared+voice+x+team+images+hosting": 70210,
@@ -221,7 +221,7 @@ describe("agents proxy tools/list golden", () => {
         if (profile.env.OMB_CLOUD_HOME === "1" && (tool.name === "select_computer" || OWN_CLOUD_TOOLS.includes(tool.name))) continue;
         if (profile.env.OMB_CHIEF_OF_STAFF === "0" && CHIEF_TARGET_TOOLS.includes(tool.name)) continue;
         if (profile.env.OMB_MAUSBOT === "1" && MAUSBOT_TOOLS.includes(tool.name)) continue;
-        if (profile.env.OMB_ROOM === "1" && tool.name === "engagement_finding") continue;
+        if (profile.env.OMB_ROOM === "1" && ROOM_ONLY_TOOL_NAMES.has(tool.name)) continue;
         expect(JSON.stringify(tool), `${name}: ${tool.name}`).toBe(full.get(tool.name));
       }
     }
@@ -357,7 +357,7 @@ describe("agents proxy tools/list golden", () => {
     for (const name of ["default", "non-chief"]) {
       expect(names(`${name}+room`), name).toEqual([
         ...names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "burst", "rename_thread"].includes(tool)),
-        "engagement_finding",
+        ...ROOM_ONLY_TOOL_NAMES,
       ]);
     }
     for (const [name, profile] of Object.entries(PROFILES)) {
@@ -365,7 +365,7 @@ describe("agents proxy tools/list golden", () => {
       expect(names(name).includes("show_widget"), name).toBe(true);
       expect(names(name).includes("show_html"), name).toBe(profile.env.OMB_TOOLS_OFF === undefined);
       expect(names(name).includes("wait_until"), name).toBe(profile.env.OMB_ROOM !== "1");
-      expect(names(name).includes("engagement_finding"), name).toBe(profile.env.OMB_ROOM === "1");
+      for (const tool of ROOM_ONLY_TOOL_NAMES) expect(names(name).includes(tool), `${name}: ${tool}`).toBe(profile.env.OMB_ROOM === "1");
     }
   });
 

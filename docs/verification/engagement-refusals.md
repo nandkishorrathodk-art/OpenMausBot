@@ -2,8 +2,9 @@
 
 An engagement is a room whose work is authorized offensive security. The room
 card's **Engagement** section holds the **Scope** the client authorized, the
-**Findings** the team recorded, and the **Refused commands** its scope turned
-away. A direct message holds none of the three.
+**Assets** the team found inside it, the **Findings** the team recorded, and the
+**Refused commands** its scope turned away. A direct message holds none of the
+four.
 
 The scope is a list of authorized targets (`example.com`, `*.example.com`,
 `10.0.0.0/24`), the hosts that are off limits, and an optional window. Before
@@ -14,6 +15,44 @@ restates the scope. Loopback is never part of a scope.
 
 This is a heuristic on command text, not a sandbox. It is the record of what a
 team reached for, not the only thing between a bot and a network.
+
+## What an asset records
+
+The **Assets** page is the engagement's inventory of the attack surface it found
+inside the scope: each host, service, web app or endpoint, what it runs, the
+banner that identified it, and the command, scan or source that turned it up.
+The bot writes it with `engagement_asset`; the person reads it through
+`GET /api/groups/:id/assets`. The route reads each asset against the room's
+current scope, so one that has fallen out of scope is shown flagged rather than
+silently dropped.
+
+The store (`server/engagement-assets.ts`) keys an asset by its location, so a
+scan that returns `https://app.example.com/` and a later
+`https://app.example.com` are one entry whose first sighting keeps its time.
+Like the findings and the refusals, it is room-scoped, fails closed on a damaged
+file, and is never a place a command runs from.
+
+```sh
+node_modules/.bin/vitest run server/engagement-assets.test.ts \
+  server/routes/engagement-assets.test.ts server/routes/groups-assets.test.ts \
+  server/drivers/agents-asset-tool.test.ts \
+  server/routes/engagement-assets-chain.test.ts
+```
+
+They prove, against the real store and the real routes:
+
+- a location, a kind and how it was found are required, and an unknown kind is
+  refused;
+- the same location recorded twice refreshes the one asset, keeping its first
+  sighting;
+- `GET /api/groups/:id/assets` flags each asset against the room's scope, and
+  answers 404 for an unknown room, 403 for a room this caller may not read, 400
+  for a direct message, and passes an unknown method on;
+- `engagement_asset` is offered in a room's turn and in no other conversation,
+  and its record, update and list reach the internal route;
+- an asset a bot records in the room's own thread is read in that room; one
+  recorded in a parallel room job's thread is read in the room its opener ties it
+  to; a bot's own thread is refused 409.
 
 ## What a refusal records
 

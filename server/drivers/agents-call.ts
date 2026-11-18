@@ -20,7 +20,7 @@ import { dropBlankArguments } from "./agents-blank-arguments.ts";
 import { callResearchTool, RESEARCH_TOOL_NAMES } from "./agents-research-tools.ts";
 import { callHelperTool, HELPER_TOOL_NAMES } from "./agents-helper-tools.ts";
 import { callUsageLimitsTool, USAGE_LIMITS_TOOL } from "./agents-usage-tool.ts";
-import { callEngagementFindingTool, ENGAGEMENT_FINDING_TOOL } from "./agents-finding-tool.ts";
+import { callEngagementFindingTool, ENGAGEMENT_FINDING_TOOL } from "./agents-finding-tool.ts"; import { callEngagementAssetTool, ENGAGEMENT_ASSET_TOOL } from "./agents-asset-tool.ts";
 import { callThreadPostTool, THREAD_POST_TOOL } from "./agents-thread-post-tool.ts"; import { callRenameThreadTool, RENAME_THREAD_TOOL } from "./agents-thread-title-tool.ts";
 import { callWaitTool, WAIT_TOOL_NAMES } from "./agents-wait-tools.ts";
 import { callBurstTool } from "./agents-burst-tool.ts";
@@ -258,7 +258,7 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
   if (TRIGGER_TOOL_NAMES.has(name)) return callTriggerTool(name, args, context);
   if (WAIT_TOOL_NAMES.has(name)) return callWaitTool(name, args, context);
   if (name === USAGE_LIMITS_TOOL) return callUsageLimitsTool(context);
-  if (name === ENGAGEMENT_FINDING_TOOL) return callEngagementFindingTool(args, context);
+  if (name === ENGAGEMENT_FINDING_TOOL) return callEngagementFindingTool(args, context); if (name === ENGAGEMENT_ASSET_TOOL) return callEngagementAssetTool(args, context);
   if (COMPUTER_ASK_TOOL_NAMES.has(name)) return callComputerAskTool(args, context);
   // Second lock: with sharing off the catalog already omits these tools.
   if (SHARED_COMPUTER_TOOL_NAMES.has(name) && !context.sharedComputers) {

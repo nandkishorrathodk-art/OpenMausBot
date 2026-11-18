@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
-// The engagement pages the Room panel opens: the scope form's save and clear, and the findings list's order and rows.
+// The engagement pages the Room panel opens: the scope form's save and clear, the assets inventory and the findings
+// list's order and rows.
 import { createElement } from "react";
 import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
@@ -10,6 +11,7 @@ const fixture = vi.hoisted(() => ({
   readScope: vi.fn(),
   saveScope: vi.fn(),
   readFindings: vi.fn(),
+  readAssets: vi.fn(),
   readRefusals: vi.fn(),
   downloadReport: vi.fn(),
   ownerOrAdmin: true as boolean | null,
@@ -19,6 +21,7 @@ vi.mock("@/lib/engagement", () => ({
   readRoomScope: fixture.readScope,
   saveRoomScope: fixture.saveScope,
   readRoomFindings: fixture.readFindings,
+  readRoomAssets: fixture.readAssets,
   readRoomRefusals: fixture.readRefusals,
   downloadRoomReport: fixture.downloadReport,
 }));
@@ -26,6 +29,7 @@ vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => fixture.owne
 
 const { EngagementScopePage } = await import("./EngagementScopePage");
 const { EngagementFindingsPage } = await import("./EngagementFindingsPage");
+const { EngagementAssetsPage } = await import("./EngagementAssetsPage");
 const { EngagementRefusalsPage } = await import("./EngagementRefusalsPage");
 
 const group = { id: "desk", name: "Desk HQ" } as unknown as Group;
@@ -48,6 +52,7 @@ beforeEach(() => {
   fixture.readScope.mockReset();
   fixture.saveScope.mockReset();
   fixture.readFindings.mockReset();
+  fixture.readAssets.mockReset();
   fixture.readRefusals.mockReset();
   fixture.downloadReport.mockReset();
   host = document.createElement("div");
@@ -170,5 +175,37 @@ describe("the engagement refusals page", () => {
     flushSync(() => root.render(createElement(EngagementRefusalsPage, { group })));
     await settle();
     expect(document.body.textContent).toContain("Every command the team ran stayed inside the authorized scope.");
+  });
+});
+
+describe("the engagement assets page", () => {
+  it("lists the inventory, flags an asset outside the scope and shows how each was found", async () => {
+    fixture.readAssets.mockResolvedValue([
+      { id: "1", location: "https://app.example.com", kind: "web-app", service: "nginx 1.25.3", discoveredBy: "nmap -sV", firstSeenAt: 1, lastSeenAt: 1, inScope: true },
+      { id: "2", location: "https://elsewhere.test", kind: "host", discoveredBy: "nmap -sV", firstSeenAt: 2, lastSeenAt: 2, inScope: false },
+    ]);
+    flushSync(() => root.render(createElement(EngagementAssetsPage, { group })));
+    await settle();
+    const rows = [...document.querySelectorAll("[data-asset]")];
+    expect(rows.map((row) => row.getAttribute("data-asset"))).toEqual(["1", "2"]);
+    expect(rows[0]!.textContent).toContain("https://app.example.com");
+    expect(rows[0]!.textContent).toContain("nginx 1.25.3");
+    expect(rows[0]!.textContent).toContain("nmap -sV");
+    expect(rows[0]!.textContent).not.toContain("Out of scope");
+    expect(rows[1]!.textContent).toContain("Out of scope");
+  });
+
+  it("says there are none yet when the inventory is empty", async () => {
+    fixture.readAssets.mockResolvedValue([]);
+    flushSync(() => root.render(createElement(EngagementAssetsPage, { group })));
+    await settle();
+    expect(document.body.textContent).toContain("The team records each host, service or endpoint");
+  });
+
+  it("says the inventory could not be read when the request fails", async () => {
+    fixture.readAssets.mockRejectedValue(new Error("nope"));
+    flushSync(() => root.render(createElement(EngagementAssetsPage, { group })));
+    await settle();
+    expect($("[data-panel-row='assets-error']")?.textContent).toContain("nope");
   });
 });
