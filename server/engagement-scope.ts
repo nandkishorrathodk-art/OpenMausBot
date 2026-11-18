@@ -185,6 +185,15 @@ export function hostInScope(scope: EngagementScope, host: string): boolean {
   return scope.targets.some((target) => targetMatches(target, host));
 }
 
+/** The host an asset's location names — a URL's authority, `host:port`, or a bare host — or null when it names
+ * none. Read against the scope to tell a client's asset from something the team should not have recorded. */
+export function assetLocationHost(location: string): string | null {
+  const value = location.trim();
+  const scheme = /^[a-z][a-z0-9+.-]*:\/\//i.exec(value);
+  const authority = scheme ? (value.slice(scheme[0].length).split(/[/?#]/)[0] ?? "") : value;
+  return authorityHost(authority);
+}
+
 export function scopeActive(scope: EngagementScope, now: number): boolean {
   return (scope.startsAt === undefined || now >= scope.startsAt) && (scope.endsAt === undefined || now <= scope.endsAt);
 }

@@ -2,6 +2,7 @@ import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../sh
 import { buildEngagementReport, engagementReportFilename } from "../../shared/engagement-report.ts";
 import type { EngagementScope } from "../engagement-scope.ts";
 import type { EngagementFinding } from "../engagement-findings.ts";
+import type { EngagementAsset } from "../engagement-assets.ts";
 import type { EngagementRefusal } from "../engagement-refusals.ts";
 import { validateBotCwd } from "../bot-cwd.ts";
 import type { VisibleSet } from "../bot-visibility.ts";
@@ -28,6 +29,10 @@ export interface GroupRouteDeps {
   canManageScope(auth: RequestAuth): boolean;
   /** The flaws the engagement has recorded, for the room panel to show. */
   findings: { list(roomId: string): EngagementFinding[] };
+  /** What the engagement has found inside its scope, for the room panel to show. */
+  assets: { list(roomId: string): EngagementAsset[] };
+  /** Whether a location is inside a room's authorized scope, so the panel can flag an asset outside it. */
+  assetInScope(roomId: string, location: string): boolean;
   /** The commands the engagement's scope refused, for the room panel to show. */
   refusals: { list(roomId: string): EngagementRefusal[] };
 }
@@ -126,6 +131,14 @@ export function createGroupRoutes(deps: GroupRouteDeps): RouteHandler {
       if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement findings" });
       if (!visible.group(group.id)) return json(res, 403, { error: "This room's findings are not yours to read." });
       return json(res, 200, { findings: deps.findings.list(group.id) });
+    }
+    m = path.match(/^\/api\/groups\/([\w-]+)\/assets$/);
+    if (m && method === "GET") {
+      const group = store.group(m[1]);
+      if (!group) return json(res, 404, { error: "no such room" });
+      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement assets" });
+      if (!visible.group(group.id)) return json(res, 403, { error: "This room's assets are not yours to read." });
+      return json(res, 200, { assets: deps.assets.list(group.id).map((asset) => ({ ...asset, inScope: deps.assetInScope(group.id, asset.location) })) });
     }
     m = path.match(/^\/api\/groups\/([\w-]+)\/refusals$/);
     if (m && method === "GET") {
