@@ -98,7 +98,10 @@ which would delete the rebrand.
   `EngagementRefusalsPage` reads `GET /api/groups/:id/refusals` (400 for a DM, 403
   for a room this caller may not read) and shows the most recent refusal first.
   What is still open: `createCommandScope`'s check is a heuristic on command text
-  rather than a sandbox.
+  rather than a sandbox. It reads a destination written as one integer
+  (`0xc0a80101`, `3232235777`) and bash's `/dev/tcp/host/port`, but an address
+  assembled inside a script or reached through a redirect is still not seen, so
+  it bounds an honest operator's mistakes and is not a containment boundary.
 - When a rebrand reaches a string, move its verbatim twin in the same change.
   `src/lib/phone-setup.ts`'s `PUBLIC_ACCOUNT_MESSAGES` matches
   `electron/companion-account-messages.mjs`'s `FRIENDLY_MESSAGES` by regex, and
