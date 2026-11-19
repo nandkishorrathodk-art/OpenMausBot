@@ -13,6 +13,7 @@ interface WireFinding {
   severity: string;
   status: string;
   evidence: string;
+  proof?: string;
   detail?: string;
   reportedAt: number;
   updatedAt: number;
@@ -33,8 +34,9 @@ function one(finding: WireFinding): string {
   const evidence = finding.evidence.length > MAX_EVIDENCE_IN_RESULT
     ? `${finding.evidence.slice(0, MAX_EVIDENCE_IN_RESULT)}…`
     : finding.evidence;
+  const proof = finding.proof ? `\nProof: ${finding.proof}` : "";
   const detail = finding.detail ? `\nDetail: ${finding.detail}` : "";
-  return `${finding.severity}/${finding.status} — ${finding.target}: ${finding.title}\nEvidence: ${evidence}${detail}`;
+  return `${finding.severity}/${finding.status} — ${finding.target}: ${finding.title}\nEvidence: ${evidence}${proof}${detail}`;
 }
 
 export async function callEngagementFindingTool(args: Record<string, unknown>, context: ToolCallContext): Promise<ToolCallResult> {
@@ -49,6 +51,7 @@ export async function callEngagementFindingTool(args: Record<string, unknown>, c
       ...(typeof args.severity === "string" ? { severity: args.severity } : {}),
       ...(typeof args.status === "string" ? { status: args.status } : {}),
       ...(typeof args.evidence === "string" ? { evidence: args.evidence } : {}),
+      ...(typeof args.proof === "string" ? { proof: args.proof } : {}),
       ...(typeof args.detail === "string" ? { detail: args.detail } : {}),
     }),
   });
@@ -70,7 +73,7 @@ export async function callEngagementFindingTool(args: Record<string, unknown>, c
 export const ENGAGEMENT_FINDING_TOOL_DEFINITION = {
   name: ENGAGEMENT_FINDING_TOOL,
   description:
-    "The engagement's shared ledger of flaws, one per room, every member reads and writes it. action=record adds a flaw, or updates the one with the same target and title; update changes one by id (from a list) as its evidence or status moves on; list reads them all, worst first. Record a flaw as soon as you suspect it, with evidence: the command and its output, the request and its response, or the artifact that shows it. Keep status=suspected until the evidence proves it, then set status=proven — the client acts on what is proven. A finding is not a claim: never record one without the evidence that shows it.",
+    "The engagement's shared ledger of flaws, one per room, every member reads and writes it. action=record adds a flaw, or updates the one with the same target and title; update changes one by id (from a list) as its evidence or status moves on; list reads them all, worst first. Record a flaw as soon as you suspect it, with evidence: the command and its output, the request and its response, or the artifact that shows it. Keep status=suspected until you can prove it, then set status=proven with proof: the exact request and the response it returned, or the command and its output, short enough for the client to run again. The client acts on what is proven. A finding is not a claim: never record one without the evidence that shows it.",
   inputSchema: {
     type: "object",
     additionalProperties: false,
@@ -82,6 +85,7 @@ export const ENGAGEMENT_FINDING_TOOL_DEFINITION = {
       severity: { type: "string", enum: ["critical", "high", "medium", "low", "info"], description: "How bad if exploited. Defaults to medium." },
       status: { type: "string", enum: ["suspected", "proven", "fixed", "wont-fix"], description: "Defaults to suspected; proven once evidence shows it." },
       evidence: { type: "string", description: "record: what shows it — the command and its output, the request and its response, or the artifact path. Required." },
+      proof: { type: "string", description: "The reproduction a person can run again: the exact request and the response it returned, or the command and its output. Required to set status=proven." },
       detail: { type: "string", description: "Optional: impact and the steps to reproduce it." },
     },
     required: ["action"],

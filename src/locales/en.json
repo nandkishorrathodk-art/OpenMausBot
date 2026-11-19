@@ -5225,6 +5225,7 @@
   "room.findings.status": "Status",
   "room.findings.target": "Target",
   "room.findings.evidence": "Evidence",
+  "room.findings.proof": "Proof",
   "room.findings.detail": "Impact and steps",
   "room.findings.reported": "Reported {when}",
   "room.findings.updated": "Updated {when}",

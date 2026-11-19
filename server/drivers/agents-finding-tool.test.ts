@@ -45,6 +45,14 @@ describe("the engagement_finding tool", () => {
       .resolves.toEqual({ text: "Findings live in an engagement room.", isError: true });
   });
 
+  it("forwards the proof and shows it back, so a proven claim carries its reproduction", async () => {
+    const asked = context({ ok: true, body: { finding: finding({ status: "proven", proof: "curl -i https://app.example/invoices/42 -> 200 with another user's invoice" }) } });
+    const result = await callEngagementFindingTool({ action: "update", id: "f-1", status: "proven", proof: "curl -i https://app.example/invoices/42 -> 200 with another user's invoice" }, asked);
+    const [, init] = (asked.client.apiResponse as ReturnType<typeof vi.fn>).mock.calls[0]!;
+    expect(JSON.parse(init.body)).toMatchObject({ proof: "curl -i https://app.example/invoices/42 -> 200 with another user's invoice" });
+    expect(result.text).toContain("Proof: curl -i");
+  });
+
   it("reaches the route when a bot calls it by name", async () => {
     const asked = context({ ok: true, body: { findings: [] } });
     await expect(callTool(ENGAGEMENT_FINDING_TOOL, { action: "list" }, asked)).resolves.toMatchObject({ text: expect.stringContaining("No findings recorded") });

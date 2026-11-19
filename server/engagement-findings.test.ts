@@ -16,7 +16,9 @@ afterEach(() => rmSync(directory, { recursive: true, force: true }));
 
 const finding = (over: Record<string, unknown> = {}) => ({
   target: "api.example.com", title: "Reflected XSS in q", severity: "high", status: "proven",
-  evidence: "GET /search?q=<svg/onload=alert(1)> returned it unescaped", ...over,
+  evidence: "GET /search?q=<svg/onload=alert(1)> returned it unescaped",
+  proof: "GET /search?q=%3Csvg%2Fonload%3Dalert(1)%3E -> 200 with the payload unescaped in the body",
+  ...over,
 });
 
 describe("engagement findings", () => {
@@ -32,12 +34,28 @@ describe("engagement findings", () => {
 
   it("keeps an existing finding up to date when the same target and title come back, ignoring case", () => {
     const store = new EngagementFindingsStore(filename);
-    const first = store.record("room-a", finding({ status: "suspected" }));
+    const first = store.record("room-a", finding({ status: "suspected", proof: undefined }));
     const again = store.record("room-a", finding({ title: "reflected xss in Q", status: "proven", evidence: "reproduced on staging" }));
     expect(again.id).toBe(first.id);
     expect(again.status).toBe("proven");
     expect(again.reportedAt).toBe(first.reportedAt);
     expect(store.list("room-a")).toHaveLength(1);
+  });
+
+  it("refuses the proven label without a reproduction a person can run again", () => {
+    expect(parseFinding({ target: "x", title: "y", evidence: "looks exploitable", status: "proven" }).ok).toBe(false);
+    expect(parseFinding({ target: "x", title: "y", evidence: "looks exploitable", status: "proven", proof: "   " }).ok).toBe(false);
+    expect(parseFinding({ target: "x", title: "y", evidence: "looks exploitable", status: "proven", proof: "curl -i https://x/?q=1 -> 200" }).ok).toBe(true);
+
+    const store = new EngagementFindingsStore(filename);
+    expect(() => store.record("room-a", finding({ proof: undefined }))).toThrow(/proven only with proof/);
+    expect(store.list("room-a")).toEqual([]);
+    expect(() => store.patch("room-a", "missing", { status: "proven" })).toThrow(/No such finding/);
+  });
+
+  it("keeps proof out of the record when it is not given, so a suspected finding carries none", () => {
+    const parsed = parseFinding({ target: "x", title: "y", evidence: "seen once" });
+    expect(parsed.ok && "proof" in parsed.finding).toBe(false);
   });
 
   it("records, patches, lists and removes, keeping each room's findings apart", () => {
@@ -80,5 +98,19 @@ describe("engagement findings", () => {
 
   it("keys a finding by its target and title, ignoring case and space", () => {
     expect(findingKey(" API.example.com ", "Reflected XSS")).toBe(findingKey("api.example.com", "reflected xss"));
+  });
+
+  it("reads a store written before proof was required, demoting a proven finding that has none", () => {
+    writeFileSync(filename, JSON.stringify({ version: 1, rooms: [{ roomId: "room-a", findings: [
+      { id: "f-1", target: "x", title: "unproven claim", severity: "high", status: "proven",
+        evidence: "someone said it works", reportedAt: 1, updatedAt: 1 },
+      { id: "f-2", target: "y", title: "real one", severity: "high", status: "proven",
+        evidence: "reproduced", proof: "curl -i https://y/?q=1 -> 200", reportedAt: 2, updatedAt: 2 },
+    ] }] }));
+    const store = new EngagementFindingsStore(filename);
+    const listed = store.list("room-a");
+    expect(listed.map((f) => [f.id, f.status])).toEqual([["f-1", "suspected"], ["f-2", "proven"]]);
+    expect(listed[0]!.evidence).toBe("someone said it works");
+    expect(() => store.record("room-a", finding())).not.toThrow();
   });
 });

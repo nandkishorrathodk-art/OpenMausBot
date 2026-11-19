@@ -102,7 +102,7 @@ describe("a finding crosses from the bot that recorded it to the person who read
     const { room, record, read } = chain();
     const wrote = await record(room.threadId, finding);
     const id = wrote.body.finding.id;
-    const updated = await record(room.threadId, { action: "update", id, status: "proven", evidence: "the redirect returns 302 to evil.test" });
+    const updated = await record(room.threadId, { action: "update", id, status: "proven", evidence: "the redirect returns 302 to evil.test", proof: "curl -i https://acme.test/?next=evil.test -> 302 Location: https://evil.test" });
     expect(updated.status).toBe(200);
     expect(updated.body.finding).toMatchObject({ id, status: "proven" });
     const listed = await read(room.id);

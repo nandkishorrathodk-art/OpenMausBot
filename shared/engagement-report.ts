@@ -116,6 +116,7 @@ export function buildEngagementReport(input: EngagementReportInput): string {
     );
     if (finding.updatedAt > finding.reportedAt) out.push(`- Updated: ${when(finding.updatedAt)}`);
     out.push("", "**Evidence**", "", finding.evidence.trim(), "");
+    if (finding.proof?.trim()) out.push("**Proof**", "", finding.proof.trim(), "");
     if (finding.detail?.trim()) out.push("**Detail**", "", finding.detail.trim(), "");
   }
 

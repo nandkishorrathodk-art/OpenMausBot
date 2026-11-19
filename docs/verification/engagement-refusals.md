@@ -108,6 +108,8 @@ The chain test proves, over one real store:
 - a finding a parallel room job records in its own thread is read in the room
   its opener ties it to;
 - an update by id changes the one finding the person then reads;
+- `status=proven` is refused 400 unless the update carries `proof`, so a claim
+  cannot take the proven label from prose alone;
 - a bot's own thread answers to no room, so a record there is refused 409 and
   the room's ledger stays empty.
 
@@ -134,6 +136,8 @@ They prove:
 - findings are worst first, `proven` counted apart from `suspected`, each with
   its target, status, evidence and detail, and an update time only once it has
   moved past its report;
+- a finding's `proof` prints under its evidence so the client can run the
+  reproduction again, and a finding without one prints no proof section;
 - a title or target with a newline or a `|` cannot break the table;
 - `GET /api/groups/:id/report` answers 404 for an unknown room, 403 for a room
   this caller may not read, 400 for a direct message, and passes an unknown

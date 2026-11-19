@@ -65,7 +65,13 @@ describe("the engagement findings internal route", () => {
 
     const update = harness({ body: { action: "update", id: created.id, status: "proven" } });
     await update.call(FINDINGS_PATH);
-    expect((update.sent[0]!.body as { finding: { status: string } }).finding.status).toBe("proven");
+    expect(update.sent[0]!.status).toBe(400);
+    expect((update.sent[0]!.body as { error: string }).error).toContain("proven only with proof");
+
+    const proven = harness({ body: { action: "update", id: created.id, status: "proven", proof: "curl -i https://app.example/invoices/42 -> 200 with another user's invoice" } });
+    await proven.call(FINDINGS_PATH);
+    expect(proven.sent[0]!.status).toBe(200);
+    expect((proven.sent[0]!.body as { finding: { status: string } }).finding.status).toBe("proven");
   });
 
   it("rejects an unknown action and a body the store refuses", async () => {

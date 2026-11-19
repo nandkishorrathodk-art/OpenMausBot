@@ -56,6 +56,11 @@ export function parseFinding(value: unknown): ParsedFinding {
   const evidence = text(value.evidence);
   if (!evidence) return { ok: false, error: "A finding needs evidence: the command and its output, the request and its response, or the artifact that shows it." };
   if (evidence.length > MAX_EVIDENCE) return { ok: false, error: `The evidence must be at most ${MAX_EVIDENCE} characters.` };
+  const proof = text(value.proof);
+  if (proof && proof.length > MAX_EVIDENCE) return { ok: false, error: `The proof must be at most ${MAX_EVIDENCE} characters.` };
+  if (status === "proven" && !proof) {
+    return { ok: false, error: "A finding is proven only with proof: the exact request that reproduces it and the response that shows the flaw, or the command and the output it produced. Record it as suspected until that exists." };
+  }
   const detail = text(value.detail);
   if (detail && detail.length > MAX_TEXT) return { ok: false, error: `The detail must be at most ${MAX_TEXT} characters.` };
   return {
@@ -66,6 +71,7 @@ export function parseFinding(value: unknown): ParsedFinding {
       severity: severity as FindingSeverity,
       status: status as FindingStatus,
       evidence,
+      ...(proof ? { proof } : {}),
       ...(detail ? { detail } : {}),
     },
   };
@@ -91,7 +97,9 @@ function loadFinding(row: unknown): EngagementFinding {
   if (!record(row) || typeof row.id !== "string" || typeof row.reportedAt !== "number" || typeof row.updatedAt !== "number") {
     throw new Error("Invalid engagement findings store.");
   }
-  const parsed = parseFinding(row);
+  // A finding recorded before proof was required keeps its evidence but loses a `proven` label it never earned.
+  const demoted = row.status === "proven" && !text(row.proof) ? { ...row, status: "suspected" } : row;
+  const parsed = parseFinding(demoted);
   if (!parsed.ok) throw new Error("Invalid engagement findings store.");
   return { id: row.id, reportedAt: row.reportedAt, updatedAt: row.updatedAt, ...parsed.finding };
 }

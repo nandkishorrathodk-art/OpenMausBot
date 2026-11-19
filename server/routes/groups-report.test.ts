@@ -24,6 +24,7 @@ function fixture() {
   findings.record(room.id, {
     target: "api.acme.test", title: "IDOR on invoices", severity: "critical", status: "proven",
     evidence: "GET /invoices/42 as another user returns their invoice",
+    proof: "GET /invoices/42 with the other user's session -> 200 with their invoice body",
   });
   const scope = new EngagementScopeStore(`${DATA_DIR}/engagement-scopes.json`);
   scope.set(room.id, { targets: ["acme.test", "*.acme.test"], offLimits: [] });

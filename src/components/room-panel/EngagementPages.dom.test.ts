@@ -106,7 +106,7 @@ describe("the engagement findings page", () => {
   it("lists the worst finding first with its severity, status and evidence", async () => {
     fixture.readFindings.mockResolvedValue([
       { id: "1", target: "a.example.com", title: "Weak TLS", severity: "low", status: "suspected", evidence: "nmap", reportedAt: 1, updatedAt: 1 },
-      { id: "2", target: "b.example.com", title: "Open redirect", severity: "critical", status: "proven", evidence: "curl -I", reportedAt: 2, updatedAt: 2 },
+      { id: "2", target: "b.example.com", title: "Open redirect", severity: "critical", status: "proven", evidence: "curl -I", proof: "curl -I https://b.example.com/?next=evil.test -> 302 to evil.test", reportedAt: 2, updatedAt: 2 },
     ]);
     flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));
     await settle();
@@ -116,6 +116,7 @@ describe("the engagement findings page", () => {
     expect(rows[0]!.textContent).toContain("Critical");
     expect(rows[0]!.textContent).toContain("Proven");
     expect(rows[0]!.textContent).toContain("curl -I");
+    expect(rows[0]!.textContent).toContain("302 to evil.test");
   });
 
   it("says there are none yet when the ledger is empty", async () => {
