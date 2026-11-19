@@ -386,12 +386,22 @@ export function createCommandScope(deps: {
     if (room) deps.onRefusal?.(room.id, verdict, command);
     return scopeRefusalText(verdict, scope);
   };
+  /** Whether a browser connection from `botId` to `host` falls outside the room's authorization. Read by name at the
+   * egress gate, before a DNS lookup. Pure: a page can open many connections, so this records nothing — the gate's own
+   * page-health line is where the refusal surfaces, as it does for every other egress refusal. */
+  const hostOutOfScope = (botId: string, threadId: string, host: string, now = Date.now()): boolean => {
+    const room = deps.roomOfThread(botId, threadId);
+    const scope = room ? deps.scopes.get(room.id) : null;
+    if (!scope) return false;
+    return !scopeActive(scope, now) || !hostInScope(scope, host);
+  };
   return {
     /** The line a room's members read; false when the room holds no authorization. */
     prompt(groupId: string): string | false {
       return scopePrompt(deps.scopes.get(groupId));
     },
     refusal,
+    hostOutOfScope,
     /**
      * Why a desktop call from `botId` may not reach the host it names, or null. Only the arguments that carry a
      * destination are read: `exec`'s command and `open_url`'s address. Every other desktop action, a click included,

@@ -137,7 +137,7 @@ describe("the egress gate on MausBot Cloud", () => {
       try {
         for (const name of ["www.reddit.com", "i.redd.it"]) expect(await ask(port, name), `${host} ${name}`).toBe(4);
         expect(looked, host).toEqual(["www.reddit.com", "i.redd.it"]);
-        expect(egress.nameRefusal("www.reddit.com"), host).toBeNull();
+        expect(egress.nameRefusal("bot-1", "www.reddit.com"), host).toBeNull();
         expect(egress.callRefusal({ name: "agent_browser_open", arguments: { url: "https://www.reddit.com/" } }), host).toBeNull();
         expect(egress.takeNotice("bot-1"), host).toBeNull();
       } finally {

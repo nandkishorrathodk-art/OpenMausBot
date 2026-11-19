@@ -304,4 +304,48 @@ describe("command scope", () => {
       expect(commandScope.call("stranger", "room-a", "open_url", { url: "https://evil.test/" })).toBeNull();
     });
   });
+
+  describe("a browser connection", () => {
+    it("refuses a name the room's scope does not cover and allows one it does", () => {
+      const { scopes, commandScope } = fixture();
+      scopes.set("room-a", { targets: ["example.com"] });
+      expect(commandScope.hostOutOfScope("member", "room-a", "evil.test")).toBe(true);
+      expect(commandScope.hostOutOfScope("member", "room-a", "example.com")).toBe(false);
+    });
+
+    it("reads a wildcard's subdomain as in scope and an off-limits host as out of it", () => {
+      const { scopes, commandScope } = fixture();
+      scopes.set("room-a", { targets: ["*.example.com"], offLimits: ["admin.example.com"] });
+      expect(commandScope.hostOutOfScope("member", "room-a", "app.example.com")).toBe(false);
+      expect(commandScope.hostOutOfScope("member", "room-a", "admin.example.com")).toBe(true);
+      expect(commandScope.hostOutOfScope("member", "room-a", "example.com")).toBe(true);
+    });
+
+    it("leaves a room with no scope, and a caller outside the room, unchecked", () => {
+      const { scopes, commandScope } = fixture();
+      expect(commandScope.hostOutOfScope("member", "room-b", "evil.test")).toBe(false);
+      scopes.set("room-a", { targets: ["example.com"] });
+      expect(commandScope.hostOutOfScope("stranger", "room-a", "evil.test")).toBe(false);
+    });
+
+    it("refuses every name once the authorization window has closed, either side of it", () => {
+      const { scopes, commandScope } = fixture();
+      scopes.set("room-a", { targets: ["example.com"], startsAt: Date.now() + 60_000 });
+      expect(commandScope.hostOutOfScope("member", "room-a", "example.com")).toBe(true);
+      scopes.set("room-a", { targets: ["example.com"], endsAt: Date.now() - 60_000 });
+      expect(commandScope.hostOutOfScope("member", "room-a", "example.com")).toBe(true);
+      scopes.set("room-a", { targets: ["example.com"] });
+      expect(commandScope.hostOutOfScope("member", "room-a", "example.com")).toBe(false);
+    });
+
+    it("records nothing, because a page opens many connections and the gate states the refusal itself", () => {
+      const scopes = new EngagementScopeStore(join(directory, "browser-quiet.json"));
+      scopes.set("room-a", { targets: ["example.com"] });
+      const seen: unknown[] = [];
+      const roomOfThread = (botId: string, threadId: string) => (botId === "member" && threadId === "room-a" ? ({ id: "room-a", memberIds: ["member"] } as never) : null);
+      const commandScope = createCommandScope({ roomOfThread, scopes, onRefusal: (_roomId, check, command) => seen.push({ check, command }) });
+      commandScope.hostOutOfScope("member", "room-a", "evil.test");
+      expect(seen).toEqual([]);
+    });
+  });
 });

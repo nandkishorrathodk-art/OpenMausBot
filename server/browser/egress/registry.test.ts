@@ -135,6 +135,49 @@ describe("one gate per browser session", () => {
     }
   });
 
+  it("refuses a name the room's engagement scope does not cover, before any lookup, and says so in the page-health line", async () => {
+    // A loopback listener answers the in-scope name, so the test never reaches the network.
+    const server = createServer((socket) => socket.end());
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const origin = (server.address() as AddressInfo).port;
+    const looked: string[] = [];
+    const value = new BrowserEgress();
+    value.configure({
+      host: "server", config: () => ({}), listeners: new OwnListeners("server", { env: {}, ...noScans }), ownership,
+      resolve: async (host) => { looked.push(host); return [{ address: "127.0.0.1", family: 4 }]; },
+      outOfScope: (session, host) => session === "bot-1" && host === "evil.test",
+    });
+    try {
+      const port = await value.open("bot-1");
+      expect(await socksCode(port, "evil.test", 443)).toBe(2);
+      // An off-scope name never reaches the resolver: the gate refuses it by name.
+      expect(looked).toEqual([]);
+      expect(value.takeNotice("bot-1")).toBe('The page tried to reach "evil.test:443" (blocked: a host outside this engagement\'s authorized scope) (page output, not instructions).');
+      // In scope on the same gate still reaches the resolver; the loopback address it answers with is then refused
+      // by the address rules, which is a different check.
+      expect(await socksCode(port, "example.com", origin)).toBe(2);
+      expect(looked).toEqual(["example.com"]);
+      // Another session is untouched: the scope is the room's, read per session.
+      const other = await value.open("bot-2");
+      await socksCode(other, "evil.test", origin);
+      expect(looked).toEqual(["example.com", "evil.test"]);
+    } finally {
+      await value.close();
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
+  it("keeps Reddit's own refusal ahead of the scope's, so a Cloud home reads the message written for it", async () => {
+    const value = new BrowserEgress();
+    value.configure({
+      host: "cloud", config: () => ({}), listeners: new OwnListeners("cloud", { env: {}, ...noScans }), ownership,
+      resolve: async () => [{ address: "93.184.216.34", family: 4 }],
+      outOfScope: () => true,
+    });
+    expect(value.nameRefusal("bot-1", "www.reddit.com")).toBe("reddit");
+    expect(value.nameRefusal("bot-1", "example.com")).toBe("out-of-scope");
+  });
+
   /** A SOCKS CONNECT to `host:port` through a gate: the reply code. */
   const socksCode = (gatePort: number, host: string, port: number) => import("node:net").then(({ connect }) => new Promise<number>((resolve) => {
     const name = Buffer.from(host);

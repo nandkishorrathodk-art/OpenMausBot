@@ -96,6 +96,9 @@ export interface EgressSetup {
    * none of the person's computers shares it; null where this browser may not use a computer's connection. Only the
    * sites that turn away data centres (home-sites.ts) go through it. */
   device?(session: string): GateUpstream | { away: string } | { unshared: true } | null;
+  /** Whether `session`'s browser may not reach `host` because the room whose turn holds it authorized other targets.
+   * Asked by name before the address lookup, so an off-scope destination never costs a DNS query. */
+  outOfScope?(session: string, host: string): boolean;
 }
 
 interface Blocked { target: string; reason: Refusal }
@@ -110,7 +113,7 @@ export const UNSHARED_NOTICE = `Sites that turn away data centres, such as Insta
 /** One gate per running browser session, so a Chrome keeps the port it launched with; released once that browser has
  * ended, and opened again on the same port where it is still free. */
 export class BrowserEgress {
-  private setup: Required<Omit<EgressSetup, "device">> & Pick<EgressSetup, "device"> | null = null;
+  private setup: Required<Omit<EgressSetup, "device" | "outOfScope">> & Pick<EgressSetup, "device" | "outOfScope"> | null = null;
   private readonly gates = new Map<string, Promise<EgressGate>>();
   private readonly ports = new Map<string, number>();
   private readonly blocked = new Map<string, Blocked[]>();
@@ -127,9 +130,12 @@ export class BrowserEgress {
     };
   }
 
-  /** Why a destination is refused by its name alone on this host: Reddit, from MausBot Cloud. */
-  nameRefusal(name: string): Refusal | null {
-    return this.setup && refusesReddit(this.setup.host, name) ? "reddit" : null;
+  /** Why a destination is refused by its name alone on this host: Reddit from MausBot Cloud, or a host outside the
+   * engagement scope of the room whose turn holds `session`. */
+  nameRefusal(session: string, name: string): Refusal | null {
+    if (!this.setup) return null;
+    if (refusesReddit(this.setup.host, name)) return "reddit";
+    return this.setup.outOfScope?.(session, name) ? "out-of-scope" : null;
   }
 
   /** What a browser tool call that would open Reddit from MausBot Cloud is told instead of running, or null. */
@@ -168,7 +174,7 @@ export class BrowserEgress {
     let gate = this.gates.get(session);
     if (!gate) {
       gate = openGate({
-        refuseName: (target) => this.nameRefusal(target.host),
+        refuseName: (target) => this.nameRefusal(session, target.host),
         decide: (target, addresses) => refusalFor(target, addresses, this.rules()),
         onRefusal: (target, reason) => this.note(session, target, reason as Refusal),
         resolve: this.setup.resolve,

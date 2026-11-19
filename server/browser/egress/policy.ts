@@ -11,7 +11,7 @@ export { addressClass, ownAddresses, type AddressClass };
 export type EgressHost = "desktop" | "server" | "cloud";
 
 /** `home-network` and `port` come from the person's own computer when My Cloud's browsing goes out through it. */
-export type Refusal = "omb" | "this-computer" | "local-network" | "link-local" | "metadata" | "reserved" | "rebinding" | "reddit" | "home-network" | "port";
+export type Refusal = "omb" | "this-computer" | "local-network" | "link-local" | "metadata" | "reserved" | "rebinding" | "reddit" | "home-network" | "port" | "out-of-scope";
 
 /** How a refusal reads in the page-health line. */
 export const REFUSAL_TEXT: Record<Refusal, string> = {
@@ -25,6 +25,7 @@ export const REFUSAL_TEXT: Record<Refusal, string> = {
   reddit: "Reddit",
   "home-network": "the person's own computer or home network",
   port: "a port other than 80 and 443, which the person's computer does not open for bots",
+  "out-of-scope": "a host outside this engagement's authorized scope",
 };
 
 const family = (address: string) => (isIP(address) === 6 ? "ipv6" : "ipv4");

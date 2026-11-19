@@ -73,6 +73,9 @@ export interface BrowserHostDeps {
   PORT: number;
   /** A Cloud home's way out through the person's own lent computer. */
   device?: EgressSetup["device"];
+  /** The room's engagement scope, asked by name for one conversation: a browser a turn holds may not reach a host the
+   * room's authorization does not cover. Absent on a build with no engagement scopes. */
+  engagementScope?: { outOfScope(botId: string, threadId: string, host: string): boolean };
   /** Why a turn may not use the person's lent computer (cloud-lending.ts plus the memory check), or null when it may.
    * Without it, no browser a turn holds may. */
   lendRefusal?(turn: TurnOwner): LendRefusal | null;
@@ -245,7 +248,14 @@ export function createBrowserHost(deps: BrowserHostDeps) {
   // workspace's network is the operator's, so its stored switch and allow-list are ignored, like MausBot Cloud's.
   const hostedServer = egressHost === "server" && Boolean(deps.HOSTED_WORKSPACE);
   const sitesSwitch = egressHost === "server" && !hostedServer;
-  browserEgress.configure({ host: egressHost, config: () => (hostedServer ? undefined : cfg.browserEngine?.egress), ...(device ? { device } : {}) });
+  // A room's engagement scope refuses a name its authorization does not cover. The turn holding the session names the
+  // conversation; a session no turn holds (an idle or person-started browser) has no room, so nothing is refused.
+  const outOfScope = (session: string, host: string): boolean => {
+    const turn = turnResources.holder(`browser:${session}`);
+    const botId = turn ? store.botByThread(turn.threadId)?.id : undefined;
+    return Boolean(botId && turn && deps.engagementScope?.outOfScope(botId, turn.threadId, host));
+  };
+  browserEgress.configure({ host: egressHost, config: () => (hostedServer ? undefined : cfg.browserEngine?.egress), outOfScope, ...(device ? { device } : {}) });
   /** A live bot's, profile's or temporary browser of this data dir, for any audience. */
   const belongs = (session: string) => isTemporaryBrowserSession(session) || audiences.variants().some((suffix) =>
     store.bots.some((bot) => browserSessionId(bot.id + suffix, "") === session)
