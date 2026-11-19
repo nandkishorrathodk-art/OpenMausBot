@@ -38,6 +38,9 @@ export interface EngagementFinding {
   status: FindingStatus;
   /** How it was shown: the command and its output, a request and its response, an artifact path. */
   evidence: string;
+  /** What makes `proven` true: the reproduction that a person can run again, kept apart from the narrative
+   * `evidence` so a claim cannot borrow a proven label from prose. Required while `status` is `proven`. */
+  proof?: string;
   detail?: string;
   reportedAt: number;
   updatedAt: number;

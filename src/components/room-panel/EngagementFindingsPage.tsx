@@ -68,6 +68,12 @@ function FindingRow({ finding }: { finding: EngagementFinding }) {
         <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.evidence")}</div>
         <ExpandableText text={finding.evidence} className="font-mono" />
       </div>
+      {finding.proof && (
+        <div className="text-[12px] leading-relaxed text-ink-secondary">
+          <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.proof")}</div>
+          <ExpandableText text={finding.proof} className="font-mono" />
+        </div>
+      )}
       {finding.detail && (
         <div className="text-[12px] leading-relaxed text-ink-secondary">
           <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.detail")}</div>

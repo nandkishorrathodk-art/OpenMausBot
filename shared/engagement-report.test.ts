@@ -12,6 +12,7 @@ const scope: EngagementScope = {
 const at = (finding: Partial<EngagementFinding> = {}): EngagementFinding => ({
   id: "f-1", target: "api.acme.test", title: "IDOR on invoices", severity: "critical", status: "proven",
   evidence: "GET /invoices/42 as another user returns their invoice",
+  proof: "GET /invoices/42 with the other user's session -> 200 with their invoice body",
   reportedAt: Date.UTC(2026, 10, 2), updatedAt: Date.UTC(2026, 10, 2), ...finding,
 });
 const report = (findings: EngagementFinding[], s: EngagementScope | null = scope) =>
@@ -60,6 +61,19 @@ describe("the engagement report", () => {
     expect(text).toContain("GET /invoices/42 as another user returns their invoice");
     expect(text).toContain("**Detail**");
     expect(text).toContain("Any authenticated user can read any invoice.");
+  });
+
+  it("prints the proof under the evidence, so the client can run it again", () => {
+    const text = report([at()]);
+    expect(text).toContain("**Proof**");
+    expect(text).toContain("GET /invoices/42 with the other user's session -> 200 with their invoice body");
+    expect(text.indexOf("**Evidence**")).toBeLessThan(text.indexOf("**Proof**"));
+  });
+
+  it("leaves the proof out for a finding that has none", () => {
+    const text = report([at({ status: "suspected", proof: undefined })]);
+    expect(text).toContain("**Evidence**");
+    expect(text).not.toContain("**Proof**");
   });
 
   it("shows an update time only once the finding has moved past its report", () => {

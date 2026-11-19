@@ -4908,6 +4908,7 @@
   "room.findings.status": "Situação",
   "room.findings.target": "Alvo",
   "room.findings.evidence": "Evidência",
+  "room.findings.proof": "Prova",
   "room.findings.detail": "Impacto e passos",
   "room.findings.reported": "Relatado {when}",
   "room.findings.updated": "Atualizado {when}",
