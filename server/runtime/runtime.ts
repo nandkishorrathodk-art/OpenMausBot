@@ -145,7 +145,7 @@ export class Runtime {
           this.touch(parent);
         }
       }
-      for (const n of this.store.all()) if (isTerminal(n) && n.reportedAt === undefined) this.reportDue.add(n.id);
+      for (const id of this.store.unreported()) this.reportDue.add(id);
     });
   }
 

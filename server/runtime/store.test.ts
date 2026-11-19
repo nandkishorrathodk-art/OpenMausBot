@@ -254,6 +254,19 @@ describe("runtime store: a root's cards and continuation", () => {
   });
 });
 
+describe("runtime store: unreported ids", () => {
+  it("names exactly the ended rows all() would report, and ignores the ones still running", () => {
+    const store = open();
+    store.insert(assignment("ended-unreported", { status: "completed", finishedAt: 1_100 }), { kind: "enqueued", at: 1_000 });
+    store.insert(assignment("ended-reported", { status: "failed", finishedAt: 1_100, reportedAt: 1_200 }), { kind: "enqueued", at: 1_000 });
+    store.insert(assignment("running", { status: "running", startedAt: 1_000 }), { kind: "enqueued", at: 1_000 });
+    store.insert(assignment("parked", { status: "needs_input" }), { kind: "enqueued", at: 1_000 });
+    expect(store.unreported().sort()).toEqual(["ended-unreported"]);
+    const fromAll = store.all().filter((n) => TERMINAL.includes(n.status) && n.reportedAt === undefined).map((n) => n.id);
+    expect(store.unreported().sort()).toEqual(fromAll.sort());
+  });
+});
+
 describe("runtime store: evidence fields and the loop guard", () => {
   it("round-trips okToolCalls, errors and outward on the evidence, and the guard record, and refuses the wrong shapes", () => {
     const store = open();

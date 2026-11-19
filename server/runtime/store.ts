@@ -95,6 +95,9 @@ export interface RuntimeStore {
   /** `openSince`: only rows not finished before that time. */
   all(filter?: { rootId?: string; nonTerminal?: boolean; ownerThreadId?: string; assignee?: { botId: string; threadId: string };
     assigneeThreadId?: string; roots?: boolean; openSince?: number }): Assignment[];
+  /** Ids of ended assignments whose report has not reached the requester. Answers from the row's own JSON, so it
+   * walks the table; it returns ids only, which is what makes it cheaper than reading every row through all(). */
+  unreported(): string[];
   insert(a: Assignment, event: { kind: EventKind; detail?: string; at?: number }): void;
   update(a: Assignment, event?: { kind: EventKind; detail?: string; at?: number }): void;
   /** Nested calls join the outer transaction (a savepoint inside it). */
@@ -240,6 +243,8 @@ export function openRuntimeStore(path: string): RuntimeStore {
 
   const statements = {
     get: db.prepare("SELECT id, json FROM assignments WHERE id = ?"),
+    unreported: db.prepare(`SELECT id FROM assignments WHERE status IN (${terminalList})
+      AND json_extract(json, '$.reportedAt') IS NULL`),
     children: db.prepare("SELECT id, json FROM assignments WHERE parent_id = ? ORDER BY created_at, rowid"),
     insert: db.prepare(`INSERT INTO assignments (id, root_id, parent_id, status, requester_thread_id, requester_run_id,
       assignee_bot_id, assignee_thread_id, created_at, finished_at, json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
@@ -326,6 +331,9 @@ export function openRuntimeStore(path: string): RuntimeStore {
       if (filter.openSince !== undefined) { where.push("(finished_at IS NULL OR finished_at >= ?)"); params.push(filter.openSince); }
       const sql = `SELECT id, json FROM assignments${where.length ? ` WHERE ${where.join(" AND ")}` : ""} ORDER BY created_at, rowid`;
       return timeBlocking("runtimeReads", () => (db.prepare(sql).all(...params) as Row[]).map(readAssignment));
+    },
+    unreported() {
+      return timeBlocking("runtimeReads", () => (statements.unreported.all() as Array<{ id: string }>).map((row) => row.id));
     },
     insert(a, event) {
       transaction(() => {

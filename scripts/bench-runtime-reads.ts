@@ -41,6 +41,7 @@ for (const rows of sizes.length ? sizes : [1_809, 5_000, 20_000, 50_000]) {
         store.insert(a, { kind: "enqueued", at });
       }
     });
+    const unreportedMs = median(() => store.unreported());
     store.close();
     const coordinator = createCoordinator({ dataDir: directory, host, log: () => {} });
     const threadId = "thread-0";
@@ -56,7 +57,7 @@ for (const rows of sizes.length ? sizes : [1_809, 5_000, 20_000, 50_000]) {
     const at = performance.now();
     for (let bot = 0; bot < BOTS; bot++) coordinator.newestRoot(`thread-${bot}`, [`root-${rows - 1 - bot}`]);
     const settle34Ms = Number((performance.now() - at).toFixed(3));
-    console.log(JSON.stringify({ rows, found, fullReadMs, fullRead34Ms: Math.round(fullReadMs * BOTS), newestRootMs, settle34Ms, openInThreadMs, sinceInThreadMs, activeMs }));
+    console.log(JSON.stringify({ rows, found, fullReadMs, fullRead34Ms: Math.round(fullReadMs * BOTS), unreportedMs, newestRootMs, settle34Ms, openInThreadMs, sinceInThreadMs, activeMs }));
     coordinator.close();
   } finally {
     rmSync(directory, { recursive: true, force: true });
