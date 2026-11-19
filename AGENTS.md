@@ -174,3 +174,18 @@ sees comes from `PRODUCT_NAME` in `src/lib/brand.ts`. Check the payload with
 `7za l release/*-setup.exe` (it is an NSIS archive) before publishing. The build
 is unsigned, so Windows SmartScreen warns on first run.
 
+
+## Performance work
+
+Measure before changing, with the bench that already covers the path:
+`pnpm bench:runtime-reads`, `bench:persistence`, `bench:registry`,
+`bench:today`, `bench:observation`, `bench:browser-stream`, `bench:desktop`.
+`bench:persistence` measures the synchronous search path by default; pass
+`--worker` for the one production uses (`searchMessagesAsync`).
+
+Reject an index that adds work to every write to speed up a read that runs once.
+`json_extract(json, ...)` in an index predicate is re-evaluated on each update,
+so a partial index over it doubled `assignments` writes (0.0053 ms to 0.0133 ms
+p50) to save 126 ms on a boot read. The boot path runs once and the writes run
+all day, so the read stayed a scan and returns ids only
+(`RuntimeStore.unreported()`).
