@@ -2062,7 +2062,7 @@
     },
     {
       "name": "skill_manage",
-      "description": "Create or update a reusable skill (SKILL.md), or turn one of your own skills on or off, or delete it. Never change a skill unless the person explicitly asked for that named skill. It applies at once, with an Undo where possible: read the result before saying it did. It never raises another operator's execution permissions.",
+      "description": "Create or update a reusable skill (SKILL.md), or turn one of your own skills on or off, or delete it. Never change a skill you did not learn yourself unless the person explicitly asked for that named skill; revise your own method whenever a later target shows it wrong. It applies at once, with an Undo where possible: read the result before saying it did. It never raises another operator's execution permissions.",
       "inputSchema": {
         "type": "object",
         "additionalProperties": false,

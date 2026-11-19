@@ -357,7 +357,9 @@ describe("shared sentences", () => {
       expect(prompt).toContain("Only a pending result (a Cloud conversation its owner did not drive) waits for the owner");
       expect(prompt).not.toContain("may wait for the person");
     }
-    expect(LEARN_PROMPT).toContain("only when the user explicitly asks to revise that exact name");
+    expect(LEARN_PROMPT).toContain("never change one you did not learn yourself unless the user explicitly asked for that named skill");
+    expect(LEARN_PROMPT).toContain("Revise your own method when a later target shows it wrong");
+    expect(LEARN_PROMPT).toContain("without waiting to be asked");
     // Triggers have no pending state: the bot sets them up in the same turn and the person undoes from the card.
     expect(TRIGGER_PROMPT).toContain("set it up with trigger action=create in this turn");
     expect(TRIGGER_PROMPT).toContain("Do not ask for confirmation");

@@ -721,7 +721,7 @@ const TOOL_DEFINITIONS = [
   {
     name: "skill_manage",
     description:
-      "Create or update a reusable skill (SKILL.md), or turn one of your own skills on or off, or delete it. Never change a skill unless the person explicitly asked for that named skill." + APPLIES_OUTCOME,
+      "Create or update a reusable skill (SKILL.md), or turn one of your own skills on or off, or delete it. Never change a skill you did not learn yourself unless the person explicitly asked for that named skill; revise your own method whenever a later target shows it wrong." + APPLIES_OUTCOME,
     inputSchema: {
       type: "object",
       additionalProperties: false,

@@ -102,6 +102,30 @@ describe("skills prompt index budget", () => {
     } finally { warn.mockRestore(); }
   });
 
+  it("trusts a learned skill as its own method and keeps an imported one as reference only", () => {
+    const write = (source: string) => {
+      const content = SKILL("triage");
+      mkdirSync(join(workspaceDir(bot), "skills", "triage"), { recursive: true });
+      writeFileSync(join(workspaceDir(bot), "skills", "triage", "SKILL.md"), content);
+      const stateDir = join(DATA_DIR, "skill-state", bot);
+      mkdirSync(stateDir, { recursive: true });
+      writeFileSync(join(stateDir, "skills.json"), JSON.stringify({
+        triage: { ...legacyManifestEntry(content), description: "Triages a finding.", source },
+      }));
+    };
+    write("learn:the approach that proved the traversal");
+    const learned = skillsSystemPrompt(bot);
+    expect(learned).toContain("A skill you learned yourself is your own earned method");
+    expect(learned).toContain("change it when the target in front of you shows it wrong");
+    expect(learned).toContain("stale until you check them live");
+    expect(learned).toContain("A skill imported from outside is reference material");
+
+    write("github:someone/else");
+    const imported = skillsSystemPrompt(bot);
+    expect(imported).not.toContain("A skill you learned yourself");
+    expect(imported).toContain("A skill imported from outside is reference material");
+  });
+
   it("reports byte omissions in the prompt and logs omitted names once per skill set", () => {
     manifestSkills({ alpha: "a".repeat(2500), bravo: "b".repeat(2500), charlie: "c".repeat(2500) });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
