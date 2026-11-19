@@ -13059,7 +13059,7 @@ const handleRequest = async (req: IncomingMessage, res: ServerResponse) => {
           cfg, signal: abort.signal, folder: () => messageFileRootsForThread(internalCapability.botId, internalCapability.threadId)[0],
           boxId: () => internalCapability.boxId ?? claimedBoatId(internalCapability),
           gate: () => computerCallGate(internalCapability, abort.signal),
-          assertActive: requireActiveInternalCapability, recovery: boatRecovery, disk: cloudComputerDisk, settled: (answered) => runComputers.callSettled(internalCapability.botId, internalCapability.threadId, answered),
+          assertActive: requireActiveInternalCapability, recovery: boatRecovery, disk: cloudComputerDisk, settled: (answered) => runComputers.callSettled(internalCapability.botId, internalCapability.threadId, answered), scopeOf: (name, args) => commandScope.call(internalCapability.botId, internalCapability.threadId, name, args),
         }) });
       }
       // DuckDB runs here on the bot's own database; the agent process holds only the turn's capability.

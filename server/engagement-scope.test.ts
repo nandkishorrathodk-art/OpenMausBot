@@ -277,4 +277,31 @@ describe("command scope", () => {
     commandScope.refusal("member", "room-a", "curl https://evil.test/");
     expect(seen).toEqual([{ roomId: "room-a", reason: "targets", command: "curl https://evil.test/" }]);
   });
+
+  describe("a desktop call", () => {
+    it("reads exec's command and open_url's address, the two that name a host", () => {
+      const { scopes, commandScope } = fixture();
+      scopes.set("room-a", { targets: ["example.com"] });
+      expect(commandScope.call("member", "room-a", "exec", { command: "curl https://evil.test/" })).toContain("evil.test");
+      expect(commandScope.call("member", "room-a", "open_url", { url: "https://evil.test/" })).toContain("evil.test");
+      expect(commandScope.call("member", "room-a", "exec", { command: "curl https://example.com/" })).toBeNull();
+      expect(commandScope.call("member", "room-a", "open_url", { url: "https://example.com/" })).toBeNull();
+    });
+
+    it("says nothing about a click, a screenshot or a keystroke, which name no host", () => {
+      const { scopes, commandScope } = fixture();
+      scopes.set("room-a", { targets: ["example.com"] });
+      for (const name of ["click", "screenshot", "move", "drag", "type_text", "key_press", "scroll", "get_screen_size"]) {
+        expect(commandScope.call("member", "room-a", name, { x: 1, y: 2, text: "curl https://evil.test/" })).toBeNull();
+      }
+    });
+
+    it("records the refusal the same way a command's is recorded, so the room sees what was reached for", () => {
+      const { scopes, commandScope } = fixture();
+      scopes.set("room-a", { targets: ["example.com"] });
+      commandScope.call("member", "room-a", "open_url", { url: "https://evil.test/" });
+      expect(scopes.get("room-a")?.targets).toEqual(["example.com"]);
+      expect(commandScope.call("stranger", "room-a", "open_url", { url: "https://evil.test/" })).toBeNull();
+    });
+  });
 });

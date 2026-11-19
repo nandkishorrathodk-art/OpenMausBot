@@ -376,20 +376,31 @@ export function createCommandScope(deps: {
   /** Every refusal, at the one place commands are checked, so the room's surface can show what the team reached for. */
   onRefusal?(roomId: string, check: ScopeRefusal, command: string): void;
 }) {
+  /** Why a command from `botId` may not run, or null. Only ever refuses; a room without a scope is unchecked. */
+  const refusal = (botId: string, threadId: string, command: string): string | null => {
+    const room = deps.roomOfThread(botId, threadId);
+    const scope = room ? deps.scopes.get(room.id) : null;
+    if (!scope) return null;
+    const verdict = checkCommand(scope, command);
+    if (verdict.ok) return null;
+    if (room) deps.onRefusal?.(room.id, verdict, command);
+    return scopeRefusalText(verdict, scope);
+  };
   return {
     /** The line a room's members read; false when the room holds no authorization. */
     prompt(groupId: string): string | false {
       return scopePrompt(deps.scopes.get(groupId));
     },
-    /** Why a command from `botId` may not run, or null. Only ever refuses; a room without a scope is unchecked. */
-    refusal(botId: string, threadId: string, command: string): string | null {
-      const room = deps.roomOfThread(botId, threadId);
-      const scope = room ? deps.scopes.get(room.id) : null;
-      if (!scope) return null;
-      const verdict = checkCommand(scope, command);
-      if (verdict.ok) return null;
-      if (room) deps.onRefusal?.(room.id, verdict, command);
-      return scopeRefusalText(verdict, scope);
+    refusal,
+    /**
+     * Why a desktop call from `botId` may not reach the host it names, or null. Only the arguments that carry a
+     * destination are read: `exec`'s command and `open_url`'s address. Every other desktop action, a click included,
+     * names no host, so a room's scope cannot speak to it.
+     */
+    call(botId: string, threadId: string, name: unknown, args: unknown): string | null {
+      const field = name === "exec" ? "command" : name === "open_url" ? "url" : null;
+      const value = field === null ? null : (args as Record<string, unknown> | null | undefined)?.[field];
+      return typeof value === "string" ? refusal(botId, threadId, value) : null;
     },
   };
 }
