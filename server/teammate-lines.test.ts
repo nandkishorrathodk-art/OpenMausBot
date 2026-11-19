@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createGoalCards } from "./host/goal-cards.ts";
 import { sentRow, teammateResultRow, WAIT_CARD_CLOSED_REASON } from "./host/handoff-sent.ts";
 import { briefCrossingLabel, recallCrossingLabel } from "./recall-disclosure.ts";
+import { DEFAULT_ROOM_GOAL_MAX_TURNS } from "./room-config.ts";
 import "./server-line-packs.ts";
 import { serverLine, setConversationLanguage } from "./server-lines.ts";
 import type { Message } from "./store.ts";
@@ -73,7 +74,7 @@ describe("what a conversation shows about a teammate's work", () => {
       messagesFor: () => lines,
       patchMessage: (_threadId: string, id: string, patch: Partial<Message>) => { const line = lines.find((one) => one.id === id)!; Object.assign(line, patch); return line; },
     };
-    const goals = createGoalCards({ store: store as never, routines: () => null, notify: () => {}, routineSourceOwner: () => null, routineSourceThread: () => null });
+    const goals = createGoalCards({ store: store as never, routines: () => null, notify: () => {}, routineSourceOwner: () => null, routineSourceThread: () => null, goalMaxTurns: () => DEFAULT_ROOM_GOAL_MAX_TURNS });
     const run = goals.start("room", biber, "Ship the release", "run-1");
     expect(lines[0]!.text).toBe("Ziel in Arbeit: Biber koordiniert dieses Ziel.");
     expect(lines[0]!.goalRun?.detail).toBe("Biber koordiniert dieses Ziel.");

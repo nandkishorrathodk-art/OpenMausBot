@@ -6,7 +6,7 @@ import { defaultBotThreads, MAX_CONCURRENT_BOT_THREADS } from "../bot-thread-lim
 import { isClaudeBedrock } from "../claude-bedrock.ts";
 import { isClaudeEndpoint } from "../claude-endpoints.ts";
 import { isCodexEndpoint } from "../codex-endpoints.ts";
-import { MAX_MCP_CALL_TIMEOUT_MINUTES, MAX_ROOM_TURN_TIMEOUT_MINUTES, mcpCallTimeoutMinutes, MIN_MCP_CALL_TIMEOUT_MINUTES, MIN_ROOM_TURN_TIMEOUT_MINUTES, persistableInstanceConfigs, roomTurnTimeoutMinutes, type AppConfig } from "../config.ts";
+import { MAX_MCP_CALL_TIMEOUT_MINUTES, MAX_ROOM_GOAL_MAX_TURNS, MAX_ROOM_TURN_TIMEOUT_MINUTES, mcpCallTimeoutMinutes, MIN_MCP_CALL_TIMEOUT_MINUTES, MIN_ROOM_GOAL_MAX_TURNS, MIN_ROOM_TURN_TIMEOUT_MINUTES, persistableInstanceConfigs, roomGoalMaxTurns, roomTurnTimeoutMinutes, type AppConfig } from "../config.ts";
 import type { InstanceConfig } from "../contracts.ts";
 import { BUILT_IN_DRIVERS } from "../drivers/builtIn.ts";
 import type { ProviderRegistry } from "../harness/registry.ts";
@@ -220,6 +220,11 @@ export function createSettingsRegistry(deps: RegistryDeps): SettingEntry[] {
       id: "rooms.turnTimeoutMinutes", label: "Room turn timeout", help: "Minutes a bot's turn in a room may run before it is stopped.", where: "group-turns",
       synonyms: ["room", "channel", "timeout", "turn limit"], value: z.number().int().min(MIN_ROOM_TURN_TIMEOUT_MINUTES).max(MAX_ROOM_TURN_TIMEOUT_MINUTES), allowed: `${MIN_ROOM_TURN_TIMEOUT_MINUTES} to ${MAX_ROOM_TURN_TIMEOUT_MINUTES} minutes`,
       current: () => roomTurnTimeoutMinutes(cfg()), write: config((turnTimeoutMinutes: number) => ({ rooms: { turnTimeoutMinutes } })),
+    }),
+    writable({
+      id: "rooms.goalMaxTurns", label: "Goal run turn budget", help: "Turns one goal run may spend before it pauses; each turn is one member reply, and the budget must be odd so the last turn decides completion.", where: "group-turns",
+      synonyms: ["goal", "goal turns", "turn budget", "turn limit", "run limit"], value: z.number().int().min(MIN_ROOM_GOAL_MAX_TURNS).max(MAX_ROOM_GOAL_MAX_TURNS).refine((turns) => turns % 2 === 1, { message: "must be odd" }), allowed: `${MIN_ROOM_GOAL_MAX_TURNS} to ${MAX_ROOM_GOAL_MAX_TURNS} turns, odd`,
+      current: () => roomGoalMaxTurns(cfg()), write: config((goalMaxTurns: number) => ({ rooms: { goalMaxTurns } })),
     }),
     writable({
       id: "mcp.callTimeoutMinutes", label: "MCP call timeout", help: "Minutes one MCP tool call may run.", where: "limits",

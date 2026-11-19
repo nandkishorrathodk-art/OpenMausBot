@@ -34,6 +34,8 @@ import { browserEngineConfigSchema, isValidCdpTarget, type BrowserEngineConfig }
 import { roomContextSettings } from "./room-context-settings.ts"; import { usageCapsSchema, type UsageCapsConfig } from "./usage-caps-config.ts";
 import { localVmConfigSchema } from "./local-vm-settings.ts";
 export * from "./local-vm-settings.ts";
+import { roomConfigSchema, roomPatchSchema } from "./room-config.ts";
+export * from "./room-config.ts";
 
 const optionalText = z.string().optional();
 const SSH_ALIAS = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$/;
@@ -44,9 +46,6 @@ const BROWSER_PROFILE_ID = /^[a-z0-9_-]{1,40}$/;
 export const FISH_TTS_MODELS = ["s2.1-pro", "s2.1-pro-free"] as const;
 export type FishTtsModel = (typeof FISH_TTS_MODELS)[number];
 
-export const DEFAULT_ROOM_TURN_TIMEOUT_MINUTES = 5;
-export const MIN_ROOM_TURN_TIMEOUT_MINUTES = 1;
-export const MAX_ROOM_TURN_TIMEOUT_MINUTES = 1_440;
 export const DEFAULT_MCP_CALL_TIMEOUT_MINUTES = 10;
 export const MIN_MCP_CALL_TIMEOUT_MINUTES = 1;
 export const MAX_MCP_CALL_TIMEOUT_MINUTES = 60;
@@ -73,13 +72,6 @@ export function normalizeVpsConfig(raw: unknown): { sshAlias?: string } {
 
 const vpsConfigSchema = z.object({
   sshAlias: z.string().refine((value) => value === "" || isValidSshAlias(value), { message: "must be a simple SSH config alias" }).optional(),
-});
-const roomConfigSchema = z.object({
-  turnTimeoutMinutes: z
-    .number()
-    .int()
-    .min(MIN_ROOM_TURN_TIMEOUT_MINUTES)
-    .max(MAX_ROOM_TURN_TIMEOUT_MINUTES),
 });
 const mcpConfigSchema = z.object({
   /** Minutes one bot MCP tool call may run; default 10. */
@@ -428,7 +420,7 @@ const storedAppConfigSchema = appConfigSchema.extend(helperStoredShape).extend({
   }).optional(),
 });
 const appConfigPatchSchema = appConfigSchema.omit({ instances: true, mcpServers: true, cliStartup: true, customDomain: true })
-  .extend({ threads: threadsPatchSchema.optional(), newBots: newBotsPatchSchema.optional(), imageGen: imageGenPatchSchema.optional() }); export const CONFIG_PATCH_FIELDS = appConfigPatchSchema.shape;
+  .extend({ threads: threadsPatchSchema.optional(), newBots: newBotsPatchSchema.optional(), imageGen: imageGenPatchSchema.optional(), rooms: roomPatchSchema.optional() }); export const CONFIG_PATCH_FIELDS = appConfigPatchSchema.shape;
 const jsonObjectSchema = z.record(z.string(), z.json());
 
 export interface AppConfig extends HelperConfig {
@@ -478,7 +470,7 @@ export interface AppConfig extends HelperConfig {
   imageGen?: ImageGenerationConfig;
   live?: LiveConfig;
   profile?: { name?: string; email?: string; aboutMe?: string; avatarUrl?: string }; everyBotRules?: string;
-  rooms?: { turnTimeoutMinutes: number };
+  rooms?: { turnTimeoutMinutes?: number; goalMaxTurns?: number };
   mcp?: { callTimeoutMinutes?: number };
   threads?: { maxConcurrentPerBot: number; eventLogMaxBytes?: number; eventLogRetentionDays?: number }; burst?: { maxParallel?: number };
   context?: { rebuildBytes?: number; compactAt?: number; autoCompact?: boolean; roomCompactAt?: number; roomSessions?: boolean; replayToolHistory?: boolean };
@@ -590,10 +582,6 @@ export function vpsSshAlias(cfg: AppConfig): string | null {
 /** Revalidated because the value is forwarded into a child process environment. */
 export function browserEngineAttachCdpUrl(cfg: AppConfig): string | null {
   return isValidCdpTarget(cfg.browserEngine?.attachCdpUrl) ? cfg.browserEngine.attachCdpUrl : null;
-}
-
-export function roomTurnTimeoutMinutes(cfg: AppConfig): number {
-  return cfg.rooms?.turnTimeoutMinutes ?? DEFAULT_ROOM_TURN_TIMEOUT_MINUTES;
 }
 
 export function mcpCallTimeoutMinutes(cfg: AppConfig): number {
@@ -890,10 +878,11 @@ export function onConfigSaved(listener: (before: JsonObject, after: JsonObject) 
 
 /** Secrets are never echoed back; callers report configured-or-not only. */
 export function saveConfig(
-  patch: Partial<Omit<AppConfig, "threads" | "newBots" | "imageGen">> & {
+  patch: Partial<Omit<AppConfig, "threads" | "newBots" | "imageGen" | "rooms">> & {
     threads?: z.output<typeof threadsPatchSchema>;
     newBots?: z.output<typeof newBotsPatchSchema>;
     imageGen?: z.output<typeof imageGenPatchSchema>;
+    rooms?: z.output<typeof roomPatchSchema>;
   },
   options: { replaceInstances?: boolean } = {},
 ): void {
@@ -901,7 +890,7 @@ export function saveConfig(
   const read = readConfigFile(p);
   if (read.state === "unreadable" || read.state === "invalid") throw configSaveRefusal(read, p);
   const disk: JsonObject = read.state === "ok" ? read.value : {};
-  const checkedPatch = appConfigSchema.partial().extend({ threads: threadsPatchSchema.optional(), newBots: newBotsPatchSchema.optional(), imageGen: imageGenPatchSchema.optional() }).parse(patch);
+  const checkedPatch = appConfigSchema.partial().extend({ threads: threadsPatchSchema.optional(), newBots: newBotsPatchSchema.optional(), imageGen: imageGenPatchSchema.optional(), rooms: roomPatchSchema.optional() }).parse(patch);
   const before = configSaveListeners.size ? structuredClone(disk) : disk;
   const keepImageModels = keepKeysOutOfImageModels(disk, checkedPatch.imageGen);
   const storedProfiles = storedBrowserProfilesSchema.safeParse(disk.browserProfiles);

@@ -25,6 +25,10 @@ import { cacheUntilConfigChanges,
   parseConfigPatch,
   parseStoredConfig,
   persistableInstanceConfigs,
+  DEFAULT_ROOM_GOAL_MAX_TURNS,
+  MAX_ROOM_GOAL_MAX_TURNS,
+  MIN_ROOM_GOAL_MAX_TURNS,
+  roomGoalMaxTurns,
   roomTurnTimeoutMinutes,
   mcpCallTimeoutMinutes,
   threadEventLogMaxBytes,
@@ -573,6 +577,22 @@ describe("configuration boundaries", () => {
       );
     },
   );
+
+  it("accepts a persisted goal turn budget only when it is odd, and reads it back with the default", () => {
+    expect(parseConfigPatch({ rooms: { goalMaxTurns: 25 } })).toEqual({ rooms: { goalMaxTurns: 25 } });
+    expect(parseStoredConfig({ rooms: { turnTimeoutMinutes: 5, goalMaxTurns: 25 } })).toEqual({
+      rooms: { turnTimeoutMinutes: 5, goalMaxTurns: 25 },
+    });
+    expect(roomGoalMaxTurns({ rooms: { turnTimeoutMinutes: 5, goalMaxTurns: 25 } })).toBe(25);
+    expect(roomGoalMaxTurns({})).toBe(DEFAULT_ROOM_GOAL_MAX_TURNS);
+    expect(roomGoalMaxTurns({}, { OMB_ROOM_GOAL_MAX_TURNS: "41" })).toBe(41);
+    expect(roomGoalMaxTurns({ rooms: { goalMaxTurns: 25 } }, { OMB_ROOM_GOAL_MAX_TURNS: "nope" })).toBe(25);
+    expect(roomGoalMaxTurns({}, { OMB_ROOM_GOAL_MAX_TURNS: "1000" })).toBe(MAX_ROOM_GOAL_MAX_TURNS);
+    expect(roomGoalMaxTurns({}, { OMB_ROOM_GOAL_MAX_TURNS: "2" })).toBe(MIN_ROOM_GOAL_MAX_TURNS);
+    expect(roomGoalMaxTurns({}, { OMB_ROOM_GOAL_MAX_TURNS: "40" })).toBe(39);
+    expect(() => parseConfigPatch({ rooms: { goalMaxTurns: 24 } })).toThrow("rooms.goalMaxTurns");
+    expect(() => parseConfigPatch({ rooms: { goalMaxTurns: 2 } })).toThrow("rooms.goalMaxTurns");
+  });
 
   it("accepts a persisted MCP call timeout and supplies the legacy default", () => {
     expect(parseStoredConfig({ mcp: { callTimeoutMinutes: 30 } })).toEqual({

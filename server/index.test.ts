@@ -9180,7 +9180,7 @@ describe("harness HTTP API", () => {
   it("validates and persists the global room turn timeout", async () => {
     const before = await api("GET", "/api/config");
     expect(before.status).toBe(200);
-    expect(before.body.rooms).toEqual({ turnTimeoutMinutes: 5 });
+    expect(before.body.rooms).toEqual({ turnTimeoutMinutes: 5, goalMaxTurns: 13 });
 
     for (const turnTimeoutMinutes of [0, 1.5, 1441, "20", null]) {
       const invalid = await api("PUT", "/api/config", { rooms: { turnTimeoutMinutes } });
@@ -9190,15 +9190,33 @@ describe("harness HTTP API", () => {
 
     const saved = await api("PUT", "/api/config", { rooms: { turnTimeoutMinutes: 20 } });
     expect(saved.status).toBe(200);
-    expect(saved.body.rooms).toEqual({ turnTimeoutMinutes: 20 });
+    expect(saved.body.rooms).toEqual({ turnTimeoutMinutes: 20, goalMaxTurns: 13 });
 
     const after = await api("GET", "/api/config");
-    expect(after.body.rooms).toEqual({ turnTimeoutMinutes: 20 });
+    expect(after.body.rooms).toEqual({ turnTimeoutMinutes: 20, goalMaxTurns: 13 });
 
     const disk = JSON.parse(readFileSync(join(home, ".openmausbot", "config.json"), "utf8"));
     expect(disk.rooms).toEqual({ turnTimeoutMinutes: 20 });
 
     await api("PUT", "/api/config", { rooms: { turnTimeoutMinutes: 5 } });
+  });
+
+  it("saves a goal run's turn budget beside the room timeout without clearing it", async () => {
+    for (const goalMaxTurns of [2, 24, 202, 1.5, "25", null]) {
+      const invalid = await api("PUT", "/api/config", { rooms: { goalMaxTurns } });
+      expect(invalid.status).toBe(400);
+      expect(invalid.body.error).toContain("rooms.goalMaxTurns");
+    }
+
+    const saved = await api("PUT", "/api/config", { rooms: { goalMaxTurns: 25 } });
+    expect(saved.status).toBe(200);
+    expect(saved.body.rooms).toEqual({ turnTimeoutMinutes: 5, goalMaxTurns: 25 });
+
+    // Only what the patch named is written; the room timeout stays unset and reads as its default.
+    const disk = JSON.parse(readFileSync(join(home, ".openmausbot", "config.json"), "utf8"));
+    expect(disk.rooms).toEqual({ goalMaxTurns: 25 });
+
+    await api("PUT", "/api/config", { rooms: { goalMaxTurns: 13 } });
   });
 
   it("cards asks when Claude's reviewer never started and remembers an exact configured MCP read", async () => {

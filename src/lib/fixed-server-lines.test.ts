@@ -282,7 +282,7 @@ describe("goal detail receipts", () => {
       patchMessage: (_thread: string, _id: string, patch: Partial<Message>) => { message = { ...message!, ...patch }; },
       bot: () => undefined,
     };
-    const cards = createGoalCards({ store, routines: () => null, notify: vi.fn(), routineSourceOwner: () => null, routineSourceThread: () => null } as unknown as GoalCardDeps);
+    const cards = createGoalCards({ store, routines: () => null, notify: vi.fn(), routineSourceOwner: () => null, routineSourceThread: () => null, goalMaxTurns: () => 13 } as unknown as GoalCardDeps);
     const run = cards.start("t", { id: "b", name: "Scout", color: "teal" }, "Test", "run");
     const waiting = noticeFailure("chat.notice.goalWaiting", { name: "Scout" });
     cards.progress("t", run, waiting.message, waiting.text);

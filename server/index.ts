@@ -157,7 +157,7 @@ import {
   localVmMaxInstances,
   localVmMode,
   localVmPreservesInstalledApps, localVmResources,
-  roomTurnTimeoutMinutes,
+  roomTurnTimeoutMinutes, roomGoalMaxTurns,
   mcpCallTimeoutMinutes,
   cacheKeepWarmSettings,
   threadEventLogMaxBytes,
@@ -3532,7 +3532,7 @@ function activeGroupSpeaker(groupId: string): { botId: string; name: string; col
 }
 
 const goalTurns = createGoalTurns({ retireProviderTurn });
-const goalCards = createGoalCards({ store, routines: () => routines, notify, routineSourceOwner, routineSourceThread });
+const goalCards = createGoalCards({ store, routines: () => routines, notify, routineSourceOwner, routineSourceThread, goalMaxTurns: () => roomGoalMaxTurns(cfg) });
 const oneOnOneGoals = createOneOnOneGoals({
   store, cards: goalCards, turns: goalTurns, canStart: (botId, threadId) => canAdmitDirectTurn(botId, threadId) && !threadsAwaitingTeammates().has(threadId), startTurn, isUnattended,
 });
@@ -11697,7 +11697,7 @@ function configStatus() {
     managedPolicy: managedPolicy.summary(),
     ...(CLOUD_HOME ? { cloudHome: true } : {}), ...(CLOUD_TEAM ? { team: { id: CLOUD_TEAM.id, name: CLOUD_TEAM.name, ...(CLOUD_HOME ? { cloudPage: `${CLOUD_HOME.adminOrigin}/cloud` } : {}) } } : {}),
     language: appLanguage() ?? "", computerName: cfg.computerName ?? "", everyBotRules: cfg.everyBotRules ?? "",
-    rooms: { turnTimeoutMinutes: roomTurnTimeoutMinutes(cfg) },
+    rooms: { turnTimeoutMinutes: roomTurnTimeoutMinutes(cfg), goalMaxTurns: roomGoalMaxTurns(cfg) },
     mcp: { callTimeoutMinutes: mcpCallTimeoutMinutes(cfg) },
     automaticRecovery: cfg.automaticRecovery ?? { enabled: false },
     cacheKeepWarm: cacheKeepWarmSettings(cfg),

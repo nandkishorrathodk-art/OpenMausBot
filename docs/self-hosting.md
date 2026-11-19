@@ -1660,6 +1660,19 @@ turn's tools runs, the turn may show nothing for up to 60 minutes (the longest
 an MCP call can be set to take) or the room's limit if that is longer. These two
 settings do not change it.
 
+### How many turns one goal may take
+
+A goal run stops after a fixed number of turns and marks its card `limit-reached`
+so the work resumes with a person's word rather than running unattended forever.
+`rooms.goalMaxTurns` in `config.json` sets that number, and
+`OMB_ROOM_GOAL_MAX_TURNS` in the server's environment overrides it. Both take a
+whole number from 3 to 201, and it must be odd: the last turn always falls to the
+coordinator, which alone decides whether the goal is done. A value that is even
+is rounded down, and one outside the range is clamped, so a run can never lose
+that final decision. The default is 13. Raise it when a goal legitimately needs
+more turns; each turn is one member's full reply, so the cost of a run grows with
+it. A setting saved in the app applies to the next goal, without a restart.
+
 ## Keeping unattended bots from spending on failures
 
 Work that nobody is watching (a routine, an event, work one bot hands to
