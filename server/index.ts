@@ -6272,7 +6272,7 @@ async function localVmInventoryPayload() {
 
 const usageTrace = createTraceRecorder({ dataDir: DATA_DIR });
 bus.subscribe((event: RuntimeEvent) => { if (!shouldIgnoreProviderEvent(event)) usageTrace.observe(event); });
-bus.subscribe((event: RuntimeEvent) => {
+bus.subscribe((event: RuntimeEvent) => batchSaves(() => {
   if (shouldIgnoreProviderEvent(event)) return;
   const localVmTarget = localVmThreadTargets.get(event.threadId);
   if (localVmTarget) {
@@ -6856,7 +6856,7 @@ bus.subscribe((event: RuntimeEvent) => {
       break;
     }
   }
-});
+}));
 
 function openPersonCard(threadId: string) { return personWaits.open(threadId); }
 
