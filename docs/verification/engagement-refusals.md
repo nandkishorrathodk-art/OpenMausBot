@@ -14,7 +14,15 @@ command outside the window, is refused with a line that names the host and
 restates the scope. Loopback is never part of a scope.
 
 This is a heuristic on command text, not a sandbox. It is the record of what a
-team reached for, not the only thing between a bot and a network.
+team reached for. It is not a wall around a network, and it does not become one:
+a bot that opens a browser and clicks through a page reaches a host no command
+text named, and nothing here sees that.
+
+The same check guards the two desktop calls that name a host, `exec` and
+`open_url`, through `createCommandScope.call`. Every other desktop action, a
+click included, is a point on a screen with no host in it, so the scope cannot
+speak to it. A Local VM's desktop runs its commands through `vm_exec`, which the
+command check already covers.
 
 ## What an asset records
 

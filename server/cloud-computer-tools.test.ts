@@ -437,4 +437,56 @@ describe("cloud computer tools", () => {
       expect(second.content).toHaveLength(1);
     });
   });
+
+  describe("a call a room's scope turns away", () => {
+    /** What the routes hand the RPC: one refusal per call, the same one `vm_exec` reads. */
+    const scoped = (why: (name: unknown, args: unknown) => string | null) => {
+      let asked = 0;
+      let gated = 0;
+      const done = tools.cloudComputerRpc({ method: "tools/call", params: { name: "exec", arguments: { command: "curl https://elsewhere.test" } } }, {
+        cfg, boxId: () => "bx_23456789", signal: new AbortController().signal,
+        gate: async () => { gated++; return { held: false }; },
+        assertActive: () => {},
+        scopeOf: (name, args) => { asked++; return why(name, args); },
+      });
+      return { done, asked: () => asked, gated: () => gated };
+    };
+
+    it("refuses the call before the gate runs and before anything reaches the Boat", async () => {
+      const before = calls.length;
+      const call = scoped(() => "That host is outside this room's scope.");
+      const result = await call.done as { isError?: boolean; content: Array<{ text: string }> };
+      expect(result.isError).toBe(true);
+      expect(result.content[0]!.text).toBe("That host is outside this room's scope.");
+      expect(call.asked()).toBe(1);
+      // Nothing was woken, claimed or sent: a refusal acts on no computer.
+      expect(call.gated()).toBe(0);
+      expect(calls.length).toBe(before);
+    });
+
+    it("checks exec by its command and open_url by its address, and a click by nothing at all", async () => {
+      const seen: Array<[unknown, unknown]> = [];
+      const rpc = (name: string, args: Record<string, unknown>) => tools.cloudComputerRpc({ method: "tools/call", params: { name, arguments: args } }, {
+        cfg, boxId: () => "bx_23456789", signal: new AbortController().signal,
+        gate: async () => ({ held: false }), assertActive: () => {},
+        scopeOf: (kind, given) => { seen.push([kind, given]); return null; },
+      });
+      await rpc("click", { x: 4, y: 9 });
+      await rpc("screenshot", {});
+      await rpc("open_url", { url: "https://app.example.com/login" });
+      expect(seen).toEqual([
+        ["click", { x: 4, y: 9 }],
+        ["screenshot", {}],
+        ["open_url", { url: "https://app.example.com/login" }],
+      ]);
+    });
+
+    it("lets a call through when the scope says nothing about it", async () => {
+      const call = scoped(() => null);
+      const result = await call.done as { isError?: boolean };
+      expect(call.asked()).toBe(1);
+      expect(result.isError).toBeFalsy();
+      expect(call.gated()).toBe(1);
+    });
+  });
 });
