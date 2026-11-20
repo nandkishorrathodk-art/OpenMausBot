@@ -7,11 +7,17 @@ import type { EngagementFindingsStore } from "../engagement.ts";
 import type { json as sendJson } from "../harness/http.ts";
 import type { GroupRecord } from "../store.ts";
 import { PASS } from "./table.ts";
+import { replayProof } from "../engagement-replay.ts";
+import type { EngagementScope } from "../../shared/engagement.ts";
 
 export interface EngagementFindingInternalDeps {
-  findings: Pick<EngagementFindingsStore, "list" | "record" | "patch">;
+  findings: Pick<EngagementFindingsStore, "list" | "record" | "patch" | "recordReplay">;
   /** The room a conversation answers to, or null outside one. */
   roomOf(botId: string, threadId: string): GroupRecord | null;
+  /** The room's authorization: a replay never leaves it. */
+  scopeOf(roomId: string): EngagementScope | null;
+  /** Runs a reproduction; injected so a test replays against its own fixture. */
+  replay?: typeof replayProof;
 }
 
 export interface EngagementFindingInternalContext {
@@ -25,7 +31,7 @@ export interface EngagementFindingInternalContext {
 }
 
 export const FINDINGS_PATH = "/api/internal/findings";
-const ACTIONS = new Set(["list", "record", "update"]);
+const ACTIONS = new Set(["list", "record", "update", "replay"]);
 
 export function createEngagementFindingInternalRoutes(deps: EngagementFindingInternalDeps) {
   return async (ctx: EngagementFindingInternalContext): Promise<typeof PASS | void> => {
@@ -47,6 +53,16 @@ export function createEngagementFindingInternalRoutes(deps: EngagementFindingInt
       if (action === "record") return ctx.json(ctx.res, 200, { finding: deps.findings.record(room.id, body) });
       const id = (body as { id?: unknown }).id;
       if (typeof id !== "string" || !id) return ctx.json(ctx.res, 400, { error: "update needs the finding's id, from the list." });
+      if (action === "replay") {
+        const current = deps.findings.list(room.id).find((finding) => finding.id === id);
+        if (!current) return ctx.json(ctx.res, 404, { error: "No such finding in this engagement." });
+        if (!current.repro) {
+          return ctx.json(ctx.res, 400, { error: "This finding carries no replayable repro. Record one as an http proof, or keep its status suspected." });
+        }
+        const run = deps.replay ?? replayProof;
+        const result = await run(current.repro, deps.scopeOf(room.id));
+        return ctx.json(ctx.res, 200, { finding: deps.findings.recordReplay(room.id, id, result), replay: result });
+      }
       return ctx.json(ctx.res, 200, { finding: deps.findings.patch(room.id, id, body) });
     } catch (error) {
       return ctx.json(ctx.res, (error as { status?: number }).status ?? 400, { error: error instanceof Error ? error.message : "invalid finding" });

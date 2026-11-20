@@ -68,6 +68,19 @@ function FindingRow({ finding }: { finding: EngagementFinding }) {
         <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.evidence")}</div>
         <ExpandableText text={finding.evidence} className="font-mono" />
       </div>
+      {finding.repro && (
+        <div className="text-[12px] leading-relaxed text-ink-secondary">
+          <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.replay")}</div>
+          <ExpandableText text={`${finding.repro.method} ${finding.repro.url}`} className="font-mono" />
+          <div className="mt-1 text-ink-tertiary">
+            {finding.replay
+              ? finding.replay.ok
+                ? t("room.findings.replayHeld", { when: when(finding.replay.at) })
+                : t("room.findings.replayFailed", { when: when(finding.replay.at) })
+              : t("room.findings.replayPending")}
+          </div>
+        </div>
+      )}
       {finding.proof && (
         <div className="text-[12px] leading-relaxed text-ink-secondary">
           <div className="mb-0.5 text-[12px] font-medium text-ink-tertiary">{t("room.findings.proof")}</div>

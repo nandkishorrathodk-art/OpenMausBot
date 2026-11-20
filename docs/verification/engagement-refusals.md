@@ -146,12 +146,22 @@ They prove:
   moved past its report;
 - a finding's `proof` prints under its evidence so the client can run the
   reproduction again, and a finding without one prints no proof section;
+- a finding with a replayable `repro` prints the request and what the last
+  replay found, and one that has not been replayed says so;
 - a title or target with a newline or a `|` cannot break the table;
 - `GET /api/groups/:id/report` answers 404 for an unknown room, 403 for a room
   this caller may not read, 400 for a direct message, and passes an unknown
   method on so routing continues;
 - the page saves the room's report from the button, offers it even with nothing
   found, and says so when the download is refused.
+
+A `proven` label is the server's to give. When a finding carries a `repro`, the
+record refuses `status=proven` from the caller and only a passing replay sets it;
+a replay that fails drops the label back to `suspected`, and so does loading a
+store whose `proven` row has no passing replay behind it. The replay leaves the
+process with `fetch`, so it checks the room's scope first and refuses a target
+outside it, and a flaw the target only shows from inside the client's network is
+one it cannot confirm.
 
 To see a real refusal end to end, launch a fixture
 ([README](README.md)), give a room a scope that excludes a host, and have a

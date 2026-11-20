@@ -30,7 +30,7 @@ function chain() {
   const findings = new EngagementFindingsStore(`${DATA_DIR}/engagement-findings.json`);
   const { roomOfThread } = createThreadSource(store);
 
-  const internal = createEngagementFindingInternalRoutes({ findings, roomOf: roomOfThread });
+  const internal = createEngagementFindingInternalRoutes({ findings, roomOf: roomOfThread, scopeOf: () => null });
   const record = async (threadId: string, body: unknown) => {
     const sent: Array<{ status: number; body: any }> = [];
     const out = await internal({

@@ -119,6 +119,24 @@ describe("the engagement findings page", () => {
     expect(rows[0]!.textContent).toContain("302 to evil.test");
   });
 
+  it("shows the request a replay runs and what the last replay found", async () => {
+    const repro = { kind: "http", method: "GET", url: "https://b.example.com/items/1", expect: "admin=1" };
+    fixture.readFindings.mockResolvedValue([
+      { id: "3", target: "b.example.com", title: "Broken access control", severity: "high", status: "proven",
+        evidence: "another tenant's record came back", repro, replay: { at: 5, ok: true, excerpt: "admin=1" }, reportedAt: 3, updatedAt: 5 },
+      { id: "4", target: "c.example.com", title: "Stale claim", severity: "medium", status: "suspected",
+        evidence: "a request", repro, reportedAt: 4, updatedAt: 4 },
+    ]);
+    flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));
+    await settle();
+    const rows = [...document.querySelectorAll("[data-finding]")];
+    const proven = rows.find((row) => row.getAttribute("data-finding") === "3")!;
+    expect(proven.textContent).toContain("GET https://b.example.com/items/1");
+    expect(proven.textContent).toContain("the flaw reproduced again");
+    const pending = rows.find((row) => row.getAttribute("data-finding") === "4")!;
+    expect(pending.textContent).toContain("Not replayed yet");
+  });
+
   it("says there are none yet when the ledger is empty", async () => {
     fixture.readFindings.mockResolvedValue([]);
     flushSync(() => root.render(createElement(EngagementFindingsPage, { group })));

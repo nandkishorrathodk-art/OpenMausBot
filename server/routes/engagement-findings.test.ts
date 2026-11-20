@@ -4,7 +4,9 @@ import { join } from "node:path";
 import type { ServerResponse } from "node:http";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import type { EngagementScope } from "../../shared/engagement.ts";
 import { EngagementFindingsStore } from "../engagement.ts";
+import { replayProof } from "../engagement-replay.ts";
 import { createEngagementFindingInternalRoutes, FINDINGS_PATH } from "./engagement-findings.ts";
 import { PASS } from "./table.ts";
 
@@ -17,13 +19,20 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-function harness(options: { room?: { id: string; memberIds: string[]; dm?: boolean } | null; body?: unknown } = {}) {
+function harness(options: {
+  room?: { id: string; memberIds: string[]; dm?: boolean } | null;
+  body?: unknown;
+  scope?: EngagementScope | null;
+  replay?: typeof replayProof;
+} = {}) {
   const sent: Array<{ status: number; body: unknown }> = [];
   const res = {} as ServerResponse;
   const json = (_res: ServerResponse, status: number, body: unknown) => { sent.push({ status, body }); };
   const route = createEngagementFindingInternalRoutes({
     findings: store,
     roomOf: () => (options.room === null ? null : (options.room ?? { id: "eng-room", memberIds: ["bot-a"] })) as never,
+    scopeOf: () => options.scope ?? null,
+    ...(options.replay ? { replay: options.replay } : {}),
   });
   const call = (path: string, method = "POST") => route({
     path, method, res, json: json as never, botId: "bot-a", threadId: "t1",
@@ -83,5 +92,51 @@ describe("the engagement findings internal route", () => {
     await missing.call(FINDINGS_PATH);
     expect(missing.sent[0]!.status).toBeGreaterThanOrEqual(400);
     expect(store.list("eng-room")).toHaveLength(0);
+  });
+
+  it("replays a finding's repro and lets the passing replay make it proven", async () => {
+    const scope: EngagementScope = { targets: ["api.example.com"], offLimits: [] };
+    const repro = { kind: "http", method: "GET", url: "https://api.example.com/items/1", expect: "admin=1" };
+    const recorded = store.record("eng-room", {
+      target: "api.example.com", title: "Broken access control", severity: "high", status: "suspected",
+      evidence: "GET /items/1 as another tenant returned their record", repro,
+    });
+    const replay = (async () => ({ at: 5, ok: true, excerpt: "admin=1" })) as unknown as typeof replayProof;
+    const fixture = harness({ body: { action: "replay", id: recorded.id }, scope, replay });
+    await fixture.call(FINDINGS_PATH);
+    expect(fixture.sent[0]!.status).toBe(200);
+    const body = fixture.sent[0]!.body as { finding: { status: string; replay: { ok: boolean } } };
+    expect([body.finding.status, body.finding.replay.ok]).toEqual(["proven", true]);
+    expect(store.list("eng-room")[0]!.status).toBe("proven");
+  });
+
+  it("demotes a proven finding when its replay no longer holds", async () => {
+    const scope: EngagementScope = { targets: ["api.example.com"], offLimits: [] };
+    const repro = { kind: "http", method: "GET", url: "https://api.example.com/items/1", expect: "admin=1" };
+    const recorded = store.record("eng-room", {
+      target: "api.example.com", title: "Broken access control", severity: "high", status: "suspected",
+      evidence: "another tenant's record came back", repro,
+    });
+    store.recordReplay("eng-room", recorded.id, { at: 5, ok: true, excerpt: "admin=1" }, 5);
+    const replay = (async () => ({ at: 9, ok: false, error: "the expected text is gone" })) as unknown as typeof replayProof;
+    const fixture = harness({ body: { action: "replay", id: recorded.id }, scope, replay });
+    await fixture.call(FINDINGS_PATH);
+    expect(store.list("eng-room")[0]!.status).toBe("suspected");
+  });
+
+  it("refuses to replay a finding that carries no repro", async () => {
+    const recorded = store.record("eng-room", {
+      target: "api.example.com", title: "A claim", severity: "low", status: "suspected", evidence: "a hunch",
+    });
+    const fixture = harness({ body: { action: "replay", id: recorded.id } });
+    await fixture.call(FINDINGS_PATH);
+    expect(fixture.sent[0]!.status).toBe(400);
+    expect((fixture.sent[0]!.body as { error: string }).error).toContain("no replayable repro");
+  });
+
+  it("answers 404 for a replay of a finding this engagement does not hold", async () => {
+    const fixture = harness({ body: { action: "replay", id: "f-missing" } });
+    await fixture.call(FINDINGS_PATH);
+    expect(fixture.sent[0]!.status).toBe(404);
   });
 });
