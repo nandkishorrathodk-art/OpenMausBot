@@ -2218,7 +2218,8 @@ function botAtThreadCapacity(botId: string, personThreadId?: string, startedByAB
   const limit = (startedByABot ? maxConcurrentChildThreads : maxConcurrentBotThreads)(cfg, botThreadsHost(cloudPlanTier.starter()));
   let busy = 0;
   for (const task of store.tasks(botId)) {
-    if (!threadBusy(botId, task.threadId) || burst.laneOwned(task.threadId)) continue;
+    if (task.busy !== true && !directTurnDispatchClaims.has(task.threadId)) continue;
+    if (burst.laneOwned(task.threadId)) continue;
     if (!startedByABot && cloudPlanTier.starter() && directRequestOwners.get(task.threadId)?.kind === "handoff") continue;
     if (++busy >= limit) return true;
   }
