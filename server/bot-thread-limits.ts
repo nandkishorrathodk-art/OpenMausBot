@@ -34,3 +34,32 @@ export function botThreadLimitText(cfg: SavedThreads, host: BotThreadsHost = bot
     ? "Starter runs one thread at a time per bot — wait for it to finish, or move to a bigger plan to run more"
     : `this bot has reached its limit of ${maxConcurrentBotThreads(cfg, host)} parallel threads — wait for one to finish`;
 }
+
+/** What the per-turn capacity check reads. */
+export interface ThreadCapacityView {
+  tasks(botId: string): readonly { threadId: string; busy?: boolean }[];
+  laneOwned(threadId: string): boolean;
+  /** A turn has claimed this thread but has not written its busy flag yet. */
+  dispatching(threadId: string): boolean;
+  /** The thread was started by a hand-off, which a starter plan's limit does not hold. */
+  handoffStarted(threadId: string): boolean;
+  mainThread(botId: string): string | undefined;
+  limit(startedByABot: boolean): number;
+}
+
+/** Whether `botId` already runs as many threads as it may. The person's main chat is never at capacity. */
+export function threadCapacityCheck(view: ThreadCapacityView): (botId: string, personThreadId?: string, startedByABot?: boolean) => boolean {
+  return (botId, personThreadId, startedByABot = false) => {
+    if (personThreadId && (view.laneOwned(personThreadId) || personThreadId === view.mainThread(botId))) return false;
+    const limit = view.limit(startedByABot);
+    let busy = 0;
+    for (const task of view.tasks(botId)) {
+      // threadBusy, not the stored flag alone: a reservation holds its slot after an early completion clears the flag.
+      if (task.busy !== true && !view.dispatching(task.threadId)) continue;
+      if (view.laneOwned(task.threadId)) continue;
+      if (!startedByABot && view.handoffStarted(task.threadId)) continue;
+      if (++busy >= limit) return true;
+    }
+    return false;
+  };
+}

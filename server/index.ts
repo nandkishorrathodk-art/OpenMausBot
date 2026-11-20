@@ -454,7 +454,7 @@ import { loginSite } from "../shared/logins.ts";
 import { browserRestartRefusal } from "./browser-live.ts";
 import { browserEngineStatus } from "./browser-engine.ts";
 import { chromeLauncher } from "./browser/chrome/launcher.ts";
-import { botThreadLimitText, botThreadsHost, maxConcurrentBotThreads, maxConcurrentChildThreads } from "./bot-thread-limits.ts"; import { createBrowserSeats } from "./host/browser-seats.ts"; import { createBrowserHost } from "./host/browser.ts"; import { createCloudPlanTier } from "./host/cloud-plan-tier.ts";
+import { botThreadLimitText, botThreadsHost, maxConcurrentBotThreads, maxConcurrentChildThreads, threadCapacityCheck } from "./bot-thread-limits.ts"; import { createBrowserSeats } from "./host/browser-seats.ts"; import { createBrowserHost } from "./host/browser.ts"; import { createCloudPlanTier } from "./host/cloud-plan-tier.ts";
 import { createScreenFrameSource, rememberTurnFrame, type ScreenCapture } from "./screen-frame-source.ts";
 import { screenFrameHash, screenSurfaceForTool, screenTouchingTool, settledFrameIsNews } from "./screen-frame-gate.ts";
 import { asSchedule, RoutineRequestService } from "./routine-requests.ts"; import { ownerSpokeOnly } from "./cloud-routine-level.ts"; import { routineRunCard, routineRunFallbackText } from "./routine-run-card.ts";
@@ -2212,19 +2212,10 @@ function parksBehindCoordination(botId: string, threadId: string): boolean {
   return (store.projectBotForTask(botId, threadId) ?? store.bot(botId))?.parkDirectMessages === true;
 }
 
-function botAtThreadCapacity(botId: string, personThreadId?: string, startedByABot = false): boolean {
-  // The person's main chat is never at capacity. threadBusy, not the stored flag: a reservation holds its slot after an early completion clears the flag.
-  if (personThreadId && (burst.laneOwned(personThreadId) || personThreadId === botMainThread(botId))) return false;
-  const limit = (startedByABot ? maxConcurrentChildThreads : maxConcurrentBotThreads)(cfg, botThreadsHost(cloudPlanTier.starter()));
-  let busy = 0;
-  for (const task of store.tasks(botId)) {
-    if (task.busy !== true && !directTurnDispatchClaims.has(task.threadId)) continue;
-    if (burst.laneOwned(task.threadId)) continue;
-    if (!startedByABot && cloudPlanTier.starter() && directRequestOwners.get(task.threadId)?.kind === "handoff") continue;
-    if (++busy >= limit) return true;
-  }
-  return false;
-}
+const botAtThreadCapacity = threadCapacityCheck({ tasks: (botId) => store.tasks(botId), laneOwned: (threadId) => burst.laneOwned(threadId),
+  dispatching: (threadId) => directTurnDispatchClaims.has(threadId), mainThread: (botId) => botMainThread(botId),
+  handoffStarted: (threadId) => cloudPlanTier.starter() && directRequestOwners.get(threadId)?.kind === "handoff",
+  limit: (startedByABot) => (startedByABot ? maxConcurrentChildThreads : maxConcurrentBotThreads)(cfg, botThreadsHost(cloudPlanTier.starter())) });
 
 function hasDirectDispatch(botId: string): boolean {
   return [...directTurnDispatchClaims.values()].some((claim) => claim.botId === botId);

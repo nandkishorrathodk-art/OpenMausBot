@@ -555,17 +555,11 @@ export class Store {
   /** In memory only: message writes must not rewrite bots.json. */
   private noteThreadActivity(threadId: string, at: number, forOrder = false, orderAt = at): void {
     if (!Number.isFinite(at)) return;
-    const stamp = (task: { updatedAt?: number; lastThreadOrderAt?: number }) => {
+    for (const owner of [...this.bots, ...this.groups]) {
+      const task = owner.tasks?.find((candidate) => candidate.threadId === threadId);
+      if (!task) continue;
       task.updatedAt = Math.max(task.updatedAt ?? 0, at);
       if (forOrder) task.lastThreadOrderAt = Math.max(task.lastThreadOrderAt ?? 0, orderAt);
-    };
-    for (const owner of this.bots) {
-      const task = owner.tasks?.find((candidate) => candidate.threadId === threadId);
-      if (task) stamp(task);
-    }
-    for (const owner of this.groups) {
-      const task = owner.tasks?.find((candidate) => candidate.threadId === threadId);
-      if (task) stamp(task);
     }
   }
 
@@ -1405,14 +1399,13 @@ export class Store {
   }
 
   private switchNeedsAsk(bot: BotRecord, task: TaskRecord, from: ModelSelection, to: ModelSelection): boolean {
-    if (from.instanceId === to.instanceId) return false;
-    return modelSwitchNeedsAsk(approvalModeFor(this.viewForTask(bot, task)), this.driverKindOf(from.instanceId), this.driverKindOf(to.instanceId));
+    return from.instanceId !== to.instanceId && modelSwitchNeedsAsk(approvalModeFor(this.projectBotForTask(bot.id, task.threadId, task)!), this.driverKindOf(from.instanceId), this.driverKindOf(to.instanceId));
   }
 
   private withDefaultModel(bot: BotRecord, next: ModelSelection): TaskRecord[] | undefined {
     return bot.tasks?.map((task) => ({
       ...task,
-      approvalMode: approvalModeFor(this.viewForTask(bot, task)),
+      approvalMode: approvalModeFor(this.projectBotForTask(bot.id, task.threadId, task)!),
       autoApprove: task.autoApprove ?? bot.autoApprove,
       alwaysAllow: structuredClone(task.alwaysAllow ?? bot.alwaysAllow ?? []),
       ...(task.modelSelection === undefined && this.switchNeedsAsk(bot, task, bot.modelSelection, next) ? structuredClone(ASK_NOW) : {}),
@@ -2000,15 +1993,10 @@ export class Store {
       t.openedBy.threadId === fromThreadId && Boolean(t.openedBy.roomLane) === roomLane && t.archivedAt === undefined && also(t));
   }
 
-  projectBotForTask(botId: string, threadId: string): BotRecord | null {
+  projectBotForTask(botId: string, threadId: string, known?: TaskRecord): BotRecord | null {
     const bot = this.own(botId);
-    const task = this.taskByThread(botId, threadId);
+    const task = known ?? this.taskByThread(botId, threadId);
     if (!bot || !task) return null;
-    return this.viewForTask(bot, task);
-  }
-
-  private viewForTask(bot: BotRecord, task: TaskRecord): BotRecord {
-    const threadId = task.threadId;
     return {
       ...bot,
       threadId: task.threadId,
