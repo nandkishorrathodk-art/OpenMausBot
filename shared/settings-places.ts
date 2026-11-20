@@ -53,6 +53,7 @@ export const SETTINGS_PLACES = [
   {"id":"limits","path":"Settings → You and your bots → Limits","words":["group turns","timeout","tool time limit","parallel threads","concurrency","keep warm"],"advanced":true},
   {"id":"parallel","path":"Settings → You and your bots → Limits → Parallel threads","words":["parallel","threads","concurrency"],"advanced":true},
   {"id":"group-turns","path":"Settings → You and your bots → Limits → Group turns","words":["group","turns"],"advanced":true},
+  {"id":"goal-turns","path":"Settings → You and your bots → Limits → Goal runs","words":["goal","goal run","turn budget","turns per goal"],"advanced":true},
   {"id":"skills","path":"Settings → You and your bots → Skills","words":["skills","library"],"advanced":true,"only":"a place with the skills library on"},
   {"id":"early","path":"Settings → You and your bots → Early features","words":["experimental","early","preview","write their own skills"],"advanced":true},
   {"id":"all-bots","path":"Settings → You and your bots","words":["all bots"],"advanced":true},

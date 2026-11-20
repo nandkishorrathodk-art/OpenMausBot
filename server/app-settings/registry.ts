@@ -222,7 +222,7 @@ export function createSettingsRegistry(deps: RegistryDeps): SettingEntry[] {
       current: () => roomTurnTimeoutMinutes(cfg()), write: config((turnTimeoutMinutes: number) => ({ rooms: { turnTimeoutMinutes } })),
     }),
     writable({
-      id: "rooms.goalMaxTurns", label: "Goal run turn budget", help: "Turns one goal run may spend before it pauses; each turn is one member reply, and the budget must be odd so the last turn decides completion.", where: "group-turns",
+      id: "rooms.goalMaxTurns", label: "Goal run turn budget", help: "Turns one goal run may spend before it pauses; each turn is one member reply, and the budget must be odd so the last turn decides completion.", where: "goal-turns",
       synonyms: ["goal", "goal turns", "turn budget", "turn limit", "run limit"], value: z.number().int().min(MIN_ROOM_GOAL_MAX_TURNS).max(MAX_ROOM_GOAL_MAX_TURNS).refine((turns) => turns % 2 === 1, { message: "must be odd" }), allowed: `${MIN_ROOM_GOAL_MAX_TURNS} to ${MAX_ROOM_GOAL_MAX_TURNS} turns, odd`,
       current: () => roomGoalMaxTurns(cfg()), write: config((goalMaxTurns: number) => ({ rooms: { goalMaxTurns } })),
     }),

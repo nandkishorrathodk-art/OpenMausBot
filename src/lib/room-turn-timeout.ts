@@ -1,3 +1,4 @@
+export const DEFAULT_ROOM_TURN_TIMEOUT_MINUTES = 5;
 export const MIN_ROOM_TURN_TIMEOUT_MINUTES = 1;
 export const MAX_ROOM_TURN_TIMEOUT_MINUTES = 1_440;
 export const ROOM_TURN_TIMEOUT_INPUT_ERROR = "Enter a whole number from 1 to 1,440.";
@@ -14,4 +15,8 @@ export function parseRoomTurnTimeoutMinutes(value: string): RoomTurnTimeoutInput
     return { ok: false, error: ROOM_TURN_TIMEOUT_INPUT_ERROR };
   }
   return { ok: true, minutes };
+}
+
+export function roomTurnTimeoutMinutes(config: { rooms?: { turnTimeoutMinutes?: number } } | null | undefined): number {
+  return config?.rooms?.turnTimeoutMinutes ?? DEFAULT_ROOM_TURN_TIMEOUT_MINUTES;
 }

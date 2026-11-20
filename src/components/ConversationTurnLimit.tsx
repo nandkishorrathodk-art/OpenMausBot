@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { t } from "@/lib/i18n";
-import { parseRoomTurnTimeoutMinutes } from "@/lib/room-turn-timeout";
+import { parseRoomTurnTimeoutMinutes, roomTurnTimeoutMinutes } from "@/lib/room-turn-timeout";
 import { useStore, type Group } from "@/state/store";
 import { Select } from "./Select";
 
@@ -12,7 +12,7 @@ const isPresetTurnLimit = (minutes: number): minutes is (typeof PRESET_TURN_LIMI
 
 export function useConversationTurnLimit(group: Group) {
   const { state, dispatch } = useStore();
-  const globalMinutes = state.config?.rooms.turnTimeoutMinutes ?? 5;
+  const globalMinutes = roomTurnTimeoutMinutes(state.config);
   const task = group.dm ? undefined : group.tasks?.find((candidate) => candidate.threadId === group.threadId);
   const override = group.dm ? group.turnTimeoutMinutes : task?.turnTimeoutMinutes;
   const saved = typeof override === "number" ? override : null;

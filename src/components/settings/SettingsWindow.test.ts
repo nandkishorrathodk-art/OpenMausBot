@@ -103,6 +103,18 @@ describe("the Settings window", () => {
     expect(render("app")).not.toContain('data-settings-block="typing"');
   });
 
+  it("offers the goal run budget beside the group turn timeout, with the default when none is saved", () => {
+    fixture.advanced = true;
+    fixture.config = {};
+    const defaults = render("bots");
+    expect(defaults).toContain('data-settings-block="goal-turns"');
+    expect(defaults).toMatch(/id="room-goal-budget"[^>]*value="13"/);
+    expect(defaults).toMatch(/id="room-goal-budget"[^>]*step="2"/);
+
+    fixture.config = { rooms: { turnTimeoutMinutes: 5, goalMaxTurns: 25 } };
+    expect(render("bots")).toMatch(/id="room-goal-budget"[^>]*value="25"/);
+  });
+
   it("turns Advanced on for a link to a page Simple doesn't show, and lands there", () => {
     fixture.advanced = false;
     expect(render("general")).toMatch(/data-settings-page-open="general"/);

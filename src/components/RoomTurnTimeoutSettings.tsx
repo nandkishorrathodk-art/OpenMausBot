@@ -6,13 +6,14 @@ import {
   MAX_ROOM_TURN_TIMEOUT_MINUTES,
   MIN_ROOM_TURN_TIMEOUT_MINUTES,
   parseRoomTurnTimeoutMinutes,
+  roomTurnTimeoutMinutes,
 } from "@/lib/room-turn-timeout";
 import { api, useStore, type ConfigStatus } from "@/state/store";
 import { t } from "@/lib/i18n";
 
 export function RoomTurnTimeoutSettings() {
   const { state, dispatch } = useStore();
-  const confirmedMinutes = state.config?.rooms.turnTimeoutMinutes ?? 5;
+  const confirmedMinutes = roomTurnTimeoutMinutes(state.config);
   const [value, setValue] = useState(String(confirmedMinutes));
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState("");
@@ -38,7 +39,7 @@ export function RoomTurnTimeoutSettings() {
         body: JSON.stringify({ rooms: { turnTimeoutMinutes: parsed.minutes } }),
       });
       dispatch({ type: "configStatus", config });
-      setValue(String(config.rooms.turnTimeoutMinutes));
+      setValue(String(roomTurnTimeoutMinutes(config)));
       setDirty(false);
       setError("");
     } catch (cause) {

@@ -24,6 +24,7 @@ import { McpCallTimeoutSettings } from "../../McpCallTimeoutSettings";
 import { DefaultBotSettings } from "../../NewBotDialog";
 import { PlaceLookRows } from "../../PlaceLookCard";
 import { ProfileFields } from "../../ProfileSettings";
+import { RoomGoalBudgetSettings } from "../../RoomGoalBudgetSettings";
 import { RoomTurnTimeoutSettings } from "../../RoomTurnTimeoutSettings";
 import { SavedStepsRow } from "../../SavedStepsRow";
 import { Card, SettingRow, SettingsDisclosureRow, SettingsFoldRow, SettingsGroup, SettingsLinkRow, SettingsRows } from "../../SettingsPrimitives";
@@ -164,9 +165,10 @@ export function BotsPage() {
     <SettingsGroup label={t("settings.bots.newBots")} block="new-bots">
       <SettingsRows><NewBotEffortRow /><DefaultBotSettings simple /></SettingsRows>
     </SettingsGroup>
-    {!(ctx.team && !ctx.admin) && <AdvancedSection anchor="limits" also={["parallel", "group-turns", "tool-time", "keep-warm"]}><SettingsGroup label={t("settings.simple.more.limits")} block="limits">
+    {!(ctx.team && !ctx.admin) && <AdvancedSection anchor="limits" also={["parallel", "group-turns", "goal-turns", "tool-time", "keep-warm"]}><SettingsGroup label={t("settings.simple.more.limits")} block="limits">
       <SettingsRows selectWidth={160}>
         <div data-settings-block="group-turns" className="contents"><RoomTurnTimeoutSettings /></div>
+        <div data-settings-block="goal-turns" className="contents"><RoomGoalBudgetSettings /></div>
         <div data-settings-block="tool-time" className="contents"><McpCallTimeoutSettings /></div>
         <ThreadConcurrencySettings />
         <div data-settings-block="keep-warm" className="contents"><CacheKeepWarmSettings /></div>

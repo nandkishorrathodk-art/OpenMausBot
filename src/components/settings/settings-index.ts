@@ -197,6 +197,7 @@ export const SETTINGS_INDEX: readonly SettingsIndexEntry[] = [
   { id: "limits", page: "bots", anchor: "limits", labelKey: "settings.simple.more.limits", advanced: true, synonyms: ["group turns", "timeout", "tool time limit", "parallel threads", "concurrency", "keep warm"] },
   { id: "parallel", page: "bots", anchor: "parallel", labelKey: "settings.threads.title", sectionKey: "settings.simple.more.limits", advanced: true, synonyms: ["parallel", "threads", "concurrency"] },
   { id: "group-turns", page: "bots", anchor: "group-turns", labelKey: "settings.roomTurns.title", sectionKey: "settings.simple.more.limits", advanced: true, synonyms: ["group", "turns"] },
+  { id: "goal-turns", page: "bots", anchor: "goal-turns", labelKey: "settings.goalBudget.title", sectionKey: "settings.simple.more.limits", advanced: true, synonyms: ["goal", "goal run", "turn budget", "turns per goal"] },
   { id: "skills", page: "bots", anchor: "skills", labelKey: "settings.section.skills", when: (ctx) => ctx.skills, synonyms: ["skills", "library"] },
   { id: "early", page: "bots", anchor: "early", labelKey: "settings.bots.early", advanced: true, synonyms: ["experimental", "early", "preview", "write their own skills"] },
   { id: "all-bots", page: "bots", labelKey: "settings.page.bots", topFor: ["all bots"] },

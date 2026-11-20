@@ -51,6 +51,7 @@ const FILES = [
   "src/components/PlanUsage.tsx",
   "src/components/ProIntroduction.tsx",
   "src/components/ProfileSettings.tsx",
+  "src/components/RoomGoalBudgetSettings.tsx",
   "src/components/RoomTurnTimeoutSettings.tsx",
   "src/components/Select.tsx",
   "src/components/ServerList.tsx",
