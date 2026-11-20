@@ -12,6 +12,16 @@ import { LIPO_ARCH, isMachO, writeThinMachO } from "./mac-thin.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
+async function darwinResources(appOutDir) {
+  const bundles = (await readdir(appOutDir)).filter((entry) => entry.endsWith(".app"));
+  if (bundles.length > 1) {
+    throw new Error(`expected one .app bundle in ${appOutDir}, found ${bundles.length}`);
+  }
+  return bundles.length === 1
+    ? path.join(appOutDir, bundles[0], "Contents", "Resources")
+    : path.join(appOutDir, "resources");
+}
+
 async function requireRealDirectory(directory, mode = 0o755) {
   const details = await lstat(directory);
   if (!details.isDirectory() || details.isSymbolicLink()) {
@@ -113,7 +123,7 @@ async function thinMacPlatformTools(resources, arch) {
 export default async function afterPack(context) {
   const resources = context.packager?.getResourcesDir?.(context.appOutDir) ?? (
     context.electronPlatformName === "darwin"
-      ? path.join(context.appOutDir, "OpenMausBot.app", "Contents", "Resources")
+      ? await darwinResources(context.appOutDir)
       : path.join(context.appOutDir, "resources")
   );
   await validateCloudflared(resources, context.electronPlatformName, Boolean(context.packager));
