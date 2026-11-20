@@ -2214,7 +2214,15 @@ function parksBehindCoordination(botId: string, threadId: string): boolean {
 
 function botAtThreadCapacity(botId: string, personThreadId?: string, startedByABot = false): boolean {
   // The person's main chat is never at capacity. threadBusy, not the stored flag: a reservation holds its slot after an early completion clears the flag.
-  return !(personThreadId && burst.laneOwned(personThreadId)) && (!personThreadId || personThreadId !== botMainThread(botId)) && store.tasks(botId).filter((task) => threadBusy(botId, task.threadId) && !burst.laneOwned(task.threadId) && (startedByABot || !cloudPlanTier.starter() || directRequestOwners.get(task.threadId)?.kind !== "handoff")).length >= (startedByABot ? maxConcurrentChildThreads : maxConcurrentBotThreads)(cfg, botThreadsHost(cloudPlanTier.starter()));
+  if (personThreadId && (burst.laneOwned(personThreadId) || personThreadId === botMainThread(botId))) return false;
+  const limit = (startedByABot ? maxConcurrentChildThreads : maxConcurrentBotThreads)(cfg, botThreadsHost(cloudPlanTier.starter()));
+  let busy = 0;
+  for (const task of store.tasks(botId)) {
+    if (!threadBusy(botId, task.threadId) || burst.laneOwned(task.threadId)) continue;
+    if (!startedByABot && cloudPlanTier.starter() && directRequestOwners.get(task.threadId)?.kind === "handoff") continue;
+    if (++busy >= limit) return true;
+  }
+  return false;
 }
 
 function hasDirectDispatch(botId: string): boolean {
