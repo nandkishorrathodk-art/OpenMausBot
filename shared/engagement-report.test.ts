@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { EngagementFinding, EngagementScope } from "./engagement";
-import { buildEngagementReport, engagementReportFilename } from "./engagement-report";
+import { buildEngagementReport, engagementReportFilename, type EngagementFinding, type EngagementScope } from "./engagement";
 
 const scope: EngagementScope = {
   targets: ["acme.test", "*.acme.test"],

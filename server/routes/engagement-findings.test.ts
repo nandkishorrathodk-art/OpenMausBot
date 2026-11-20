@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { ServerResponse } from "node:http";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { EngagementFindingsStore } from "../engagement-findings.ts";
+import { EngagementFindingsStore } from "../engagement.ts";
 import { createEngagementFindingInternalRoutes, FINDINGS_PATH } from "./engagement-findings.ts";
 import { PASS } from "./table.ts";
 

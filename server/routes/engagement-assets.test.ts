@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { ServerResponse } from "node:http";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { EngagementAssetsStore } from "../engagement-assets.ts";
+import { EngagementAssetsStore } from "../engagement.ts";
 import { createEngagementAssetInternalRoutes, ASSETS_PATH } from "./engagement-assets.ts";
 import { PASS } from "./table.ts";
 

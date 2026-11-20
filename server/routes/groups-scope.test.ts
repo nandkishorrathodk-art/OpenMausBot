@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { WireGroup } from "../../shared/wire.ts";
 import { DATA_DIR } from "../config.ts";
-import { EngagementScopeStore } from "../engagement-scope.ts";
+import { EngagementScopeStore } from "../engagement.ts";
 import type { RequestAuth } from "../request-auth.ts";
 import { Store } from "../store.ts";
 import { createGroupRoutes, type GroupRouteDeps } from "./groups.ts";

@@ -14,7 +14,7 @@ import {
   parseEngagementScope,
   scopeActive,
   scopeRefusalText,
-} from "./engagement-scope.ts";
+} from "./engagement.ts";
 
 let directory: string;
 let filename: string;
