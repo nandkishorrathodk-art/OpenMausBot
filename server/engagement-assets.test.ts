@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { assetKey, EngagementAssetsStore, parseAsset } from "./engagement-assets.ts";
+import { assetKey, EngagementAssetsStore, parseAsset } from "./engagement.ts";
 
 let directory: string;
 let filename: string;

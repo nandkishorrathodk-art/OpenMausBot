@@ -3,7 +3,7 @@
 // room is resolved from the caller's own conversation, never from the body, so a bot records only where it speaks.
 import type { ServerResponse } from "node:http";
 
-import type { EngagementAssetsStore } from "../engagement-assets.ts";
+import type { EngagementAssetsStore } from "../engagement.ts";
 import type { json as sendJson } from "../harness/http.ts";
 import type { GroupRecord } from "../store.ts";
 import { PASS } from "./table.ts";

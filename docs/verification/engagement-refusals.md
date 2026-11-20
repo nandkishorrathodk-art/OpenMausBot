@@ -34,7 +34,7 @@ The bot writes it with `engagement_asset`; the person reads it through
 current scope, so one that has fallen out of scope is shown flagged rather than
 silently dropped.
 
-The store (`server/engagement-assets.ts`) keys an asset by its location, so a
+The store (`server/engagement.ts`) keys an asset by its location, so a
 scan that returns `https://app.example.com/` and a later
 `https://app.example.com` are one entry whose first sighting keeps its time.
 Like the findings and the refusals, it is room-scoped, fails closed on a damaged
@@ -65,7 +65,7 @@ They prove, against the real store and the real routes:
 ## What a refusal records
 
 Every refusal is written, from the one place commands are checked, to the
-room's own ledger (`server/engagement-refusals.ts`). The **Refused commands**
+room's own ledger (`server/engagement.ts`). The **Refused commands**
 page reads it through `GET /api/groups/:id/refusals` and shows the most recent
 first: the reason (a host outside the scope, or which side of the window), the
 command, and how many times the same command was refused.
@@ -125,7 +125,7 @@ The chain test proves, over one real store:
 
 The **Findings** page's **Download report** button saves the room's scope and
 findings as one markdown document the client keeps. The server renders it
-(`shared/engagement-report.ts`) and hands it over from
+(`shared/engagement.ts`) and hands it over from
 `GET /api/groups/:id/report` as `text/markdown` with an attachment filename, so
 the download and any other reader of the route see the same words. The report
 is English only, like the transcript export: it is a document, not UI copy. A

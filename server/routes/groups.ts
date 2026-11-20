@@ -1,9 +1,6 @@
 import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../shared/wire.ts";
-import { buildEngagementReport, engagementReportFilename } from "../../shared/engagement-report.ts";
-import type { EngagementScope } from "../engagement-scope.ts";
-import type { EngagementFinding } from "../engagement-findings.ts";
-import type { EngagementAsset } from "../engagement-assets.ts";
-import type { EngagementRefusal } from "../engagement-refusals.ts";
+import { buildEngagementReport, engagementReportFilename } from "../../shared/engagement.ts";
+import type { EngagementAsset, EngagementFinding, EngagementRefusal, EngagementScope } from "../engagement.ts";
 import { validateBotCwd } from "../bot-cwd.ts";
 import type { VisibleSet } from "../bot-visibility.ts";
 import type { RequestAuth } from "../request-auth.ts";

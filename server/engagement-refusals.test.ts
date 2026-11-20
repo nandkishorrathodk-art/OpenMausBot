@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { EngagementRefusalsStore, refusalKey } from "./engagement-refusals.ts";
+import { EngagementRefusalsStore, refusalKey } from "./engagement.ts";
 import { addHeldSecretScrubber } from "./redact.ts";
 
 let directory: string;

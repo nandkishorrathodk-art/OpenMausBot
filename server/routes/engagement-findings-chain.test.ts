@@ -7,8 +7,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { WireGroup } from "../../shared/wire.ts";
 import { DATA_DIR } from "../config.ts";
-import { EngagementFindingsStore } from "../engagement-findings.ts";
-import { EngagementScopeStore } from "../engagement-scope.ts";
+import { EngagementFindingsStore, EngagementScopeStore } from "../engagement.ts";
 import { createThreadSource } from "../host/thread-source.ts";
 import type { RequestAuth } from "../request-auth.ts";
 import { Store } from "../store.ts";

@@ -52,7 +52,7 @@ import { RoomMemberLock } from "./room-member-lock.ts";
 import { approvalHeldNote, approvalHeldReason, approvalModeForOrigin, autoVerdict, deliverFullAccessApproval, undeliveredApprovalTool } from "./auto-approve.ts"; import { readsOwnFiles } from "./own-file-reads.ts";
 import { bindSafetyFloor, denyAtSafetyFloor, heldAtSafetyFloor, safetyFloorOn } from "./safety-floor-gate.ts";
 import { CommandAllowlistStore, commandAllowlistCandidate } from "./command-allowlist.ts";
-import { createCommandScope, EngagementScopeStore, hostInScope, assetLocationHost } from "./engagement-scope.ts"; import { EngagementFindingsStore } from "./engagement-findings.ts"; import { EngagementAssetsStore } from "./engagement-assets.ts"; import { EngagementRefusalsStore } from "./engagement-refusals.ts"; import { createThreadSource } from "./host/thread-source.ts";
+import { createCommandScope, EngagementScopeStore, hostInScope, assetLocationHost, EngagementFindingsStore, EngagementAssetsStore, EngagementRefusalsStore } from "./engagement.ts"; import { createThreadSource } from "./host/thread-source.ts";
 import { providerMcpTool, providerToolAllowKey } from "./provider-tool-allow.ts";
 import type { CommandAllowlistCandidate, CommandAllowlistResponse } from "../shared/command-allowlist.ts";
 import { claudeAccountInfo } from "./claude-accounts.ts";
