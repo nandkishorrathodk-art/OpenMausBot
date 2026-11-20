@@ -146,11 +146,11 @@ export function reachRefusal(from: RosterMember, target: RosterMember, lookedAft
  * first, then the others by name, so a capped roster keeps the nearest teammates. */
 export function reachablePeers<T extends RosterMember>(bots: readonly T[], from: RosterMember, also?: (bot: T) => boolean): T[] {
   const own = sectionKey(from.section);
-  const department = (bot: T) => (sectionKey(bot.section) === own ? "" : ` ${sectionKey(bot.section).toLowerCase()}`);
-  return bots.filter(bot => canReach(from, bot) || also?.(bot)).sort((a, b) => {
-    const [left, right] = [department(a), department(b)];
-    return left < right ? -1 : left > right ? 1 : 0;
-  });
+  const ranked = bots
+    .filter(bot => canReach(from, bot) || also?.(bot))
+    .map(bot => ({ bot, department: sectionKey(bot.section) === own ? "" : ` ${sectionKey(bot.section).toLowerCase()}` }));
+  ranked.sort((a, b) => (a.department < b.department ? -1 : a.department > b.department ? 1 : 0));
+  return ranked.map(entry => entry.bot);
 }
 
 const foldedName = (value: string) => value.replace(/^@/, "").replace(/\s+/g, " ").trim().toLowerCase();

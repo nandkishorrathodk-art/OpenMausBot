@@ -555,10 +555,17 @@ export class Store {
   /** In memory only: message writes must not rewrite bots.json. */
   private noteThreadActivity(threadId: string, at: number, forOrder = false, orderAt = at): void {
     if (!Number.isFinite(at)) return;
-    for (const task of [...this.bots, ...this.groups].map((owner) => owner.tasks?.find((candidate) => candidate.threadId === threadId))) {
-      if (!task) continue;
+    const stamp = (task: { updatedAt?: number; lastThreadOrderAt?: number }) => {
       task.updatedAt = Math.max(task.updatedAt ?? 0, at);
       if (forOrder) task.lastThreadOrderAt = Math.max(task.lastThreadOrderAt ?? 0, orderAt);
+    };
+    for (const owner of this.bots) {
+      const task = owner.tasks?.find((candidate) => candidate.threadId === threadId);
+      if (task) stamp(task);
+    }
+    for (const owner of this.groups) {
+      const task = owner.tasks?.find((candidate) => candidate.threadId === threadId);
+      if (task) stamp(task);
     }
   }
 
