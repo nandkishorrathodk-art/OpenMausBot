@@ -310,7 +310,8 @@ export class Runtime {
     const live = this.store.all({ nonTerminal: true });
     if (this.heldAway.size > 0) { const ids = new Set(live.map(n => n.id)); for (const id of this.heldAway.keys()) if (!ids.has(id)) { this.heldAway.delete(id); this.awayNow.delete(id); } }
     // Deepest first, so each node fails with its own reason.
-    for (const snapshot of [...live].sort((a, b) => b.depth - a.depth)) {
+    const deepestFirst = [...live].sort((a, b) => b.depth - a.depth);
+    for (const snapshot of deepestFirst) {
       const n = this.store.get(snapshot.id);
       if (!n || isTerminal(n)) continue;
       if (n.status === "queued" && !n.continuation && !this.away(n) && now - Math.max(this.since(n.lastActivityAt), this.heldAway.get(n.id) ?? 0) > this.limits.queueMs) {
@@ -326,7 +327,7 @@ export class Runtime {
       }
     }
     // Access is rechecked every tick, not only at dispatch, so no result crosses a boundary that closed under it.
-    for (const snapshot of [...live].sort((a, b) => b.depth - a.depth)) {
+    for (const snapshot of deepestFirst) {
       const n = this.store.get(snapshot.id);
       if (!n || isTerminal(n)) continue;
       const parent = n.parentId ? this.store.get(n.parentId) : undefined;
