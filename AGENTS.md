@@ -32,7 +32,9 @@ More specific `AGENTS.md` files override this note within their directories.
 
 `main` is a fork of `milind-soni/OpenMausBot` rebranded to "Parth Lab". Keep it
 synced by merging `upstream/main`; never use GitHub's "Discard commits" button,
-which would delete the rebrand.
+which would delete the rebrand. [`docs/upstream-picks.md`](docs/upstream-picks.md)
+lists the individual upstream commits worth taking, which ones collide with the
+rebrand, and the rebrand surface `electron/` carries that this file does not.
 
 - Product name lives in `DEFAULT_BRAND.name` and `PRODUCT_NAME` in
   `src/lib/brand.ts` and `server/brand.ts`. The rebrand is scoped to those
