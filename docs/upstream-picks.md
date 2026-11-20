@@ -29,6 +29,11 @@ without a conflict.
 Both carry the Portuguese translation with them, so `pt-br` stays at 100%. Run
 `pnpm i18n:check` after taking either.
 
+`f19e689d3` is already in the tree. It arrived with `64376f685`, which touches
+the same two driver files and carries the `redact` parameter that
+`toolArguments` takes. Cherry-picking `f19e689d3` on top of `64376f685` applies
+nothing, so take one or the other, not both.
+
 ## Take with a conflict
 
 These are worth having, but each collides with the rebrand or with code the fork
