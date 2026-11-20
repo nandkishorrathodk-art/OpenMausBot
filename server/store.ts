@@ -1404,19 +1404,18 @@ export class Store {
     return result;
   }
 
-  private switchNeedsAsk(botId: string, threadId: string, from: ModelSelection, to: ModelSelection): boolean {
+  private switchNeedsAsk(bot: BotRecord, task: TaskRecord, from: ModelSelection, to: ModelSelection): boolean {
     if (from.instanceId === to.instanceId) return false;
-    const thread = this.projectBotForTask(botId, threadId);
-    return Boolean(thread) && modelSwitchNeedsAsk(approvalModeFor(thread!), this.driverKindOf(from.instanceId), this.driverKindOf(to.instanceId));
+    return modelSwitchNeedsAsk(approvalModeFor(this.viewForTask(bot, task)), this.driverKindOf(from.instanceId), this.driverKindOf(to.instanceId));
   }
 
   private withDefaultModel(bot: BotRecord, next: ModelSelection): TaskRecord[] | undefined {
     return bot.tasks?.map((task) => ({
       ...task,
-      approvalMode: approvalModeFor(this.projectBotForTask(bot.id, task.threadId)!),
+      approvalMode: approvalModeFor(this.viewForTask(bot, task)),
       autoApprove: task.autoApprove ?? bot.autoApprove,
       alwaysAllow: structuredClone(task.alwaysAllow ?? bot.alwaysAllow ?? []),
-      ...(task.modelSelection === undefined && this.switchNeedsAsk(bot.id, task.threadId, bot.modelSelection, next) ? structuredClone(ASK_NOW) : {}),
+      ...(task.modelSelection === undefined && this.switchNeedsAsk(bot, task, bot.modelSelection, next) ? structuredClone(ASK_NOW) : {}),
     }));
   }
 
@@ -1496,7 +1495,7 @@ export class Store {
       delete patch.toolScope;
     }
     const toAsk = patch.modelSelection ? (bot.tasks ?? []).filter((task) => task.modelSelection === undefined &&
-      this.switchNeedsAsk(id, task.threadId, bot.modelSelection, patch.modelSelection!)) : [];
+      this.switchNeedsAsk(bot, task, bot.modelSelection, patch.modelSelection!)) : [];
     // Revocations take effect in memory even when the disk write fails.
     Object.assign(bot, patch); if (patch.connectorScopes !== undefined) grantScopedApps(bot);
     for (const task of toAsk) Object.assign(task, structuredClone(ASK_NOW));
@@ -2005,6 +2004,11 @@ export class Store {
     const bot = this.own(botId);
     const task = this.taskByThread(botId, threadId);
     if (!bot || !task) return null;
+    return this.viewForTask(bot, task);
+  }
+
+  private viewForTask(bot: BotRecord, task: TaskRecord): BotRecord {
+    const threadId = task.threadId;
     return {
       ...bot,
       threadId: task.threadId,
@@ -2092,7 +2096,7 @@ export class Store {
     const patches = bot.tasks.map((task): Partial<TaskRecord> | null => !listed.has(task.threadId) || task.modelSelection === undefined ? null : {
       ...reset(task.modelSelection, bot.modelSelection),
       modelSelection: undefined,
-      ...(this.switchNeedsAsk(botId, task.threadId, task.modelSelection, bot.modelSelection) ? structuredClone(ASK_NOW) : {}),
+      ...(this.switchNeedsAsk(bot, task, task.modelSelection, bot.modelSelection) ? structuredClone(ASK_NOW) : {}),
     });
     const moved = bot.tasks.filter((_, index) => patches[index]).map((task) => task.threadId);
     if (!moved.length) return [];
