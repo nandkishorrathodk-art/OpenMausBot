@@ -14,6 +14,8 @@ interface WireFinding {
   status: string;
   evidence: string;
   proof?: string;
+  repro?: { kind: "http"; method: string; url: string; expect?: string };
+  replay?: { at: number; ok: boolean; error?: string; excerpt?: string };
   detail?: string;
   reportedAt: number;
   updatedAt: number;
@@ -35,8 +37,12 @@ function one(finding: WireFinding): string {
     ? `${finding.evidence.slice(0, MAX_EVIDENCE_IN_RESULT)}…`
     : finding.evidence;
   const proof = finding.proof ? `\nProof: ${finding.proof}` : "";
+  const repro = finding.repro ? `\nRepro: ${finding.repro.method} ${finding.repro.url}${finding.repro.expect ? ` (expects: ${finding.repro.expect})` : ""}` : "";
+  const replay = finding.replay
+    ? `\nReplay: ${finding.replay.ok ? "held" : "failed"} at ${new Date(finding.replay.at).toISOString()}${finding.replay.error ? ` — ${finding.replay.error}` : ""}`
+    : "";
   const detail = finding.detail ? `\nDetail: ${finding.detail}` : "";
-  return `${finding.severity}/${finding.status} — ${finding.target}: ${finding.title}\nEvidence: ${evidence}${proof}${detail}`;
+  return `${finding.severity}/${finding.status} — ${finding.target}: ${finding.title}\nEvidence: ${evidence}${proof}${repro}${replay}${detail}`;
 }
 
 export async function callEngagementFindingTool(args: Record<string, unknown>, context: ToolCallContext): Promise<ToolCallResult> {
@@ -52,10 +58,16 @@ export async function callEngagementFindingTool(args: Record<string, unknown>, c
       ...(typeof args.status === "string" ? { status: args.status } : {}),
       ...(typeof args.evidence === "string" ? { evidence: args.evidence } : {}),
       ...(typeof args.proof === "string" ? { proof: args.proof } : {}),
+      ...(args.repro !== undefined ? { repro: args.repro } : {}),
       ...(typeof args.detail === "string" ? { detail: args.detail } : {}),
     }),
   });
   if (!ok) return { text: String(body.error ?? "The findings ledger could not be read."), isError: true };
+  if (action === "replay") {
+    const replayed = asFinding(body.finding);
+    if (!replayed) return { text: "The replay did not confirm the change.", isError: true };
+    return { text: `${replayed.replay?.ok ? "The flaw reproduced again." : "The flaw did not reproduce."}\n${one(replayed)}`, isError: replayed.replay?.ok !== true };
+  }
   if (action === "list") {
     const findings = Array.isArray(body.findings) ? body.findings.map(asFinding).filter((finding): finding is WireFinding => finding !== null) : [];
     if (!findings.length) {
@@ -73,19 +85,33 @@ export async function callEngagementFindingTool(args: Record<string, unknown>, c
 export const ENGAGEMENT_FINDING_TOOL_DEFINITION = {
   name: ENGAGEMENT_FINDING_TOOL,
   description:
-    "The engagement's shared ledger of flaws, one per room, every member reads and writes it. action=record adds a flaw, or updates the one with the same target and title; update changes one by id (from a list) as its evidence or status moves on; list reads them all, worst first. Record a flaw as soon as you suspect it, with evidence: the command and its output, the request and its response, or the artifact that shows it. Keep status=suspected until you can prove it, then set status=proven with proof: the exact request and the response it returned, or the command and its output, short enough for the client to run again. The client acts on what is proven. A finding is not a claim: never record one without the evidence that shows it.",
+    "The engagement's shared ledger of flaws, one per room, every member reads and writes it. action=record adds a flaw, or updates the one with the same target and title; update changes one by id (from a list) as its evidence or status moves on; list reads them all, worst first; replay re-runs a finding's repro and lets the server decide its status. Record a flaw as soon as you suspect it, with evidence: the command and its output, the request and its response, or the artifact that shows it. For a flaw one HTTP request shows, record repro and call action=replay: the server sends it, and only a passing replay makes the finding proven. Without a repro, keep status=suspected until you can prove it, then set status=proven with proof: the exact request and the response it returned, or the command and its output, short enough for the client to run again. The client acts on what is proven: never record a finding without the evidence that shows it.",
   inputSchema: {
     type: "object",
     additionalProperties: false,
     properties: {
-      action: { type: "string", enum: ["list", "record", "update"], description: "list reads the ledger; record adds or updates by target and title; update changes one by id." },
-      id: { type: "string", description: "update: the finding's id, from a list." },
+      action: { type: "string", enum: ["list", "record", "update", "replay"], description: "list reads the ledger; record adds or updates by target and title; update changes one by id; replay re-runs the repro the server can check." },
+      id: { type: "string", description: "update and replay: the finding's id, from a list." },
       target: { type: "string", maxLength: 300, description: "record: the asset the flaw is in — a host, an endpoint, a path. update: leave out to keep it." },
       title: { type: "string", maxLength: 300, description: "record: what is wrong, one line. update: leave out to keep it." },
       severity: { type: "string", enum: ["critical", "high", "medium", "low", "info"], description: "How bad if exploited. Defaults to medium." },
-      status: { type: "string", enum: ["suspected", "proven", "fixed", "wont-fix"], description: "Defaults to suspected; proven once evidence shows it." },
+      status: { type: "string", enum: ["suspected", "proven", "fixed", "wont-fix"], description: "Defaults to suspected; proven once evidence shows it, or once a replay of its repro passes." },
       evidence: { type: "string", description: "record: what shows it — the command and its output, the request and its response, or the artifact path. Required." },
-      proof: { type: "string", description: "The reproduction a person can run again: the exact request and the response it returned, or the command and its output. Required to set status=proven." },
+      proof: { type: "string", description: "The reproduction a person can run again: the exact request and the response it returned, or the command and its output. Required to set status=proven when the finding has no repro." },
+      repro: {
+        type: "object",
+        description: "A reproduction the server can run itself: one HTTP request the flaw shows. Record it, then action=replay; the replay decides proven.",
+        additionalProperties: false,
+        properties: {
+          kind: { type: "string", enum: ["http"], description: "Only http is replayable." },
+          method: { type: "string", enum: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], description: "The request's method." },
+          url: { type: "string", maxLength: 2048, description: "Absolute http or https URL. Its host must be inside the engagement's scope." },
+          headers: { type: "object", description: "Optional request headers, as name/value strings. Host, content-length and proxy headers are refused.", additionalProperties: { type: "string" } },
+          body: { type: "string", description: "Optional request body, for POST, PUT, PATCH or DELETE." },
+          expect: { type: "string", maxLength: 2000, description: "The text that must come back for the flaw to still be there. Without it the replay only records the answer." },
+        },
+        required: ["kind", "method", "url"],
+      },
       detail: { type: "string", description: "Optional: impact and the steps to reproduce it." },
     },
     required: ["action"],

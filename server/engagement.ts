@@ -29,9 +29,11 @@ import {
   type EngagementScope,
   type FindingSeverity,
   type FindingStatus,
+  type ProofReplay,
 } from "../shared/engagement.ts";
 import { scrubHeldSecrets } from "../shared/redact.ts";
 import { writeFileAtomic } from "./atomic.ts";
+import { parseProof } from "./engagement-replay.ts";
 import type { GroupRecord } from "./store.ts";
 
 export { ASSET_KINDS, FINDING_SEVERITIES, FINDING_STATUSES };
@@ -226,8 +228,8 @@ function targetMatches(target: string, host: string): boolean {
 }
 
 export function hostInScope(scope: EngagementScope, host: string): boolean {
-  if (loopback(host)) return true;
   if (scope.offLimits.some((target) => targetMatches(target, host))) return false;
+  if (loopback(host)) return true;
   return scope.targets.some((target) => targetMatches(target, host));
 }
 
@@ -484,6 +486,19 @@ export function parseFinding(value: unknown): ParsedFinding {
   }
   const detail = text(value.detail);
   if (detail && detail.length > MAX_TEXT) return { ok: false, error: `The detail must be at most ${MAX_TEXT} characters.` };
+  let repro: EngagementFinding["repro"];
+  if (value.repro !== undefined && value.repro !== null) {
+    const parsed = parseProof(value.repro);
+    if (!parsed.ok) return { ok: false, error: parsed.error };
+    repro = parsed.proof;
+  }
+  const replay = parseReplay(value.replay);
+  if (replay === false) return { ok: false, error: "The replay record is malformed." };
+  // A replayable reproduction makes the server the judge: `proven` waits for a replay that passed, so a
+  // caller cannot set the label and the record in one write.
+  if (status === "proven" && repro && !replay?.ok) {
+    return { ok: false, error: "This finding carries a replayable repro, so its status is the server's to set: record it as suspected and let the replay decide." };
+  }
   return {
     ok: true,
     finding: {
@@ -493,9 +508,23 @@ export function parseFinding(value: unknown): ParsedFinding {
       status: status as FindingStatus,
       evidence,
       ...(proof ? { proof } : {}),
+      ...(repro ? { repro } : {}),
+      ...(replay ? { replay } : {}),
       ...(detail ? { detail } : {}),
     },
   };
+}
+
+const replayText = (value: unknown): string | null =>
+  typeof value === "string" && value.trim() ? value.trim().slice(0, MAX_EVIDENCE) : null;
+
+/** A stored replay, or false when the row claims a shape it cannot have. Absent is null. */
+function parseReplay(value: unknown): ProofReplay | null | false {
+  if (value === undefined || value === null) return null;
+  if (!record(value) || typeof value.at !== "number" || typeof value.ok !== "boolean") return false;
+  const error = replayText(value.error);
+  const excerpt = replayText(value.excerpt);
+  return { at: value.at, ok: value.ok, ...(error ? { error } : {}), ...(excerpt ? { excerpt } : {}) };
 }
 
 /** Two findings with the same target and title, ignoring case and surrounding space, are the same finding. */
@@ -588,6 +617,25 @@ export class EngagementFindingsStore {
     const parsed = parseFinding(merged);
     if (!parsed.ok) throw invalid(parsed.error);
     const updated: EngagementFinding = { ...current, ...parsed.finding, updatedAt: at };
+    this.save(this.withRoom(roomId, room!.findings.map((finding) => (finding.id === id ? updated : finding))));
+    return { ...updated };
+  }
+
+  /**
+   * Write the result of a replay the server ran, and let it decide the label: a passed replay makes the
+   * finding `proven`, a failed one drops it to `suspected` so a label cannot outlive the flaw. Only a finding
+   * that carries a replayable repro can be replayed, and a resolved one keeps its resolution.
+   */
+  recordReplay(roomId: string, id: string, replay: ProofReplay, at = Date.now()): EngagementFinding {
+    this.assertWritable();
+    validateRoomId(roomId);
+    const room = this.rooms.find((row) => row.roomId === roomId);
+    const current = room?.findings.find((finding) => finding.id === id);
+    if (!current) throw Object.assign(new Error("No such finding in this engagement."), { status: 404 });
+    if (!current.repro) throw invalid("This finding carries no replayable repro, so there is nothing to replay.");
+    const resolved = current.status === "fixed" || current.status === "wont-fix";
+    const status: FindingStatus = resolved ? current.status : replay.ok ? "proven" : "suspected";
+    const updated: EngagementFinding = { ...current, status, replay, updatedAt: at };
     this.save(this.withRoom(roomId, room!.findings.map((finding) => (finding.id === id ? updated : finding))));
     return { ...updated };
   }

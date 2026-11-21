@@ -26,6 +26,40 @@ export const FINDING_STATUSES = ["suspected", "proven", "fixed", "wont-fix"] as 
 export type FindingSeverity = (typeof FINDING_SEVERITIES)[number];
 export type FindingStatus = (typeof FINDING_STATUSES)[number];
 
+export const PROOF_HTTP_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] as const;
+export type ProofHttpMethod = (typeof PROOF_HTTP_METHODS)[number];
+
+/**
+ * A reproduction the server runs itself: one request the client's asset
+ * answers. A `proven` finding carries one and the replay result, so the label
+ * means the product re-ran it, not that the agent said so.
+ *
+ * Only HTTP is replayable. Running a bot-written shell command from the server
+ * would put arbitrary code in the host process; a command-shaped proof stays
+ * narrative `proof` text until a sandboxed runner exists.
+ */
+export interface EngagementProof {
+  kind: "http";
+  method: ProofHttpMethod;
+  /** Absolute `http`/`https` URL. Its host must be inside the room's scope. */
+  url: string;
+  headers?: Record<string, string>;
+  body?: string;
+  /** A text the response must contain for the flaw to still be there: the payload echoed back, the
+   * error text, the leaked record. Absent means the replay only records what the target answered. */
+  expect?: string;
+}
+
+/** What a replay found. Stored on the finding, so a reader sees when it last held and what came back. */
+export interface ProofReplay {
+  at: number;
+  ok: boolean;
+  /** Why it did not hold: the target refused, timed out, or the expected text was gone. */
+  error?: string;
+  /** A short excerpt of what the target answered, for the report. */
+  excerpt?: string;
+}
+
 /** One flaw as the team recorded it: an asset, what is wrong, how bad, and what proves it. */
 export interface EngagementFinding {
   id: string;
@@ -41,6 +75,12 @@ export interface EngagementFinding {
   /** What makes `proven` true: the reproduction that a person can run again, kept apart from the narrative
    * `evidence` so a claim cannot borrow a proven label from prose. Required while `status` is `proven`. */
   proof?: string;
+  /** The machine-runnable reproduction. When present, the server replays it and records the result in
+   * `replay`; `proven` then means the product re-ran it, not that the agent said so. */
+  repro?: EngagementProof;
+  /** The most recent replay of `repro`, written by the server. A failed replay demotes the finding to
+   * `suspected`, so a label cannot outlive the flaw it described. */
+  replay?: ProofReplay;
   detail?: string;
   reportedAt: number;
   updatedAt: number;
@@ -208,8 +248,15 @@ export function buildEngagementReport(input: EngagementReportInput): string {
       `- Reported: ${when(finding.reportedAt)}`,
     );
     if (finding.updatedAt > finding.reportedAt) out.push(`- Updated: ${when(finding.updatedAt)}`);
+    if (finding.repro) out.push(`- Replay: \`${finding.repro.method} ${line(finding.repro.url)}\``);
+    if (finding.replay) {
+      out.push(finding.replay.ok
+        ? `- Replayed: ${when(finding.replay.at)} — the flaw reproduced again`
+        : `- Replayed: ${when(finding.replay.at)} — did not reproduce${finding.replay.error ? `: ${line(finding.replay.error)}` : ""}`);
+    }
     out.push("", "**Evidence**", "", finding.evidence.trim(), "");
     if (finding.proof?.trim()) out.push("**Proof**", "", finding.proof.trim(), "");
+    if (finding.replay?.excerpt?.trim()) out.push("**What the target answered**", "", "```", finding.replay.excerpt.trim(), "```", "");
     if (finding.detail?.trim()) out.push("**Detail**", "", finding.detail.trim(), "");
   }
 
