@@ -33,6 +33,7 @@ import { callPageTool, PAGE_TOOL_NAMES } from "./agents-pages-tools.ts";
 import { callShareTool, SHARE_TOOL_NAMES } from "./agents-share-tool.ts";
 import { callPersonTool, PERSON_TOOL_NAMES } from "./agents-person-tools.ts";
 import { callDevsTool, DEVS_TOOL_NAMES } from "./agents-devs-tools.ts";
+import { createBotRequestBody } from "../create-bot-fields.ts";
 
 export interface ToolCallContext {
   botId: string;
@@ -532,19 +533,7 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
     if (!botName || (!copyFrom && (!role || !instructions))) {
       return { text: "create_bot needs name, role, and instructions, or name and copy_from_bot_id.", isError: true };
     }
-    const r = await api(`/api/internal/create-bot`, {
-      method: "POST",
-      body: JSON.stringify({
-        fromBotId: BOT_ID,
-        fromThreadId: THREAD_ID,
-        name: botName,
-        role,
-        instructions,
-        ...(copyFrom ? { copyFromBotId: copyFrom } : {}),
-        ...(args.modelSelection !== undefined ? { modelSelection: args.modelSelection } : {}),
-        ...(typeof args.cwd === "string" ? { cwd: args.cwd.trim() } : {}),
-      }),
-    });
+    const r = await api(`/api/internal/create-bot`, { method: "POST", body: JSON.stringify(createBotRequestBody(args, BOT_ID, THREAD_ID)) });
     if (r.state === "pending") {
       return { text: `One review card is visible: ${String(r.title)}. @${botName} has not been created yet. End this turn; the decision and structured result resume you automatically once. Do not ask again, poll, or repeat this request.` };
     }
@@ -552,7 +541,7 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
     const created = r.name ?? botName;
     const noComputer = r.noCloudComputerYet === true ? noCloudComputerNote(String(created)) : "";
     return {
-      text: `Created @${created} in ${r.section ?? "General"} [id: ${r.id}].${r.modelSelection ? ` Model: ${JSON.stringify(r.modelSelection)}.` : ""} Assign work with coordinate_bots.${noComputer}`,
+      text: `Created @${created} in ${r.section ?? "General"} [id: ${r.id}].${r.modelSelection ? ` Model: ${JSON.stringify(r.modelSelection)}.` : ""} It is on the Team map under ${r.section ?? "General"} and can be named now. Assign work with coordinate_bots.${noComputer}`,
     };
   }
   if (member === "create_room") {

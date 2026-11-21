@@ -31,4 +31,19 @@ describe("createBotFields", () => {
     const big = bot("big", "Work", { soul: "x".repeat(24_000) });
     expect(createBotFields({ name: "New", copyFromBotId: "big", instructions: "more" }, chief, [chief, big])).toMatchObject({ status: 400 });
   });
+
+  it("carries a requested section so the new bot lands in the department it names", () => {
+    expect(createBotFields({ name: "New", role: "Ops", instructions: "Work.", section: " Red Team " }, chief, [chief]))
+      .toMatchObject({ section: "Red Team" });
+    const old = bot("old", "Work");
+    expect(createBotFields({ name: "New", copyFromBotId: "old", section: "Red Team" }, chief, [chief, old]))
+      .toMatchObject({ section: "Red Team", soul: "Fix bugs." });
+  });
+
+  it("leaves the section unset for a blank or non-string request, so the Chief's own section applies", () => {
+    for (const section of [undefined, "", "   ", 7, null]) {
+      expect(createBotFields({ name: "New", role: "Ops", instructions: "Work.", section }, chief, [chief]))
+        .not.toHaveProperty("section");
+    }
+  });
 });

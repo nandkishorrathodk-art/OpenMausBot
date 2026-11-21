@@ -14107,7 +14107,7 @@ const handleRequest = async (req: IncomingMessage, res: ServerResponse) => {
                 description: summary.length > 200 ? `${summary.slice(0, 199).trimEnd()}…` : summary,
                 soul,
                 modelSelection: selection,
-                ...(cwd !== undefined ? { cwd } : {}),
+                ...(cwd !== undefined ? { cwd } : {}), ...(fields.section ? { section: fields.section } : {}),
               },
             }],
           },

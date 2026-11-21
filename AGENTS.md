@@ -176,3 +176,33 @@ sees comes from `PRODUCT_NAME` in `src/lib/brand.ts`. Check the payload with
 `7za l release/*-setup.exe` (it is an NSIS archive) before publishing. The build
 is unsigned, so Windows SmartScreen warns on first run.
 
+
+## Known failing tests on a clean `main`
+
+These fail before any change; do not treat them as regressions:
+
+- `electron/menu.test.mjs` — "keeps Electron's English labels for every role item in English": the role-label table still says `Quit OpenMausBot` where the test expects `Quit Parth Lab`.
+- `server/host/chief-notices-retry.test.ts` — two "a run stopped to free memory" cases.
+- `server/delta-context.e2e.test.ts` — "does not hand the model a queued follow-up that a restart recovered with an unknown outcome".
+- `server/cloud-computer-once.test.ts` — "ends the command and what it started, by the process id the call recorded" (needs POSIX process control the sandbox lacks).
+- `server/bot-box/hostile-home.test.ts` — the npm `.npmrc` case.
+- `scripts/docker-image.test.ts` — "installs the engines once more when one does not start".
+- `server/index.test.ts` — "saves a goal run's turn budget beside the room timeout without clearing it" passes alone but fails inside the full file: an earlier case leaves `rooms.turnTimeoutMinutes` set.
+
+Run the suites a change touches (`npx vitest run <files>`), not the whole tree.
+
+## Adding a field to a Chief tool
+
+A `create_bot` field lives in five places, and a miss shows up as the Chief
+reporting success while nothing changed:
+
+1. `TOOL_DEFINITIONS` in `server/drivers/agents-catalog.ts` (what the model sees).
+2. The `api("/api/internal/create-bot", …)` body in `server/drivers/agents-call.ts`
+   — the tool's arguments are rebuilt by hand here, so an unlisted key is dropped
+   silently before the request is made.
+3. `CreateBotFields` and `createBotFields()` in `server/create-bot-fields.ts`.
+4. The validation and the `plan` fields in the `POST /api/internal/create-bot`
+   handler in `server/index.ts`.
+5. The goldens: `UPDATE_AGENTS_CATALOG_GOLDENS=1 npx vitest run
+   server/drivers/agents-catalog-wire.test.ts`, then move `BUDGET_BASELINE` in
+   that file to the new byte counts it prints.

@@ -2813,6 +2813,36 @@ describe("harness HTTP API", () => {
     }
   });
 
+  it("files a created operator in the department it names", async () => {
+    const chief = (await api("POST", "/api/bots")).body.bot;
+    const created: string[] = [];
+    try {
+      expect((await api("POST", "/api/sidebar-sections", { name: "Red Team", botIds: [] })).status).toBe(200);
+      expect((await api("PATCH", `/api/bots/${chief.id}`, { chiefOfStaff: true, managedSections: ["", "Red Team"], acknowledgePeerScope: true, approvalMode: "ask" })).status).toBe(200);
+      const token = await mintTestCapability(BASE, chief.id, chief.threadId);
+      const create = async (name: string, section?: unknown) => {
+        const response = await fetch(`${BASE}/api/internal/create-bot`, {
+          method: "POST",
+          headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+          body: JSON.stringify({ fromBotId: chief.id, fromThreadId: chief.threadId, name, role: "Ops", instructions: "Work.", ...(section === undefined ? {} : { section }) }),
+        });
+        return { status: response.status, body: await response.json() as { id?: string; section?: string; error?: string } };
+      };
+      const placed = await create(`Red operator ${chief.id}`, "Red Team");
+      expect(placed.body.section).toBe("Red Team");
+      created.push(placed.body.id!);
+      const state = (await api("GET", "/api/bots?messages=0")).body;
+      expect(state.bots.find((bot: { id?: string }) => bot.id === placed.body.id)?.section).toBe("Red Team");
+      const tooLong = await create(`Long section ${chief.id}`, "x".repeat(61));
+      expect(tooLong).toMatchObject({ status: 400, body: { error: "section must fit on one line of at most 60 characters" } });
+      const multiline = await create(`Multiline section ${chief.id}`, "Red\nTeam");
+      expect(multiline).toMatchObject({ status: 400, body: { error: "section must fit on one line of at most 60 characters" } });
+    } finally {
+      for (const id of created) await api("DELETE", `/api/bots/${id}`);
+      await api("DELETE", `/api/bots/${chief.id}`);
+    }
+  });
+
   it("lands a created operator in a requested working folder or refuses it with the profile copy", async () => {
     const chief = (await api("POST", "/api/bots")).body.bot;
     let createdId: string | undefined;

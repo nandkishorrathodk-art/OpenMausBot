@@ -708,6 +708,11 @@
           "cwd": {
             "type": "string",
             "description": "Absolute path of the folder this specialist's tools read and write in (for example /Users/me/Projects/site). It must already exist. Leave it out for the specialist's private workspace."
+          },
+          "section": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "The department this specialist belongs to. Defaults to your own section; pass another to place it elsewhere."
           }
         },
         "required": [

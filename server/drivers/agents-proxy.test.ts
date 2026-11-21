@@ -1097,6 +1097,22 @@ describe("agents-proxy MCP surface", () => {
     });
   });
 
+  it("places a specialist in the department it names, and reports where it landed", async () => {
+    const res = await callTool("create_bot", {
+      name: "Pixel",
+      role: "Product designer",
+      instructions: "Design and review the user experience.",
+      section: " Red Team ",
+    });
+    expect(lastCreateBody.section).toBe("Red Team");
+    expect(res.result.content[0].text).toContain("on the Team map under");
+  });
+
+  it("sends no section at all when the Chief names none, so its own department applies", async () => {
+    await callTool("create_bot", { name: "Pixel", role: "Product designer", instructions: "Design." });
+    expect(lastCreateBody).not.toHaveProperty("section");
+  });
+
   it("tells the Chief when the new bot has no cloud computer yet, so handed work runs without one", async () => {
     const plain = await callTool("create_bot", { name: "Pixel", role: "Product designer", instructions: "Design." });
     expect(plain.result.content[0].text).not.toContain("cloud computer");
