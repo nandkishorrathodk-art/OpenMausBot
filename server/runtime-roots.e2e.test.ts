@@ -18,13 +18,13 @@ import { withAnswer } from "./testing/your-computer.ts";
 import { isTitleCall } from "./testing/title-call.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const RERUN_NOTE = "OpenMausBot restarted while your previous turn here was running";
+const RERUN_NOTE = "Parth Lab restarted while your previous turn here was running";
 const RERUN_CHIP = "Resuming after a restart";
-const SECRET_PROVIDED = "OpenMausBot credential update: the user securely provided";
-const CONNECTED = "OpenMausBot connection update: the user securely connected";
+const SECRET_PROVIDED = "Parth Lab credential update: the user securely provided";
+const CONNECTED = "Parth Lab connection update: the user securely connected";
 const STEP_CAP_CONTINUES = "stopped at the step limit";
 const SEAT_FREE = "the computer this conversation waited for is free again";
-const SIGNED_IN = "OpenMausBot sign-in update: the person finished signing in to";
+const SIGNED_IN = "Parth Lab sign-in update: the person finished signing in to";
 const INTERRUPTED_OUTWARD = "Interrupted by a Parth Lab restart after it already";
 const SETTLED = "Your downstream room requests have settled.";
 const REPORT_FROM_MIRA = "[From @Mira (bot) · report on assignment";
