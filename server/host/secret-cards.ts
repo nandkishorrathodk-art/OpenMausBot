@@ -413,7 +413,10 @@ export function createSecretCards(deps: SecretCardsDeps) {
     if (!message?.secret) return false;
     if (message.secret.resumed) return true;
     const text = updateText(message.id, message.secret, outcome);
-    const resumed = answerCardNode(threadId, messageId, text) || deps.startIdleTurn?.(botId, threadId, text, messageId) === true;
+    // A stopped task keeps what the person provided and starts nothing: the card outlived the turn that asked.
+    const resumed = message.secret.stopped
+      ? false
+      : answerCardNode(threadId, messageId, text) || deps.startIdleTurn?.(botId, threadId, text, messageId) === true;
     store.patchMessage(threadId, message.id, {
       secret: {
         ...message.secret,
