@@ -10,7 +10,8 @@ const task = (threadId: string, title: string, openedBy?: unknown) => ({ threadI
 const handoff = { id: "h-42", rootId: "h-1", parentId: "h-1", threadId: "t-ops-new", botId: "bot-ops", status: "queued" } as HandoffView;
 const tasks: Record<string, TaskRecord[]> = {
   "bot-lead": [task("t-lead", "Lead main")],
-  "bot-ops": [task("t-ops-busy", "Weekly report"), task("t-ops-new", "Export CSV", { botId: "bot-lead", name: "Lead", at: 5 })],
+  "bot-ops": [task("t-ops-busy", "Weekly report"), task("t-ops-new", "Export CSV", { botId: "bot-lead", name: "Lead", at: 5 }),
+    { threadId: "t-ops-closed", title: "Results", createdAt: 2, activity: "waiting-on-you", closedBy: { botId: "bot-lead", name: "Lead", at: 9 } } as TaskRecord],
 };
 
 async function listThreads(from: BotRecord) {
@@ -31,6 +32,11 @@ describe("list_threads on a queued handoff", () => {
   it("tells the sender why it waits and which handoff it is, without the receiver's thread titles", async () => {
     const row = (await listThreads(lead)).find((thread) => thread.threadId === "t-ops-new");
     expect(row).toMatchObject({ state: "queued", waiting: "h-42 waits", delegationId: "h-42", own: false });
+  });
+
+  it("reports a closed thread as closed even when an unanswered question card left it waiting", async () => {
+    const row = (await listThreads(ops)).find((thread) => thread.threadId === "t-ops-closed");
+    expect(row).toMatchObject({ state: "closed" });
   });
 
   it("lets the receiver name its own busy threads, and adds nothing to a thread that is not queued", async () => {

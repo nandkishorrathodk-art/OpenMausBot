@@ -60,6 +60,8 @@ export interface SecretCardsDeps {
   phoneSecretSubmissions: PhoneSecretSubmissionRegistry;
   connectorThread(botId: string, threadId: string): { bot: BotRecord; group: GroupRecord | undefined } | null;
   answerCardNode(threadId: string, messageId: string, text: string): boolean;
+  /** A card saved after the turn that asked has ended: starts a turn with that text, when the conversation can take one. */
+  startIdleTurn?(botId: string, threadId: string, text: string, messageId: string): boolean;
   /** A newer card replaced `from`: a turn parked on it waits on `to`. */
   followCard(threadId: string, from: string, to: string): void;
   dataDir: string;
@@ -410,7 +412,8 @@ export function createSecretCards(deps: SecretCardsDeps) {
     const message = secretMessage(botId, threadId, messageId);
     if (!message?.secret) return false;
     if (message.secret.resumed) return true;
-    const resumed = answerCardNode(threadId, messageId, updateText(message.id, message.secret, outcome));
+    const text = updateText(message.id, message.secret, outcome);
+    const resumed = answerCardNode(threadId, messageId, text) || deps.startIdleTurn?.(botId, threadId, text, messageId) === true;
     store.patchMessage(threadId, message.id, {
       secret: {
         ...message.secret,

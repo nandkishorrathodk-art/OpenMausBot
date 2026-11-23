@@ -43,12 +43,12 @@ export function createInternalThreadRoutes(deps: {
       }
       const rows: ThreadRow[] = [];
       const stateOf = (bot: BotRecord, task: TaskRecord) => {
-        if (task.activity === "waiting-on-you" || coordinator.awaitingAnswer(task.threadId)) return "waiting-on-you" as const;
         if (deps.threadBusy(bot.id, task.threadId)) return "running" as const;
-        if (coordinator.parkedDirect(task.threadId)) return "waiting-on-you" as const;
         if (deps.queuedThreadPosition(bot.id, task.threadId) !== null) return "queued" as const;
         if (coordinator.activeDirect(task.threadId)) return "queued" as const;
         if (task.closedBy) return "closed" as const;
+        if (task.activity === "waiting-on-you" || coordinator.awaitingAnswer(task.threadId)) return "waiting-on-you" as const;
+        if (coordinator.parkedDirect(task.threadId)) return "waiting-on-you" as const;
         return "idle" as const;
       };
       // A queued handoff says why it waits and which handoff it is, so a bot can tell the person and match a report.

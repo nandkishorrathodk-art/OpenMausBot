@@ -95,15 +95,19 @@ export interface BwResult { code: number; stdout: string; stderr: string; timedO
 /** One `bw` call: `env` carries every secret (BW_CLIENTID, BW_CLIENTSECRET, BW_PASSWORD, BW_SESSION). */
 export type BwRun = (args: readonly string[], env?: Record<string, string>, timeoutMs?: number) => Promise<BwResult>;
 
-/** Runs the tool with only what it needs: its own settings folder, no prompts, and nothing of the server's environment. */
+/** TLS trust settings a person's own CA reaches the tool through; paths only, never a secret. */
+const TRUST_ENV = ["NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "SSL_CERT_DIR"] as const;
+
+/** Runs the tool with only what it needs: its own settings folder, no prompts, the server's TLS trust, and nothing else. */
 export function bitwardenRunner(options: { executable: () => Promise<string>; appDataDir: string }): BwRun {
   return async (args, env = {}, timeoutMs = DEFAULT_CALL_TIMEOUT_MS) => {
     const file = await options.executable();
     mkdirSync(options.appDataDir, { recursive: true, mode: 0o700 });
+    const trust = Object.fromEntries(TRUST_ENV.flatMap((name) => process.env[name] ? [[name, process.env[name]!]] : []));
     return new Promise((resolve) => {
       execFile(file, [...args], {
         env: {
-          PATH: process.env.PATH ?? "", ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
+          PATH: process.env.PATH ?? "", ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), ...trust,
           HOME: options.appDataDir, BITWARDENCLI_APPDATA_DIR: options.appDataDir, BW_NOINTERACTION: "true", NODE_OPTIONS: "", ...env,
         },
         timeout: timeoutMs, maxBuffer: OUTPUT_MAX, windowsHide: true, encoding: "utf8",

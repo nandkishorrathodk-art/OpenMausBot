@@ -25,7 +25,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 /** `privateTo`: a Team Cloud's private chats, by conversation, and whose each is; any other conversation is the team's. */
-function fixture(language?: string, linked?: (vaultStore: VaultStore) => SecretCardsDeps["botLogins"], privateTo: Record<string, string> = {}) {
+function fixture(language?: string, linked?: (vaultStore: VaultStore) => SecretCardsDeps["botLogins"], privateTo: Record<string, string> = {}, overrides: Partial<SecretCardsDeps> = {}) {
   const dataDir = mkdtempSync(join(tmpdir(), "omb-secret-cards-"));
   dirs.push(dataDir);
   const lines: Message[] = [];
@@ -51,7 +51,7 @@ function fixture(language?: string, linked?: (vaultStore: VaultStore) => SecretC
     botLogins: linked?.(vaultStore) ?? { credentialConfig: (config) => ({ ...config, onePassword: { connected: false } }), linkedSecret: async () => null },
     phoneSecrets: { provide: async () => {}, open: () => {} } as never, phoneSecretSubmissions: { has: () => false } as never,
     connectorThread: () => ({ bot, group: undefined }), answerCardNode: (_thread, _id, text) => { resumed.push(text); return true; }, followCard: () => {}, dataDir, providerKeysRefused: false,
-    layerFolder: () => dataDir, turnVm: () => undefined, ...(language ? { threadLanguage: () => language } : {}),
+    layerFolder: () => dataDir, turnVm: () => undefined, ...(language ? { threadLanguage: () => language } : {}), ...overrides,
   });
   return { cards, lines, bot, vaultStore, resumed, dataDir };
 }
@@ -123,6 +123,28 @@ describe("a secret a card saves to the Vault", () => {
     expect(saved.status).toBe(200);
     expect(one.vaultStore.secretValues()[0] === value).toBe(true);
     expect(JSON.stringify([one.lines, one.resumed, saved])).not.toContain("large-fixture--!");
+  });
+
+  it("starts a new turn for a card saved after the turn that asked has ended, so the bot hears it was provided", async () => {
+    const woke: Array<[string, string, string]> = [];
+    const one = fixture(undefined, undefined, {}, {
+      answerCardNode: () => false,
+      startIdleTurn: (botId, threadId, text) => { woke.push([botId, threadId, text]); return true; },
+    });
+    const card = await ask(one, "t1");
+    expect(one.cards.saveCustomSecret("ledger", "t1", String(card.body.messageId), KEY).status).toBe(200);
+    expect(woke).toHaveLength(1);
+    expect(woke[0]![0]).toBe("ledger");
+    expect(woke[0]![1]).toBe("t1");
+    expect(woke[0]![2]).toContain("Continue the task");
+    expect(one.lines.find((line) => line.kind === "secret")!.secret!.resumed).toBe(true);
+  });
+
+  it("leaves the card waiting when the conversation cannot take a turn", async () => {
+    const one = fixture(undefined, undefined, {}, { answerCardNode: () => false, startIdleTurn: () => false });
+    const card = await ask(one, "t1");
+    expect(one.cards.saveCustomSecret("ledger", "t1", String(card.body.messageId), KEY).status).toBe(200);
+    expect(one.lines.find((line) => line.kind === "secret")!.secret!.resumed).not.toBe(true);
   });
 
   it("is kept for the asking bot, and its next ask, in any conversation and after any ref is spent, gets a fresh one with no card", async () => {

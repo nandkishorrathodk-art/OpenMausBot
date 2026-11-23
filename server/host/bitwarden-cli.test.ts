@@ -56,17 +56,19 @@ describe("Bitwarden's command line tool, fetched on first use", () => {
   it.skipIf(process.platform === "win32")("runs it as a separate process with secrets in its environment only, and none of the server's own", async () => {
     const dir = temp();
     const tool = join(dir, "bw");
-    writeFileSync(tool, `#!/bin/sh\necho "args=$*"\necho "secret=$BW_PASSWORD"\necho "dir=$BITWARDENCLI_APPDATA_DIR"\necho "server=$OMB_FAKE_SERVER_SECRET"\nexit 3\n`, { mode: 0o755 });
+    writeFileSync(tool, `#!/bin/sh\necho "args=$*"\necho "secret=$BW_PASSWORD"\necho "dir=$BITWARDENCLI_APPDATA_DIR"\necho "server=$OMB_FAKE_SERVER_SECRET"\necho "ca=$NODE_EXTRA_CA_CERTS"\nexit 3\n`, { mode: 0o755 });
     process.env.OMB_FAKE_SERVER_SECRET = "never-passed";
+    process.env.NODE_EXTRA_CA_CERTS = join(dir, "private-ca.pem");
     try {
       const run = bitwardenRunner({ executable: async () => tool, appDataDir: join(dir, "account") });
       const result = await run(["unlock", "--passwordenv", "BW_PASSWORD", "--raw"], { BW_PASSWORD: "fake-master" });
       expect(result).toEqual({ code: 3, timedOut: false, stderr: "",
-        stdout: `args=unlock --passwordenv BW_PASSWORD --raw\nsecret=fake-master\ndir=${join(dir, "account")}\nserver=\n` });
+        stdout: `args=unlock --passwordenv BW_PASSWORD --raw\nsecret=fake-master\ndir=${join(dir, "account")}\nserver=\nca=${join(dir, "private-ca.pem")}\n` });
       const missing = bitwardenRunner({ executable: async () => join(dir, "nothing"), appDataDir: join(dir, "account") });
       expect((await missing(["status"])).code).toBe(127);
     } finally {
       delete process.env.OMB_FAKE_SERVER_SECRET;
+      delete process.env.NODE_EXTRA_CA_CERTS;
     }
   });
 });
