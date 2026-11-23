@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, Check, Copy, Download, ExternalLink, KeyRound, Loader2, LogIn, TerminalSquare, X } from "lucide-react";
 import { api, ApiError, type InstanceInfo, useStore } from "@/state/store";
 import { cn } from "@/lib/cn";
+import { useSignInStarted } from "@/lib/connect-ai-events";
 import { t } from "@/lib/i18n";
 import { engineDisplayName } from "@/lib/engine-name";
 import { copyText } from "@/lib/copy-text";
@@ -273,6 +274,7 @@ export function EngineWarningNotice({
 
 function ManagedEngineSetup({ instance, signInOnly }: { instance: InstanceInfo; signInOnly: boolean }) {
   const { state, refreshInstances, refreshModels } = useStore();
+  const signInStarted = useSignInStarted(instance.instanceId);
   const [busy, setBusy] = useState<"install" | "signin" | "complete" | "check" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [flow, setFlow] = useState<{ flowId: string; authorizationUrl: string } | null>(null);
@@ -331,6 +333,7 @@ function ManagedEngineSetup({ instance, signInOnly }: { instance: InstanceInfo; 
 
   const signIn = () => run("signin", async () => {
     if (flow) return openLink(flow.authorizationUrl);
+    signInStarted();
     const { auth } = await api(`/api/instances/${encodeURIComponent(instance.instanceId)}/auth/start`, { method: "POST" });
     if (auth.phase === "succeeded") {
       await refreshInstances();
@@ -461,6 +464,8 @@ export function ApiKeyHint({ instance }: { instance: InstanceInfo }) {
   );
 }
 
+const UNREADABLE_NOTE = { failed: "model.unreadable.failed", signedOut: "model.unreadable.signedOut", timedOut: "model.unreadable.timedOut" } as const;
+
 export function InstanceAccountNotes({ instance, listsModels }: { instance: InstanceInfo; listsModels: boolean }) {
   const account = instance.snapshot.authenticated && instance.snapshot.account
     ? [instance.snapshot.account.email, instance.snapshot.account.organization].filter(Boolean).join(" · ")
@@ -470,7 +475,7 @@ export function InstanceAccountNotes({ instance, listsModels }: { instance: Inst
       {account !== null && <p className="mt-1 truncate text-[12px] leading-4 text-ink-tertiary" title={account}>{account}</p>}
       {instance.modelsUnconfirmed && listsModels && (
         <p data-models-unconfirmed className="mt-1 text-[12px] leading-4 text-ink-tertiary">
-          {t("model.unconfirmed", { name: instance.displayName })}
+          {t(instance.modelsUnreadable ? UNREADABLE_NOTE[instance.modelsUnreadable] : "model.unconfirmed", { name: instance.displayName })}
         </p>
       )}
     </>
@@ -564,6 +569,7 @@ export function EngineSetup({
   onHost?: boolean;
 }) {
   const { state } = useStore();
+  const signInStarted = useSignInStarted(instance.instanceId);
   const cloudHome = state.config?.cloudHome === true;
   const install = instance.install;
   const installCommand = installCommandFor(install);
@@ -664,10 +670,10 @@ export function EngineSetup({
       ))}
 
       {engineBrowserSignIn ? (
-        <EngineBrowserSignIn key={instance.instanceId} instanceId={instance.instanceId} />
+        <EngineBrowserSignIn key={instance.instanceId} instanceId={instance.instanceId} onStart={signInStarted} />
       ) : deviceSignIn || browserSignIn ? (
         <>
-          <DeviceSignIn key={instance.instanceId} instanceId={instance.instanceId} browserPkce={browserSignIn} provider={provider} />
+          <DeviceSignIn key={instance.instanceId} instanceId={instance.instanceId} browserPkce={browserSignIn} provider={provider} onStart={signInStarted} />
           {deviceSignIn && provider !== "codex" && signInCommand && serverTerminal(cloudHome) && (
             <details className="mt-2 rounded-lg border border-hairline/50 bg-app px-2.5 py-2 text-[12px] text-ink-secondary">
               <summary className="cursor-pointer select-none">{t("engineSetup.preferTerminal")}</summary>
@@ -676,7 +682,7 @@ export function EngineSetup({
           )}
         </>
       ) : pasteSignIn ? (
-        <ClaudeSignIn key={instance.instanceId} instanceId={instance.instanceId} />
+        <ClaudeSignIn key={instance.instanceId} instanceId={instance.instanceId} onStart={signInStarted} />
       ) : install.server && !signInOnly ? (
         <ServerEngineInstall instance={instance} mode="install" command={installCommand} />
       ) : install.managed ? (

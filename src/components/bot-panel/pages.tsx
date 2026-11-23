@@ -14,7 +14,7 @@ import type { Routine } from "@/lib/routines";
 import type { SkillImportSummary } from "../../../shared/skill-import";
 import { shortPath } from "@/lib/short-path";
 import { skillImportLines } from "@/lib/skill-import";
-import { useStore, type Bot } from "@/state/store";
+import { type Bot } from "@/state/store";
 import { useDesktopCapabilities } from "../DesktopCapabilities";
 import { connectAppFromBot } from "../AppGrantPrompt";
 import { ServiceIcon } from "../ServiceIcon";
@@ -24,6 +24,8 @@ import { useBotEditor } from "../bot-settings/BotEditorContext";
 import { inputCls } from "../bot-settings/field";
 import { ConflictNotice } from "../bot-settings/MemorySection";
 import { OrgSkillsCard } from "../bot-settings/OrgSkillsCard";
+import { SavedWorkflowsCard } from "../skill-burger/SavedWorkflowsCard";
+import { isBurgerSource } from "../../../shared/skill-burger/saved";
 import { SkillReviewDialog, skillSwitchOn, useManagedSkills, type ManagedSkill } from "../bot-settings/SkillsSection";
 import { useBotApps, type BotApp } from "../bot-settings/useBotApps";
 import { useChoosesVisibility, VisibilitySection } from "../bot-settings/VisibilitySection";
@@ -38,6 +40,7 @@ import { BotSwitch, buttonCls, Card, ColRow, ItemRow, LinkRow, NoteRow, RadioRow
 import { MemoryUpkeepCards } from "./MemoryUpkeepCards";
 import { useMemoryDoc } from "./use-memory-doc";
 import { useTeamMemoryEntries } from "../conversation-share/conversation-share";
+import { sameFields, useStoreDispatch, useStoreSelector } from "@/state/store-select";
 
 type Derived = ReturnType<typeof useBotSettingsDerived>;
 
@@ -55,7 +58,7 @@ function errorText(error: unknown, fallback: string): string {
 }
 
 export function AppsPage({ bot, derived }: PageContext) {
-  const { dispatch } = useStore();
+  const dispatch = useStoreDispatch();
   const apps = useBotApps(bot);
   const { servers: allServers, error: mcpError } = useMcpServers();
   const { patch, canUseConnectedApps } = derived;
@@ -135,7 +138,7 @@ export function AppsPage({ bot, derived }: PageContext) {
 }
 
 export function RoutinesPage({ bot, derived }: PageContext) {
-  const { state, dispatch } = useStore();
+  const state = useStoreSelector((s) => ({ config: s.config, routineRuns: s.routineRuns, routinesLoadState: s.routinesLoadState }), sameFields), dispatch = useStoreDispatch();
   // Arriving with no routines means the person asked to add one, so the editor opens straight away.
   const [editing, setEditing] = useState<Routine | "new" | null>(() => derived.botRoutines.length === 0 ? "new" : null);
   return (
@@ -413,13 +416,13 @@ function MemoryFullWindow({ label, onClose, children }: { label: string; onClose
 
 export function SkillsPage({ bot }: PageContext) {
   const { request: api } = useBotEditor();
-  const { state, dispatch } = useStore();
+  const state = useStoreSelector((s) => ({ config: s.config }), sameFields), dispatch = useStoreDispatch();
   const skills = useManagedSkills(bot);
   const [source, setSource] = useState("");
   const [importing, setImporting] = useState(false);
   const [imported, setImported] = useState<string[]>([]);
   const libraryOn = skillsLibraryEnabled(state.config);
-  const own = skills.skills.filter((skill) => skill.origin !== "project");
+  const own = skills.skills.filter((skill) => skill.origin !== "project" && !isBurgerSource(skill.source));
   const project = skills.skills.filter((skill) => skill.origin === "project");
 
   const remove = async (skill: ManagedSkill) => {
@@ -464,6 +467,7 @@ export function SkillsPage({ bot }: PageContext) {
 
   return (
     <>
+      <SavedWorkflowsCard botId={bot.id} />
       <Card>
         {skills.loading ? (
           <NoteRow>{t("skills.loading")}</NoteRow>

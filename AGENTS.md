@@ -181,7 +181,6 @@ is unsigned, so Windows SmartScreen warns on first run.
 
 These fail before any change; do not treat them as regressions:
 
-- `electron/menu.test.mjs` — "keeps Electron's English labels for every role item in English": the role-label table still says `Quit OpenMausBot` where the test expects `Quit Parth Lab`.
 - `server/host/chief-notices-retry.test.ts` — two "a run stopped to free memory" cases.
 - `server/delta-context.e2e.test.ts` — "does not hand the model a queued follow-up that a restart recovered with an unknown outcome".
 - `server/cloud-computer-once.test.ts` — "ends the command and what it started, by the process id the call recorded" (needs POSIX process control the sandbox lacks).

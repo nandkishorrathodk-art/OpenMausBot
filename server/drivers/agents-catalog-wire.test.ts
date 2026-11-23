@@ -87,37 +87,37 @@ const FULL = "skills+shared+voice+x+team+images+hosting";
 
 /** Bytes when the budget was last set; a profile may move at most 2% either way (lower it to lock in a win). */
 const BUDGET_BASELINE: Record<string, number> = {
-  "default": 58766,
-  "voice": 59547,
-  "shared": 61031,
-  "shared+voice": 61812,
-  "skills": 60947,
-  "skills+voice": 61728,
-  "skills+shared": 63212,
-  "skills+shared+voice": 63993,
-  "non-chief": 50069,
-  "voice+non-chief": 50850,
-  "shared+non-chief": 52334,
-  "shared+voice+non-chief": 53115,
-  "skills+non-chief": 52250,
-  "skills+voice+non-chief": 53031,
-  "skills+shared+non-chief": 54515,
-  "skills+shared+voice+non-chief": 55296,
-  "skills+shared+voice+cloud-home": 63638,
-  "skills+shared+voice+non-chief+cloud-home": 54941,
-  "default+legacy-switches": 58766,
-  "default+mausbot": 59417,
-  "skills+shared+voice+mausbot": 64644,
-  "skills+shared+voice+x": 67832,
-  "skills+shared+voice+x+team": 67832,
-  "default+no-computer-pick": 57554,
-  "default+room": 59692,
-  "non-chief+room": 50995,
-  "skills+shared+voice+x+team+images": 68605,
-  "default+images": 59539,
-  "skills+shared+voice+x+team+images+hosting": 70468,
-  "default+hosting": 60629,
-  "default+tools-off": 54711,
+  "default": 60476,
+  "voice": 61257,
+  "shared": 62741,
+  "shared+voice": 63522,
+  "skills": 62865,
+  "skills+voice": 63646,
+  "skills+shared": 65130,
+  "skills+shared+voice": 65911,
+  "non-chief": 51653,
+  "voice+non-chief": 52434,
+  "shared+non-chief": 53918,
+  "shared+voice+non-chief": 54699,
+  "skills+non-chief": 54042,
+  "skills+voice+non-chief": 54823,
+  "skills+shared+non-chief": 56307,
+  "skills+shared+voice+non-chief": 57088,
+  "skills+shared+voice+cloud-home": 65667,
+  "skills+shared+voice+non-chief+cloud-home": 56844,
+  "default+legacy-switches": 60476,
+  "default+mausbot": 61127,
+  "skills+shared+voice+mausbot": 66562,
+  "skills+shared+voice+x": 69750,
+  "skills+shared+voice+x+team": 69750,
+  "default+no-computer-pick": 59264,
+  "default+room": 60966,
+  "non-chief+room": 52143,
+  "skills+shared+voice+x+team+images": 71697,
+  "default+images": 62423,
+  "skills+shared+voice+x+team+images+hosting": 73560,
+  "default+hosting": 62339,
+  "default+tools-off": 56158,
 };
 
 const RPC_PREFIX = '{"jsonrpc":"2.0","id":1,"result":';
@@ -278,9 +278,9 @@ describe("agents proxy tools/list golden", () => {
     }
   });
 
-  it("mounts generate_image only when an image provider is set up, and adds nothing else", () => {
+  it("mounts generate_image and edit_image only when an image provider is set up, and adds nothing else", () => {
     const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
-    expect(names(wires["default+images"]!).filter((tool) => tool !== "generate_image")).toEqual(names(wires.default!));
+    expect(names(wires["default+images"]!).filter((tool) => tool !== "generate_image" && tool !== "edit_image")).toEqual(names(wires.default!));
     for (const [name, profile] of Object.entries(PROFILES)) {
       expect(names(wires[name]!).includes("generate_image"), name).toBe(profile.env.OMB_IMAGE_GENERATION === "1");
     }
@@ -356,7 +356,7 @@ describe("agents proxy tools/list golden", () => {
     expect(names("default+no-computer-pick")).toEqual(names("default").filter((tool) => tool !== "select_computer"));
     for (const name of ["default", "non-chief"]) {
       expect(names(`${name}+room`), name).toEqual([
-        ...names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "burst", "rename_thread"].includes(tool)),
+        ...names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "check_back", "burst", "rename_thread"].includes(tool)),
         ...ROOM_ONLY_TOOL_NAMES,
       ]);
     }

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("electron", () => ({
-  app: { name: "OpenMausBot" },
+  app: { name: "Parth Lab" },
   Menu: { buildFromTemplate: (template) => template },
 }));
 
@@ -50,7 +50,7 @@ describe("buildApplicationMenu", () => {
     const onToggle = vi.fn();
     const template = build(platform, { openAtLogin: { checked: false, onToggle } });
     const item = template[0].submenu.find((entry) => entry.id === "open-at-login");
-    expect(template[0].label).toBe(platform === "darwin" ? "OpenMausBot" : "File");
+    expect(template[0].label).toBe(platform === "darwin" ? "Parth Lab" : "File");
     expect(item).toMatchObject({ label: "Open at Login", type: "checkbox", checked: false });
     item.click();
     expect(onToggle).toHaveBeenCalledWith(true);
@@ -72,7 +72,7 @@ describe("buildApplicationMenu", () => {
     const template = build(platform);
     expect(template[0].role).toBe("fileMenu");
     for (const item of template) {
-      expect(item.label).not.toBe("OpenMausBot");
+      expect(item.label).not.toBe("Parth Lab");
     }
   });
 
@@ -123,8 +123,8 @@ describe("buildApplicationMenu", () => {
     expect(server.submenu[0].label).toBe(pt["place.local"]);
     expect(server.submenu.find((entry) => entry.id === "add-cloud").label).toBe("Adicionar um Cloud…");
     expect(template[0].submenu.find((entry) => entry.accelerator === "CmdOrCtrl+,").label).toBe("Configurações…");
-    expect(template[0].submenu.at(-1)).toEqual({ role: "quit", label: "Sair do app OpenMausBot" });
-    expect(template.map((entry) => entry.label)).toEqual(["OpenMausBot", "Arquivo", "Editar", "Servidor", "Visualizar", "Janela"]);
+    expect(template[0].submenu.at(-1)).toEqual({ role: "quit", label: "Sair do app Parth Lab" });
+    expect(template.map((entry) => entry.label)).toEqual(["Parth Lab", "Arquivo", "Editar", "Servidor", "Visualizar", "Janela"]);
     for (const platform of ["win32", "linux"]) expect(build(platform, { t })[0].submenu[0].label).toBe("Sair do Parth Lab");
   });
 
@@ -145,7 +145,7 @@ describe("buildApplicationMenu", () => {
     },
   };
   ELECTRON_DEFAULTS.linux = ELECTRON_DEFAULTS.win32;
-  const roles = (items) => items.map((item) => (item.type === "separator" ? "-" : item.submenu ? roles(item.submenu) : item.role));
+  const roles = (items) => items.filter((item) => item.visible !== false).map((item) => (item.type === "separator" ? "-" : item.submenu ? roles(item.submenu) : item.role));
   const labelled = (items) => items.flatMap((item) => (item.type === "separator" ? [] : [item, ...(item.submenu ? labelled(item.submenu) : [])]));
 
   it.each(["darwin", "win32", "linux"])("writes out Electron's own role menus on %s, each item with a label", (platform) => {
@@ -159,12 +159,19 @@ describe("buildApplicationMenu", () => {
     expect(items.filter((item) => item.role).length).toBeGreaterThan(15);
   });
 
+  it.each([["win32", true], ["linux", true], ["darwin", false]])("zooms in with Ctrl+= too on %s, without a second visible Zoom In", (platform, extra) => {
+    const view = build(platform).find((entry) => entry.role === "viewMenu").submenu;
+    const zoomIn = view.filter((entry) => entry.role === "zoomIn");
+    expect(zoomIn.filter((entry) => entry.visible !== false)).toEqual([{ role: "zoomIn", label: "Zoom In" }]);
+    expect(zoomIn.filter((entry) => entry.accelerator === "CommandOrControl+=")).toEqual(extra ? [{ role: "zoomIn", label: "Zoom In", accelerator: "CommandOrControl+=", visible: false }] : []);
+  });
+
   it("keeps Electron's English labels for every role item in English", () => {
     const english = { close: "Close Window", undo: "Undo", redo: "Redo", cut: "Cut", copy: "Copy", paste: "Paste", pasteAndMatchStyle: "Paste and Match Style",
       delete: "Delete", selectAll: "Select All", showSubstitutions: "Show Substitutions", toggleSmartQuotes: "Smart Quotes", toggleSmartDashes: "Smart Dashes",
       toggleTextReplacement: "Text Replacement", startSpeaking: "Start Speaking", stopSpeaking: "Stop Speaking", reload: "Reload", forceReload: "Force Reload",
       toggleDevTools: "Toggle Developer Tools", resetZoom: "Actual Size", zoomIn: "Zoom In", zoomOut: "Zoom Out", togglefullscreen: "Toggle Full Screen",
-      minimize: "Minimize", zoom: "Zoom", front: "Bring All to Front", about: "About OpenMausBot", hide: "Hide OpenMausBot", hideOthers: "Hide Others",
+      minimize: "Minimize", zoom: "Zoom", front: "Bring All to Front", about: "About Parth Lab", hide: "Hide Parth Lab", hideOthers: "Hide Others",
       unhide: "Show All", quit: "Quit Parth Lab" };
     for (const item of labelled(build("darwin")).filter((entry) => entry.role && !entry.role.endsWith("Menu"))) expect(item.label, item.role).toBe(english[item.role]);
     expect(build("win32")[0].submenu[0].label).toBe("Exit");

@@ -20,6 +20,7 @@ import { appDownloadPath, publishAppPage, unpublishPage } from "./app-api";
 import { AppFrame, type AppFrameHandle } from "./AppFrame";
 import type { AppSelection } from "./app-frame-host";
 import { ASK_CHIP, ASK_CHIP_IDLE, ASK_CHIP_PICKED, ASK_PRIMARY_BUTTON } from "../AskCard";
+import { serverFetch } from "@/lib/relay-server";
 
 /** A page starts at this height in the chat and grows to its content up to the cap, then scrolls inside. */
 export const PAGE_HEIGHT = { start: 520, cap: 560 } as const;
@@ -114,7 +115,7 @@ export function usePageSave(threadId: string, messageId: string, title: string) 
     setBusy(true);
     setReason("");
     try {
-      const response = await fetch(appDownloadPath(threadId, messageId, rev));
+      const response = await serverFetch(appDownloadPath(threadId, messageId, rev));
       if (!response.ok) throw new Error(serverErrorText(await response.json().catch(() => null), t("chat.preview.saveFailed")));
       const name = canonicalDownloadFilename({ contentDisposition: response.headers.get("content-disposition"), fallback: `${title}.html` });
       await saveToDevice(new File([await response.blob()], name, { type: "text/html" }));
@@ -315,8 +316,8 @@ function fullScreenLabel({ open, pane }: PageToolsProps["fullScreen"]): string {
 /** The chat's page pane: the messages area, above the transcript and below the message box. null outside a bot chat. */
 export const PagePaneContext = createContext<HTMLElement | null>(null);
 
-/** How tall the compact card in the chat is when a page opens in the pane. */
-export const PAGE_PREVIEW_HEIGHT = 220;
+/** How tall the preview on a page's compact card is, at most. */
+export const PAGE_PREVIEW_HEIGHT = 296;
 
 function typing(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (target.isContentEditable || target.matches("input, textarea, select"));

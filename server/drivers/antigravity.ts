@@ -29,6 +29,7 @@ import {
   verifyAntigravityBrowserHelper,
 } from "./antigravity-acp.ts";
 import { antigravityLimitFacts, watchAntigravityPromptOutcome } from "./antigravity-turn-outcome.ts";
+import { splitAntigravityThinking } from "./antigravity-models.ts";
 import { AntigravityAuthController } from "./antigravity-auth.ts";
 import {
   antigravityManagedInstallAvailable,
@@ -44,21 +45,43 @@ import { currentEngineCatalog } from "../model-manifest/manifest.ts";
 
 export const STATIC_ANTIGRAVITY_MODELS: ModelCatalog = bundledEngineCatalog("antigravity");
 
-/** Bots saved before the thinking-level option hold ids like `gemini-3.8-flash-medium` or `gemini-4-argon-high`;
+/** Bots saved before the thinking-level option hold ids like `gemini-3.8-flash-medium` or `gemini-4-neon-high`;
  * the official runtime offers only the base model with that option, so run the base at the saved level. A runtime
  * that still offers the suffixed id, or lacks the base, or a turn that chose its own level, keeps its selection. */
-export function normalizeAntigravityTurn(turn: SendTurnInput, offeredModels: readonly string[]): SendTurnInput {
-  if (turn.variant !== undefined) return turn;
-  const match = turn.model?.match(/^(.+)-(low|medium|high)$/u);
-  return match && offeredModels.includes(match[1]) && !offeredModels.includes(match[0])
-    ? { ...turn, model: match[1], variant: match[2] }
-    : turn;
+export function normalizeAntigravityTurn(turn: SendTurnInput, offeredModels: readonly string[], catalog?: ModelCatalog): SendTurnInput {
+  if (turn.variant !== undefined || !turn.model) return turn;
+  const split = splitAntigravityThinking(turn.model, offeredModels.map((id) => catalog?.options.find((option) => option.id === id) ?? { id }), true);
+  return split ? { ...turn, ...split } : turn;
 }
 
 /** Antigravity's session modes: `yolo` for Full, `auto_edit` for auto-accept edits, `default` otherwise (it has no reviewer for Auto). */
 export function antigravityPermissionMode(fullAuto: boolean, approvalMode?: ApprovalMode): "yolo" | "auto_edit" | "default" {
   if (fullAuto || approvalMode === "full") return "yolo";
   return approvalMode === "edits" ? "auto_edit" : "default";
+}
+
+/** agy_acp_server opens a text run after a tool call with `&_a_m_p_;_` tokens — `&` escaped
+ * entity-style — which Markdown then parses as emphasis; they are never real reply text. */
+export function cleanAntigravityTextStart(delta: string): string {
+  return delta.replace(/^(?:&_a_m_p_;_\s*)+/u, "");
+}
+
+/** The escaping can open any text run, so cleanAntigravityTextStart applies to the first text chunk
+ * after anything that is not one. */
+export function antigravityUpdateFilter(): (update: Record<string, any>) => Record<string, any> | null {
+  let runStart = true;
+  return (update) => {
+    if (update.sessionUpdate !== "agent_message_chunk" || update.content?.type === "image") {
+      runStart = true;
+      return update;
+    }
+    const text = update.content?.text;
+    if (typeof text !== "string" || !text || !runStart) return update;
+    const kept = cleanAntigravityTextStart(text);
+    if (!kept) return null;
+    runStart = false;
+    return kept === text ? update : { ...update, content: { ...update.content, text: kept } };
+  };
 }
 
 const SIGN_IN_WORDS = /\bauthenticat|\bunauthenticated\b|\bsign(?:ed)?[ -]?in\b|\blog(?:ged)?[ -]?in\b|\bcredentials?\b/iu;
@@ -93,6 +116,7 @@ const support: AcpSupport = {
       : {}),
   },
   images: true,
+  mediaLinks: true,
   spawnArgs: () => [],
   selectModel: { configId: "model" },
   modelVariants: true,
@@ -105,6 +129,7 @@ const support: AcpSupport = {
   clientFileSystem: true,
   clientReadRoots: (turn) => (turn.skillFiles ?? []).map(dirname),
   sanitizeToolPayload: true,
+  updateFilter: antigravityUpdateFilter,
 
   resolveCommand: async (env, config, instanceId) => {
     const runtime = await resolveAntigravityRuntime(config.cli, env);
@@ -227,6 +252,9 @@ export const AntigravityDriver: ProviderDriver<AcpConfig> = {
       },
       get modelsUnconfirmed() {
         return base.modelsUnconfirmed;
+      },
+      get modelsUnreadable() {
+        return base.modelsUnreadable;
       },
       snapshot: async () => {
         const snapshot = await base.snapshot();

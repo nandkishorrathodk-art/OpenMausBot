@@ -30,6 +30,7 @@ export type BotUpdatePatch = Partial<
     | "voiceNotes"
     | "voiceNoteEveryReply"
     | "xResearch"
+    | "teamFilesEdit"
     | "toolsOff"
     | "pinned"
     | "hidden"
@@ -43,6 +44,7 @@ export type BotUpdatePatch = Partial<
     | "browserProfile"
     | "memoryUpkeep"
     | "cacheKeepWarm"
+    | "checkWork"
     | "mcpServers"
     | "modelSelection"
   >

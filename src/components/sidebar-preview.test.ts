@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Bot, Group, Message } from "@/state/store";
-import { botPreview, groupPreview, lastPreviewable, serverCardText } from "./sidebar-preview";
+import { botPreview, groupPreview, lastPreviewable, serverCardText, waitingHandoffPreview } from "./sidebar-preview";
 import { setLocale } from "@/lib/i18n";
 
 let at = 0;
@@ -9,6 +9,15 @@ const screen = () => message({ kind: "screen", png: "frame", mime: "image/jpeg" 
 const bot = { id: "ada", name: "Ada", messages: [], busy: false } as unknown as Bot;
 
 describe("sidebar previews", () => {
+  it("says what a waiting bot waits for when it handed the person a step, and the plain wait otherwise", () => {
+    const waiting = { ...bot, activity: "waiting-on-you" } as Bot;
+    const step = (instruction: string, fields: object = {}) => message({ kind: "signin", signIn: { url: "", site: "", place: "browser", instruction, ...fields } } as Partial<Message>);
+    expect(botPreview(waiting, [step("Sign in to GitHub."), step("Approve the payment.")], [], false)).toBe("Waiting for you: Approve the payment.");
+    expect(botPreview(waiting, [step("Sign in to GitHub."), step("Approve the payment.", { done: true })], [], false)).toBe("Waiting for you: Sign in to GitHub.");
+    expect(waitingHandoffPreview([step("Sign in to GitHub.", { expired: true })])).toBeNull();
+    expect(botPreview(waiting, [message({ text: "Which one?" })], [], false)).toBe("Waiting for you…");
+  });
+
   it("shows a bot's reply, not the screen frame its computer turn ended with", () => {
     const visible = [message({ role: "user", text: "Paint a sunset" }), message({ text: "I painted a sunset in JS Paint." }), screen()];
     expect(botPreview(bot, visible, [], false)).toBe("I painted a sunset in JS Paint.");
@@ -33,6 +42,8 @@ describe("sidebar previews", () => {
   it("keeps a failed step's error line and a recovery or notice line as they are", () => {
     const failed = [message({ role: "user", text: "Tidy my inbox" }), message({ text: "On it." }), message({ kind: "activity", tool: { name: "error: Gmail is not connected", ok: false } } as Partial<Message>)];
     expect(botPreview(bot, failed, [], false)).toContain("Gmail is not connected");
+    const failedTool = [message({ role: "user", text: "Tidy my inbox" }), message({ text: "On it." }), message({ kind: "activity", tool: { name: "Bash", ok: false } } as Partial<Message>)];
+    expect(botPreview(bot, failedTool, [], false)).not.toBe("On it.");
     const notice = [message({ role: "user", text: "Tidy my inbox" }), message({ text: "On it." }), step("notice: Switched to a backup model")];
     expect(botPreview(bot, notice, [], false)).toBe("Switched to a backup model");
   });

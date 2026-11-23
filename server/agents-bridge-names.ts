@@ -10,7 +10,7 @@ import { availableTools } from "./drivers/agents-catalog.ts";
 export const CATALOG_TOOL_NAMES: ReadonlySet<string> = new Set([
   ...[{ room: false }, { room: true }].flatMap((room) => availableTools({
     skillAuthoring: true, sharedComputers: true, voiceNotes: true, xResearch: true, research: true, team: true,
-    computerSelection: true, cloudHome: false, chief: true, mausbot: true, botId: WATCHER_OPTIONS_CARD_BOT_ID, ...room,
+    computerSelection: true, cloudHome: false, localVm: true, chief: true, mausbot: true, botId: WATCHER_OPTIONS_CARD_BOT_ID, ...room,
   }).map((tool) => tool.name)),
   ...Object.keys(AGENTS_TOOL_ALIASES),
 ]);

@@ -96,6 +96,7 @@ export function parseOpenCodeLogLine(line: string, sessionId: string): LogSignal
 
 export class LogTail {
   private offset: number | null = null;
+  private identity: string | null = null;
   private partial = "";
   private readonly path: string;
   private readonly maxBytes: number;
@@ -113,7 +114,11 @@ export class LogTail {
       return [];
     }
     try {
-      const size = fstatSync(fd).size;
+      const stat = fstatSync(fd);
+      const size = stat.size;
+      const identity = `${stat.dev}:${stat.ino}`;
+      if (this.identity !== null && this.identity !== identity) { this.offset = 0; this.partial = ""; }
+      this.identity = identity;
       if (this.offset === null) {
         this.offset = size;
         return [];
@@ -384,6 +389,7 @@ const minutes = (ms: number): string => {
   return `${Math.round(ms / 60_000)} min`;
 };
 
+/** One sentence for the notice row: what a quiet turn is doing, and what ends it. */
 export function describeQuiet(name: string, state: QuietState, quietMs: number, stopAfterMs: number): string {
   const quiet = minutes(quietMs);
   switch (state.kind) {
@@ -400,10 +406,13 @@ export function describeQuiet(name: string, state: QuietState, quietMs: number, 
       return `${name}'s model request failed: "${state.message}" ${name} may retry or stop; no reply for ${quiet} so far.`;
     case "compressing":
       return `${name} is compressing its conversation history to make room. This can take a few minutes; it is still working.`;
-    case "waiting-model":
-      return state.nearFullContext
-        ? `${name} is waiting on its model: no reply for ${quiet}, but its request is still open. Its history is nearly full, so it may be compressing it.`
-        : `${name} is waiting on its model: no reply for ${quiet}, but its request is still open. Slow models and rate limits look like this.`;
+    case "waiting-model": {
+      if (state.nearFullContext) {
+        return `${name} is waiting on its model: no reply for ${quiet}, but its request is still open. Its history is nearly full, so it may be compressing it.`;
+      }
+      const ownStop = stopAfterMs > 0 ? `; with no tool or question active, the turn may stop after ${formatQuietLimit(stopAfterMs)} of silence` : "";
+      return `${name} is waiting on its model: no reply for ${quiet}, but its request is still open. Its model provider may be slow or busy${ownStop}.`;
+    }
     case "busy":
       return `${name} is busy on this computer but has sent nothing for ${quiet}.`;
     case "between-requests":

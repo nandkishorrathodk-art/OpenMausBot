@@ -16,6 +16,8 @@ import { nativeSkillListing, nativeSkills, projectSkillListing, projectSkills, p
 import { redactSecretsInText } from "../redact.ts";
 import { readSectionContext } from "../section-context.ts";
 import { librarySkillOptOuts, listLibrarySkills, readLibrarySkillFile, readSkillLibraryIndex, skillsLibraryEnabled } from "../skill-library.ts";
+import { workflowSkillsPrompt } from "../skill-burger/store.ts";
+import { librarySkillFiles, ownSkillFiles, type StoredSkillFiles } from "../skill-side-files.ts";
 import {
   conversationAssignedSkills,
   prepareShareNote,
@@ -111,6 +113,14 @@ export function createSkillsLibraryHost(deps: SkillsLibraryHostDeps) {
     if (readImportedSkills()[name]) return readImportedSkillFile(name);
     const native = nativesFor(bot).find((skill) => skill.name === name) ?? projectFor(bot, bot.threadId).find((skill) => skill.name === name);
     return native ? readNativeSkillFile(native) : null;
+  };
+  /** The files beside the SKILL.md readBotSkillFile reads, from the same copy: none for a skill shared from this
+   * computer, null when they changed since they came in. */
+  const readBotSkillFiles = (bot: BotRecord, name: string): StoredSkillFiles => {
+    if (readSkillFile(bot.id, name) !== null) return ownSkillFiles(bot.id, name);
+    if (listSkills(bot.id).some((skill) => skill.name === name)) return null;
+    if (skillsLibraryEnabled(cfg) && listLibrarySkills().some((skill) => skill.name === name && (bot.assignedSkills?.includes(name) || (skill.everyBot && !librarySkillOptOuts(bot.id).has(name))))) return librarySkillFiles(name);
+    return [];
   };
 
   const shareBotsNow = (): ShareBot[] =>
@@ -283,6 +293,7 @@ export function createSkillsLibraryHost(deps: SkillsLibraryHostDeps) {
   return {
     listBotSkills,
     readBotSkillFile,
+    readBotSkillFiles,
 
     mode,
 
@@ -299,7 +310,8 @@ export function createSkillsLibraryHost(deps: SkillsLibraryHostDeps) {
       const thread = threadId ?? bot.threadId;
       const project = thread ? projectInUse(bot, thread, cwd, instance, assigned) : [];
       return skillsSystemPrompt(bot.id, assigned, threadId === undefined ? undefined : conversationStartedAt(threadId)) +
-        importedSkillsPrompt(listed, available.length - listed.length) + projectSkillsPrompt(project);
+        importedSkillsPrompt(listed, available.length - listed.length) + projectSkillsPrompt(project) +
+        (skillsLibraryEnabled(cfg) ? "" : workflowSkillsPrompt(bot.id)); // with the library on, saved workflows are every-bot library skills already
     },
 
     /** The imported skills a turn links into its task folder: the same ones its index lists, so an engine that loads
@@ -310,9 +322,10 @@ export function createSkillsLibraryHost(deps: SkillsLibraryHostDeps) {
 
     turnSkillFiles,
 
-    turnSettings(bot: BotRecord, threadId: string, instance: TurnInstance, restrictsMcp: boolean) {
+    /** `cwd`: the turn's folder, whose project skills win over the person's own of the same name. */
+    turnSettings(bot: BotRecord, threadId: string, instance: TurnInstance, restrictsMcp: boolean, cwd?: string) {
       return {
-        ...settingsTurnFields(cfg, DATA_DIR, restrictsMcp),
+        ...settingsTurnFields(cfg, DATA_DIR, restrictsMcp, undefined, cwd),
         ...(instance.driverKind === "antigravityAgent" ? { skillFiles: turnSkillFiles(bot, threadId, instance) } : {}),
       };
     },
