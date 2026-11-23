@@ -1,4 +1,4 @@
-// Only the desktop app's own server may use this computer. A second OpenMausBot server on the same computer (a copy run
+// Only the desktop app's own server may use this computer. A second Parth Lab server on the same computer (a copy run
 // from source, a demo) finds the app's driver record on disk, in the folder the app keeps it in, and still never mounts
 // this computer or drives it; the app's own server, which hears the record over its parent port, still can.
 import { spawn, type ChildProcess } from "node:child_process";

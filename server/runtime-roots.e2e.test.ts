@@ -25,7 +25,7 @@ const CONNECTED = "OpenMausBot connection update: the user securely connected";
 const STEP_CAP_CONTINUES = "stopped at the step limit";
 const SEAT_FREE = "the computer this conversation waited for is free again";
 const SIGNED_IN = "OpenMausBot sign-in update: the person finished signing in to";
-const INTERRUPTED_OUTWARD = "Interrupted by an OpenMausBot restart after it already";
+const INTERRUPTED_OUTWARD = "Interrupted by a Parth Lab restart after it already";
 const SETTLED = "Your downstream room requests have settled.";
 const REPORT_FROM_MIRA = "[From @Mira (bot) · report on assignment";
 

@@ -87,7 +87,7 @@ test("security: an address only on its own port, 1024 or higher, never one left 
   for (const url of ["http://127.0.0.1:19501/mcp", "http://localhost:19501/mcp", "http://[::1]:19501/mcp", "https://127.0.0.1:1024/mcp"]) assert.equal(lentMcpRefusal(cloud, http(url)), null, url);
 });
 
-test("security: never this computer's own OpenMausBot ports or Chrome's DevTools port, and nothing is fetched", async t => {
+test("security: never this computer's own Parth Lab ports or Chrome's DevTools port, and nothing is fetched", async t => {
   const dir = await realpath(await mkdtemp(path.join(tmpdir(), "omb-lent-mcp-ports-")));
   t.after(() => rm(dir, { recursive: true, force: true }));
   const chrome = path.join(dir, "Google", "Chrome");

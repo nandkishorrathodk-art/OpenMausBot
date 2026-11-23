@@ -10125,7 +10125,7 @@
   "chat.notice.teammateNeedsInput": "{name} ha bisogno del vostro input: {question}",
   "chat.notice.relayCouldNotContinue": "questa conversazione non poteva continuare — {error}",
   "secretCard.delivery.fileNamed": "{botName} I comandi possono leggerlo da un file privato per 24 ore; non viene mai aggiunto alla chat.",
-  "secretCard.delivery.refNamed": "{botName} ottiene un riferimento unico per Parth LabI suoi strumenti e non lo vede mai.",
+  "secretCard.delivery.refNamed": "{botName} ottiene un riferimento unico per gli strumenti di Parth Lab e non lo vede mai.",
   "serverError.secret.missing": "nessuna richiesta di tali credenziali",
   "serverError.secret.settingsCard": "questa scheda salva una chiave in Impostazioni",
   "serverError.secret.savingFromPhone": "questo segreto è attualmente stato salvato da un telefono",

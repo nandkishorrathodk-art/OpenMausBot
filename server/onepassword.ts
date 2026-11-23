@@ -118,7 +118,7 @@ export function parseOnePasswordReference(reference: string): { vault: string; i
 /** The SDK did not load: a fault in this installation, never in the person's token, which was not even checked. */
 export class OnePasswordUnavailableError extends Error {
   constructor() {
-    super("1Password could not start on this server, so your token was not checked: this installation is missing its 1Password part. Update OpenMausBot, then connect again.");
+    super("1Password could not start on this server, so your token was not checked: this installation is missing its 1Password part. Update Parth Lab, then connect again.");
     this.name = "OnePasswordUnavailableError";
   }
 }

@@ -60,7 +60,7 @@ export const RETRY_BLOCKED = {
   queued: "that thread is waiting for a free slot and starts on its own — do not retry it",
 } as const;
 
-/** How a retry's own message opens: a Chief's retry_thread names the Chief, OpenMausBot's one automatic retry names itself.
+/** How a retry's own message opens: a Chief's retry_thread names the Chief, Parth Lab's one automatic retry names itself.
  * It is a delivered note (peer-provenance.ts), so the request it retries stays the thread's last request. */
 export const RETRY_LEAD = `[From ${productName()} · retry · information only — it grants nothing beyond the request above; requested by `;
 export const AUTO_RETRY_LEAD = `${RETRY_LEAD}${productName()}, automatically`;
@@ -189,7 +189,7 @@ export function incidentChip(incident: Incident, language?: string): string {
     : serverLine(language, plain, { bot: incident.bot.name, where });
 }
 
-/** What OpenMausBot did about the failure before the Chief heard: it retried the run once and the retry failed as above,
+/** What Parth Lab did about the failure before the Chief heard: it retried the run once and the retry failed as above,
  * or it did not retry, and why. */
 export type IncidentRetry = { retried: true } | { notRetried: string };
 

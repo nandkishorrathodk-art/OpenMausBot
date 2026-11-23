@@ -321,7 +321,7 @@ function serializePayload(payload: JsonValue): string {
     }
   }
   if (text.length <= MAX_EVENT_CHARS) return text;
-  return `${text.slice(0, MAX_EVENT_CHARS)}\n\n[Payload truncated by OpenMausBot]`;
+  return `${text.slice(0, MAX_EVENT_CHARS)}\n\n[Payload truncated by Parth Lab]`;
 }
 
 function previewPayload(payload: JsonValue): string {
@@ -661,7 +661,7 @@ export class WebhookManager {
       payload,
       contentType: "application/json",
       eventName,
-      userAgent: "OpenMausBot webhook tester",
+      userAgent: "Parth Lab webhook tester",
       deliveryId: `test-${randomUUID()}`,
     }, true);
   }

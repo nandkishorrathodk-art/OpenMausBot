@@ -91,7 +91,7 @@ linuxBox("the box plan", () => {
     expect(text).not.toContain("--new-session");
   });
 
-  it("puts the engines OpenMausBot installed back whole and read-only, whatever else the turn may write", () => {
+  it("puts the engines Parth Lab installed back whole and read-only, whatever else the turn may write", () => {
     // npm's bin entries are relative links into the prefix: `bin/opencode -> ../lib/node_modules/opencode-ai/bin/opencode.exe`.
     const prefix = join(dataDir, "tools", "npm");
     const engineFiles = [`${prefix}/bin/opencode`, `${prefix}/lib/node_modules/opencode-ai/bin/opencode.exe`, `${prefix}/bin/codex`,
@@ -261,7 +261,7 @@ linuxBox("the box plan", () => {
       }
     }
     expect(visibleInBox(ask({ XDG_CACHE_HOME: join(dataDir, "workspaces", "b", "cache") }, true), join(dataDir, "workspaces", "b", "cache", "x"))).toBe("rw");
-    // An engine OpenMausBot starts keeps the home it was given there.
+    // An engine Parth Lab starts keeps the home it was given there.
     expect(visibleInBox(ask({ CODEX_HOME: join(dataDir, "providers", "codex-1") }, false), join(dataDir, "providers", "codex-1", "auth.json"))).toBe("rw");
   });
 

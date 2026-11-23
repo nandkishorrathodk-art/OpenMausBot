@@ -36,7 +36,7 @@ describe("what a bot on My Cloud is told about connections that need the person"
   it("in a turn, a server on the person's computer is named only when it can't be reached now, with the reason lending gives", () => {
     const prompt = createConnectionPrompt(sources(), ORIGIN);
     expect(prompt({ mcpServers: ["notes"] }, new Map()), "reached through the lent computer: nothing to say").toBe("");
-    const offline = "notes runs on your Mac (Milind's MacBook), which is offline right now: OpenMausBot on it is closed, or the Mac is asleep or off.";
+    const offline = "notes runs on your Mac (Milind's MacBook), which is offline right now: Parth Lab on it is closed, or the Mac is asleep or off.";
     expect(prompt({ mcpServers: ["notes"] }, new Map([["notes", offline]]))).toBe(
       ` Runs on the person's own computer and can't be reached now: ${offline} If a task needs one, tell the person that in plain words, and do not write your own replacement.`);
   });
@@ -68,7 +68,7 @@ describe("what a bot on My Cloud is told about connections that need the person"
       expect(prompt({}, undefined, (name) => apps[name] ?? null)).toBe(
         " Not signed in on My Cloud, but connected here as connected apps: google-drive (Google Drive). When a task needs one, use that connected app through the composio tools instead; do not send the person to sign in to the server."
         + ` Not signed in on My Cloud yet, and also connected here as connected apps: google-docs (${link("google-docs")}; connected app: Google Docs). When a task needs one, use the connected app through the composio tools; give the server's link only when the task needs that server itself.`
-        + " Can't be signed in from OpenMausBot (their sign-in works only in another app): google-sheets (connect Google Sheets as a connected app instead); google-slides." + elsewhere);
+        + " Can't be signed in from Parth Lab (their sign-in works only in another app): google-sheets (connect Google Sheets as a connected app instead); google-slides." + elsewhere);
     });
 
     it("in a turn that cannot use the app (its tool selection, scopes, policy or no connected apps): no app, and still no link that cannot finish", () => {
@@ -76,7 +76,7 @@ describe("what a bot on My Cloud is told about connections that need the person"
       for (const appFor of [undefined, () => null]) {
         expect(prompt({}, undefined, appFor)).toBe(
           ` Not connected on My Cloud yet: google-docs (${link("google-docs")}). When a task needs one, say in plain words that it needs the person once on My Cloud and give its link; do not try another way.`
-          + " Can't be signed in from OpenMausBot (their sign-in works only in another app): google-drive; google-sheets; google-slides." + elsewhere);
+          + " Can't be signed in from Parth Lab (their sign-in works only in another app): google-drive; google-sheets; google-slides." + elsewhere);
       }
     });
   });

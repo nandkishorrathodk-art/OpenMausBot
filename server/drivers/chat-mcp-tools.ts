@@ -61,7 +61,7 @@ export interface ChatToolSession {
    * skipped and what the tool limit did; undefined when none finished. */
   join(): Promise<string[] | undefined>;
   validate(name: string, args: unknown): void;
-  /** Directory reads and OpenMausBot's own agents server need no card; call_tool shows the tool it runs. */
+  /** Directory reads and Parth Lab's own agents server need no card; call_tool shows the tool it runs. */
   view(name: string, args: Record<string, unknown>): ChatToolCallView;
   execute(name: string, args: Record<string, unknown>, signal: AbortSignal): Promise<ChatToolResult>;
   close(): Promise<void>;

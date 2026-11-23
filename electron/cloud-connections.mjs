@@ -115,7 +115,7 @@ async function letGo(local, target, item, digest) {
 }
 
 /**
- * Makes My Cloud act as this computer's connected-apps account: with OpenMausBot's service, a one-time code minted for
+ * Makes My Cloud act as this computer's connected-apps account: with Parth Lab's service, a one-time code minted for
  * My Cloud's own installation; with the person's own Composio project, the same key and user. A Cloud whose own apps
  * are connected keeps them, and says which apps connected here it lacks (`missing`).
  * `here` and `there`: the "composio" connection of this computer and of My Cloud (null when My Cloud has none yet).

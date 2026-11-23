@@ -18,8 +18,8 @@ export interface TurnStdioMcpServer {
   env: Record<string, string>;
 }
 
-/** URL servers always go through OpenMausBot's remote proxy: agents' own MCP clients add capability
- * fields strict servers refuse. Under a schema profile OpenMausBot fits every tool list: its own proxies and gates read
+/** URL servers always go through Parth Lab's remote proxy: agents' own MCP clients add capability
+ * fields strict servers refuse. Under a schema profile Parth Lab fits every tool list: its own proxies and gates read
  * the profile, and the person's stdio servers go through a gate. */
 export function turnStdioMcpServers(turn: SendTurnInput, options: { schemaProfile?: ToolSchemaProfileId; toolBudget?: number } = {}): TurnStdioMcpServer[] {
   const { schemaProfile, toolBudget } = options;
@@ -61,7 +61,7 @@ export function turnStdioMcpServers(turn: SendTurnInput, options: { schemaProfil
   return toolBudget === undefined ? fitted : withToolShares(fitted, turn, toolBudget);
 }
 
-/** OpenMausBot's proxies and gates that cap their list at OMB_TOOL_LIMIT. */
+/** Parth Lab's proxies and gates that cap their list at OMB_TOOL_LIMIT. */
 const LIMITING_PROXY = /(?:^|[\\/])(?:agents-proxy|harness-mcp-proxy|connector-proxy|mcp-gate|mcp-remote-proxy)\.[jt]s$/;
 
 /** Each server's share of `budget` tools in its environment, the agents server's whole list first; a server that would
@@ -86,7 +86,7 @@ export type AcpMcpServer = { name: string; command: string; args: string[]; env:
 
 const HARNESS_KINDS = ["browser", "computer", "data", "email", "device"] as const;
 
-/** OpenMausBot's own server behind a stdio proxy, as its HTTP endpoint on this server; null for any other server (the
+/** Parth Lab's own server behind a stdio proxy, as its HTTP endpoint on this server; null for any other server (the
  * person's, or one wrapped in a tool-selection gate). */
 export function ownMcpOverHttp(server: TurnStdioMcpServer): { url: string; headers: Record<string, string> } | null {
   const harness = server.env.OMB_HARNESS_URL;
@@ -108,7 +108,7 @@ export function ownMcpOverHttp(server: TurnStdioMcpServer): { url: string; heade
 }
 
 /** The turn's MCP servers as ACP session/new takes them. stdio is the baseline every ACP agent supports; an agent that
- * reaches servers by URL (`http`) gets OpenMausBot's own as endpoints of this server instead of a proxy process each.
+ * reaches servers by URL (`http`) gets Parth Lab's own as endpoints of this server instead of a proxy process each.
  * `engine` is the driver kind, whose provider may limit each tool's schema; `toolBudget`, how many MCP tools the model's
  * provider takes in all. */
 export function acpMcpServers(turn: SendTurnInput, options: { http?: boolean; engine?: string; toolBudget?: number } = {}): AcpMcpServer[] {
@@ -117,7 +117,7 @@ export function acpMcpServers(turn: SendTurnInput, options: { http?: boolean; en
   return options.http ? acpOwnServersOverHttp(servers) : servers;
 }
 
-/** `servers` with each of OpenMausBot's own stdio proxies as its endpoint on this server; every other server as it was. */
+/** `servers` with each of Parth Lab's own stdio proxies as its endpoint on this server; every other server as it was. */
 export function acpOwnServersOverHttp(servers: AcpMcpServer[]): AcpMcpServer[] {
   return servers.map((server) => {
     if (!("command" in server)) return server;

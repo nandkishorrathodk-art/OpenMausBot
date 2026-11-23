@@ -25,7 +25,7 @@ const KEY_CHECK = {
 const EXTRACT_KEY_CHECK = {
   seam: "keyCheck",
   fields: { ok: { type: "boolean", description: "Is this a connection check?" } },
-  input: { text: "OpenMausBot is checking that an extraction-model key works." },
+  input: { text: "Parth Lab is checking that an extraction-model key works." },
 };
 
 /** The relay's own check of an extraction body: the key check is the only extraction this test makes. */

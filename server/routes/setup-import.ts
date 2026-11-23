@@ -28,7 +28,7 @@ export const SETUP_IMPORT_PATH = "/api/setup-import";
 export const GROK_LOOK_PATH = "/api/setup-import/grok";
 export const GROK_CONNECTOR_PATH = "/api/setup-import/grok/connector";
 export const GROK_HISTORY_PATH = "/api/setup-import/grok/history";
-const LOCAL_ONLY = "Only the desktop app on the computer running OpenMausBot can bring in that computer's skills and tools.";
+const LOCAL_ONLY = "Only the desktop app on the computer running Parth Lab can bring in that computer's skills and tools.";
 const requestSchema = z.object({ skills: z.boolean().optional(), tools: z.boolean().optional() }).strict();
 const historySchema = z.object({ botId: z.string().min(1).max(200), grokName: z.string().trim().min(1).max(500) }).strict();
 

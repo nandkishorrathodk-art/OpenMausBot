@@ -2,7 +2,7 @@
 // Security: this keeps one bot from deleting or stopping the others by accident through the person's session. It is not
 // a boundary against a bot with Full access, which runs as the person and can read whatever they can.
 
-/** What OpenMausBot's server puts in the environment of the engines it starts, and so of every bot's shell: the run tag
+/** What Parth Lab's server puts in the environment of the engines it starts, and so of every bot's shell: the run tag
  * spawnCli gives each engine (engine-records.ts), the desktop app's mark on its server's children, and a turn's
  * per-turn capability. A person's terminal has none of them. */
 const TURN_VARIABLES = ["OMB_ENGINE_TAG", "OMB_COMMS_TOKEN", "OMB_HOOK_TOKEN_FILE", "OMB_HOOK_URL", "OMB_HARNESS_URL", "OMB_BOT_ID"] as const;

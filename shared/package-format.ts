@@ -1,4 +1,4 @@
-// The OpenMausBot package file ("openmaus.package"), v1, v2 or v3 (v2 with
+// The Parth Lab package file ("openmaus.package"), v1, v2 or v3 (v2 with
 // more skills); every reader returns v2 or v3. The single validation gate for
 // the server, the renderer and the Admin upload, so it imports only zod, yaml,
 // croner and pure shared modules (no Buffer, no node:*). The schema has no
@@ -380,7 +380,7 @@ const routineSchema = z.object({
   timeoutMinutes: z.number().int().min(1).max(1_440).optional(),
   overlap: z.enum(["skip", "queue"]).optional(),
   continuity: z.boolean().optional(),
-  /** Also run once each time OpenMausBot starts. Repeating routines only. */
+  /** Also run once each time Parth Lab starts. Repeating routines only. */
   runOnStartup: z.boolean().optional(),
   /** The publisher's intent. File imports always arrive paused. */
   enabledAfterInstall: z.boolean(),

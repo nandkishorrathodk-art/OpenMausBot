@@ -70,7 +70,7 @@ export function setupSuggestionPrompt(facts: SuggestionFacts): string {
     `Write every option in ${language}, even if the facts below are in another language. Keep app names as they are.`,
   ];
   return [
-    "You write the answer options for the first message of a new operator in OpenMausBot, the app where the person runs Parth Lab, their own AI-driven cybersecurity company, and every operator in it is an AI security operator.",
+    "You write the answer options for the first message of a new operator in Parth Lab, the app where the person runs their own AI-driven cybersecurity company, and every operator in it is an AI security operator.",
     "",
     'The person has just made the operator described below. Its first message asks "What should I help you with first?" and lists your 5 options. Tapping one makes the operator set itself up for that job straight away, so each option is a job the person hands the operator, in their own words.',
     "",

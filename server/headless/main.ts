@@ -1,3 +1,4 @@
+import { productName } from "../brand.ts";
 import { HEADLESS_USAGE } from "../cli-usage.ts";
 import { EXIT, HeadlessError, MUTATING_VERBS, parseCommand } from "./args.ts";
 import { inBotShell } from "./bot-shell.ts";
@@ -136,7 +137,7 @@ openmausbot computers sleep BOT            put it to sleep; it wakes when the bo
   terminal, openmausbot login is simpler. On a server you started with openmausbot serve the code is made for you;
   for the desktop app or a server elsewhere, get one from Settings → Phone & devices.
   Then use it: --url URL --token-file FILE (or OPENMAUSBOT_URL and OPENMAUSBOT_TOKEN).`,
-  mcp: "openmausbot mcp\n  Serve the OpenMausBot MCP tools on stdin and stdout, for an agent (docs/mcp-server.md).",
+  mcp: `openmausbot mcp\n  Serve the ${productName()} MCP tools on stdin and stdout, for an agent (docs/mcp-server.md).`,
   token: "openmausbot token create NAME --out FILE … | token list | token revoke ID   (see help token create)",
   "token create": `openmausbot token create NAME --out FILE [--scope client|admin] [--expires 90d] [--force]
   An access token for CI and scripts, saved to FILE (only you can read it) and never printed.

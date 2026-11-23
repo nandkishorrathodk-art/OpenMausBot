@@ -217,8 +217,8 @@ function registrationRefusal(response: Response, description: unknown): string {
   const reason = typeof description === "string" ? description.replace(/\s+/g, " ").trim().slice(0, 300) : "";
   const retryAfter = response.headers.get("retry-after")?.trim().slice(0, 40);
   const wait = retryAfter ? ` It asked to wait: Retry-After ${/^\d+$/.test(retryAfter) ? `${retryAfter} seconds` : retryAfter}.` : "";
-  if (!reason && !wait) return "This server would not register OpenMausBot for sign-in. Try again later.";
-  return `This server would not register OpenMausBot for sign-in (HTTP ${response.status})${reason ? `: ${reason}` : "."}${wait} Try again later.`;
+  if (!reason && !wait) return "This server would not register Parth Lab for sign-in. Try again later.";
+  return `This server would not register Parth Lab for sign-in (HTTP ${response.status})${reason ? `: ${reason}` : "."}${wait} Try again later.`;
 }
 
 export class McpOAuthManager {
@@ -378,7 +378,7 @@ export class McpOAuthManager {
       const expected = new URL(flow.redirectUri);
       if (!flow.listener && expected.host === host?.trim().toLowerCase() && sameSecret(state, flow.state)) match = flow;
     }
-    if (!match) return { status: 400, text: "Invalid sign-in callback. Return to OpenMausBot and try again." };
+    if (!match) return { status: 400, text: "Invalid sign-in callback. Return to Parth Lab and try again." };
     return this.answer(match, new URL(`${new URL(match.redirectUri).origin}${CALLBACK_PATH}${search.startsWith("?") ? search : ""}`));
   }
 
@@ -650,7 +650,7 @@ export class McpOAuthManager {
     if (!match) {
       response.setHeader("Cache-Control", "no-store");
       response.setHeader("Content-Type", "text/plain; charset=utf-8");
-      response.writeHead(400).end("Invalid sign-in callback. Return to OpenMausBot and try again.");
+      response.writeHead(400).end("Invalid sign-in callback. Return to Parth Lab and try again.");
       return;
     }
     void this.callback(match, request, response);
@@ -716,12 +716,12 @@ export class McpOAuthManager {
       if (request.headers.host !== expected.host || !request.url?.startsWith("/")) throw new Error("host");
       callback = new URL(request.url, flow.redirectUri);
     } catch {
-      response.writeHead(400).end("Invalid sign-in callback. Return to OpenMausBot and try again.");
+      response.writeHead(400).end("Invalid sign-in callback. Return to Parth Lab and try again.");
       return;
     }
     const answer = request.method === "GET"
       ? await this.answer(flow, callback)
-      : { status: 400, text: "Invalid or expired sign-in. Return to OpenMausBot and try again." };
+      : { status: 400, text: "Invalid or expired sign-in. Return to Parth Lab and try again." };
     response.writeHead(answer.status).end(answer.text);
   }
 
@@ -731,9 +731,9 @@ export class McpOAuthManager {
       await this.acceptCallback(flow, callback);
       return flow.status.phase === "failed"
         ? { status: 400, text: `${flow.status.message} You can close this tab.` }
-        : { status: 200, text: "Signed in. You can close this tab and return to OpenMausBot." };
+        : { status: 200, text: "Signed in. You can close this tab and return to Parth Lab." };
     } catch (error) {
-      return { status: error instanceof McpSignInError ? error.status : 400, text: "Invalid or expired sign-in. Return to OpenMausBot and try again." };
+      return { status: error instanceof McpSignInError ? error.status : 400, text: "Invalid or expired sign-in. Return to Parth Lab and try again." };
     }
   }
 

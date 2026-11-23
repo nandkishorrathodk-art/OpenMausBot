@@ -50,7 +50,7 @@ function fail(message: string): never {
 }
 
 const CREDENTIALS_REFUSED = "This MCP server refused its credentials (HTTP 401). If it uses a sign-in, send the message again: "
-  + "OpenMausBot refreshes sign-ins when a message starts. If it still fails, open Plugins → MCP servers and sign in to it again, "
+  + "Parth Lab refreshes sign-ins when a message starts. If it still fails, open Plugins → MCP servers and sign in to it again, "
   + "or check its header values.";
 
 /** A refusal of our own: its words carry nothing remote, so they are relayed. */

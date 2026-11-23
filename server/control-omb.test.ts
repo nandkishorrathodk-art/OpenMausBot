@@ -132,7 +132,7 @@ describe("control-omb command mapping", () => {
       callTool: vi.fn() as any,
       env: {},
     })).rejects.toMatchObject({
-      message: "mutating commands require an explicit OpenMausBot instance",
+      message: "mutating commands require an explicit Parth Lab instance",
     });
   });
 
@@ -184,7 +184,7 @@ describe("control-omb command mapping", () => {
       callTool: vi.fn() as any,
       env: {},
     })).rejects.toMatchObject({
-      message: "mutating commands require an explicit OpenMausBot instance",
+      message: "mutating commands require an explicit Parth Lab instance",
     });
   });
 

@@ -2,7 +2,7 @@ import { HEADLESS_VERBS } from "./headless/args.ts";
 
 export { HEADLESS_VERBS as HEADLESS_VERB_NAMES };
 
-/** Where a command line goes: the OpenMausBot account (`account login|logout|status`, and `login --email` or `--relay`
+/** Where a command line goes: the Parth Lab account (`account login|logout|status`, and `login --email` or `--relay`
  * as before) and the other classic commands to cli.ts, the headless verbs to headless/main.ts. */
 export function routeCli(argv: readonly string[]): { headless: boolean; argv: string[] } {
   if (argv[0] === "account") return { headless: false, argv: ["login", "logout", "status"].includes(argv[1] ?? "") ? argv.slice(1) : ["--help"] };
@@ -76,7 +76,7 @@ pair    a new pairing code for the running server, with its link and QR
         (--phone: chat and approvals only; --ttl keeps it open up to 24h,
         still single use)
 devices lists paired devices; "devices revoke ID" signs one out
-account login signs this machine in to an OpenMausBot account (an emailed
+account login signs this machine in to a Parth Lab account (an emailed
         code) and reserves its public address for --tunnel; with --relay it
         reserves none, for serve --relay. account logout releases that
         address and signs out. account status: the running server, the

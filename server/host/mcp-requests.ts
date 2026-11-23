@@ -33,7 +33,7 @@ const FRAMED: Record<McpChangeResult["state"], (text: string) => string> = {
 
 export function mcpDecisionText(request: McpChangeRequest): string {
   const result = request.result;
-  return `OpenMausBot MCP server decision ${request.requestId}: ${result ? FRAMED[result.state](result.text) : "not answered yet."}`;
+  return `Parth Lab MCP server decision ${request.requestId}: ${result ? FRAMED[result.state](result.text) : "not answered yet."}`;
 }
 
 type CardLine = { id: string; card?: OptionCardData };

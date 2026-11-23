@@ -4,6 +4,7 @@ import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { productName } from "@/lib/brand";
 import { setLocale } from "@/lib/i18n";
 import { BrowserProxyRow, BuiltInBrowserRow, NewBrowserSettings, ServerSitesRow } from "./BrowserSettingsRows";
 
@@ -161,14 +162,14 @@ describe("Built-in browser without Google Chrome", () => {
     fixture.config = { features: { browser: true }, browserEngine: { kind: "engine", noChrome: true, myChrome: true } };
     show();
     expect(row()).toContain("Ready. Bots use a basic browser because Google Chrome isn't installed.");
-    expect(row()).toContain("Many sites block it. Install Google Chrome and restart MausBot.");
+    expect(row()).toContain(`Many sites block it. Install Google Chrome and restart ${productName()}.`);
     expect(row()).toContain("If a site still blocks bots, give the bot a My Chrome profile in Browser profiles.");
   });
 
   it("leaves out My Chrome where there is none to use", () => {
     fixture.config = { features: { browser: true }, browserEngine: { kind: "engine", noChrome: true, myChrome: false } };
     show();
-    expect(row()).toContain("Install Google Chrome and restart MausBot.");
+    expect(row()).toContain(`Install Google Chrome and restart ${productName()}.`);
     expect(row()).not.toContain("My Chrome");
   });
 

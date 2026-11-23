@@ -3,7 +3,7 @@ import { splitCliString } from "../env-path.ts";
 import type { ProviderSnapshot } from "../contracts.ts";
 import { productName } from "../brand.ts";
 
-/** Shown on an engine whose custom command starts it inside WSL: it chats, but OpenMausBot's tool servers are Windows
+/** Shown on an engine whose custom command starts it inside WSL: it chats, but Parth Lab's tool servers are Windows
  * programs on Windows' loopback, which the engine inside WSL can neither start nor reach. */
 export const WSL_ENGINE_WARNING = {
   title: "This engine runs inside WSL",

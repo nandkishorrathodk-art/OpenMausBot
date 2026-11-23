@@ -67,7 +67,7 @@ export interface AcpOneShotInput {
   timeoutMs?: number;
 }
 
-const REFUSAL = "OpenMausBot background text allows no tools, files, terminals or approvals.";
+const REFUSAL = "Parth Lab background text allows no tools, files, terminals or approvals.";
 
 export function runAcpOneShot(input: AcpOneShotInput): Promise<string> {
   const { signal, onUsage } = input.options ?? {};

@@ -31,7 +31,7 @@ const INFO = path.join(__dirname, "resources", "speech-helper-Info.plist");
 const WINDOWS_HELPER = path.join(__dirname, "resources", "speech-helper-windows.ps1");
 // A signed app bundle must never be rewritten: lazy compilation would break its seal.
 const BUNDLE = app.isPackaged
-  ? path.join(process.resourcesPath, "OpenMausBot Speech.app")
+  ? path.join(process.resourcesPath, "Parth Lab Speech.app")
   : speechHelperBundle;
 const BIN = app.isPackaged
   ? path.join(BUNDLE, "Contents", "MacOS", "speech-helper")

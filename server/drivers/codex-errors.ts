@@ -6,7 +6,7 @@ import type { ServerText } from "../../shared/server-text.ts";
 import { noticeFailure } from "../chat-notices.ts";
 import { plainRecord } from "./codex-app-approval.ts";
 
-/** How a Codex turn reaches OpenAI: OpenMausBot's ChatGPT plan, Codex's own sign-in, or any other provider. */
+/** How a Codex turn reaches OpenAI: Parth Lab's ChatGPT plan, Codex's own sign-in, or any other provider. */
 export type CodexRoute = "plan" | "own" | "other";
 
 // codex-cli 0.160.1 holding no login sends no Authorization header and gets this 401.
@@ -67,7 +67,7 @@ export function codexLimitFacts(raw: string, route: CodexRoute, codexErrorInfo?:
 // "The 'gpt-6.1-sol' model is not supported when using Codex with a ChatGPT account."
 const PLAN_MODEL_REFUSED = /model is not supported when using Codex with a ChatGPT account/i;
 
-// A ChatGPT plan takes only text, image and file input (2026-11-17 report on OpenMausBot 0.1.169): it refuses a request
+// A ChatGPT plan takes only text, image and file input (2026-11-17 report on Parth Lab 0.1.169): it refuses a request
 // that carries audio with this code, and Codex keeps that audio in the saved session it resends every turn.
 export function codexPlanUnsupportedInput(raw: string, route: CodexRoute): boolean {
   return route === "plan" && raw.includes("subscription_sharing_unsupported_capability");
