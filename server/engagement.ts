@@ -940,7 +940,8 @@ export class EngagementRefusalsStore {
     const existing = room?.refusals.find((refusal) => refusalKey(refusal) === key);
     if (existing) {
       const updated: EngagementRefusal = { ...existing, hosts: next.hosts, ...(next.window ? { window: next.window } : {}), attempts: existing.attempts + 1, at };
-      this.save(this.withRoom(roomId, room!.refusals.map((refusal) => (refusal.id === existing.id ? updated : refusal))));
+      // Last, so the cap below drops by last attempt and a command the team keeps trying is never evicted first.
+      this.save(this.withRoom(roomId, [...room!.refusals.filter((refusal) => refusal.id !== existing.id), updated]));
       return;
     }
     const kept = room?.refusals ?? [];

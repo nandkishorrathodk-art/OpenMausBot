@@ -187,10 +187,10 @@ function window(scope: EngagementScope | null): string {
 }
 
 /**
- * The report, worst finding first. `proven` findings are what the client can act
- * on and are counted apart from `suspected` ones, so a reader never mistakes an
- * unverified lead for a finding. A room with no findings still reports its scope,
- * so the document says what was authorized even when nothing was found.
+ * The report, worst finding first. Each status is counted on its own, so a
+ * `proven` finding — what the client can act on — never reads as a `suspected`
+ * lead. A room with no findings still reports its scope, so the document says
+ * what was authorized even when nothing was found.
  */
 export function buildEngagementReport(input: EngagementReportInput): string {
   const { room, scope, findings } = input;
@@ -198,8 +198,6 @@ export function buildEngagementReport(input: EngagementReportInput): string {
   const sorted = [...findings].sort(
     (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || b.reportedAt - a.reportedAt,
   );
-  const proven = sorted.filter((f) => f.status === "proven").length;
-  const suspected = sorted.filter((f) => f.status === "suspected").length;
 
   const out: string[] = [
     `# Engagement report — ${line(room)}`,
@@ -215,9 +213,13 @@ export function buildEngagementReport(input: EngagementReportInput): string {
     "## Summary",
     "",
     `- Findings: ${sorted.length}`,
-    `- Proven: ${proven}`,
-    `- Suspected: ${suspected}`,
   ];
+
+  const byStatus = FINDING_STATUSES.map((status) => {
+    const count = sorted.filter((f) => f.status === status).length;
+    return count > 0 ? `${STATUS_WORD[status]} ${count}` : "";
+  }).filter(Boolean);
+  out.push(`- By status: ${byStatus.length ? byStatus.join(", ") : "none"}`);
 
   const bySeverity = FINDING_SEVERITIES.map((severity) => {
     const count = sorted.filter((f) => f.severity === severity).length;

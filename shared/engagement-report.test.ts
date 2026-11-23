@@ -36,16 +36,16 @@ describe("the engagement report", () => {
     expect(text).not.toContain("## Findings");
   });
 
-  it("counts proven findings apart from suspected ones, and severity worst first", () => {
+  it("counts every status, so the summary adds up, and sorts severity worst first", () => {
     const text = report([
       at({ id: "a", severity: "medium", status: "suspected", title: "Open redirect" }),
       at({ id: "b", severity: "critical", status: "proven" }),
       at({ id: "c", severity: "low", status: "fixed", title: "Missing header" }),
+      at({ id: "d", severity: "info", status: "wont-fix", title: "Server banner" }),
     ]);
-    expect(text).toContain("- Findings: 3");
-    expect(text).toContain("- Proven: 1");
-    expect(text).toContain("- Suspected: 1");
-    expect(text).toContain("- By severity: Critical 1, Medium 1, Low 1");
+    expect(text).toContain("- Findings: 4");
+    expect(text).toContain("- By status: Suspected 1, Proven 1, Fixed 1, Won't fix 1");
+    expect(text).toContain("- By severity: Critical 1, Medium 1, Low 1, Info 1");
     expect(text.indexOf("| Critical |")).toBeLessThan(text.indexOf("| Medium |"));
     expect(text.indexOf("| Medium |")).toBeLessThan(text.indexOf("| Low |"));
   });

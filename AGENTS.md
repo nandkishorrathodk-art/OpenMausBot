@@ -116,6 +116,12 @@ rebrand, and the rebrand surface `electron/` carries that this file does not.
   (`0xc0a80101`, `3232235777`) and bash's `/dev/tcp/host/port`, but an address
   assembled inside a script or reached through a redirect is still not seen, so
   it bounds an honest operator's mistakes and is not a containment boundary.
+- A card outlives the turn that asked: stopping that turn marks its secret and
+  connector cards `stopped`, and a value provided afterwards is recorded
+  (`provided: true`) but starts nothing — `resumeSecretCard` in
+  `server/host/secret-cards.ts` resumes no stopped card, so a cancelled task
+  never comes back to life through a card. The engagement report counts every
+  status in one `By status` line, so its numbers always add up to `Findings`.
 - When a rebrand reaches a string, move its verbatim twin in the same change.
   `src/lib/phone-setup.ts`'s `PUBLIC_ACCOUNT_MESSAGES` matches
   `electron/companion-account-messages.mjs`'s `FRIENDLY_MESSAGES` by regex, and

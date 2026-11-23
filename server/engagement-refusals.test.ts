@@ -51,6 +51,19 @@ describe("engagement refusals", () => {
     expect(kept.some((refusal) => refusal.command === "curl https://evil.test/0")).toBe(false);
   });
 
+  it("drops the least recently attempted refusals, not the one first seen longest ago", () => {
+    const store = new EngagementRefusalsStore(filename);
+    store.record("room-a", outside, "curl https://evil.test/first");
+    for (let i = 0; i < 199; i += 1) store.record("room-a", outside, `curl https://evil.test/${i}`);
+    store.record("room-a", outside, "curl https://evil.test/first");
+    store.record("room-a", outside, "curl https://evil.test/last");
+    const kept = store.list("room-a");
+    expect(kept).toHaveLength(200);
+    expect(kept.at(-1)!.command).toBe("curl https://evil.test/last");
+    expect(kept.some((refusal) => refusal.command === "curl https://evil.test/first")).toBe(true);
+    expect(kept.some((refusal) => refusal.command === "curl https://evil.test/0")).toBe(false);
+  });
+
   it("round-trips through disk", () => {
     const store = new EngagementRefusalsStore(filename);
     store.record("room-a", outside, "curl https://evil.test/");
