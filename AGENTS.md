@@ -190,9 +190,11 @@ These fail before any change; do not treat them as regressions:
 - `server/host/chief-notices-retry.test.ts` — two "a run stopped to free memory" cases.
 - `server/delta-context.e2e.test.ts` — "does not hand the model a queued follow-up that a restart recovered with an unknown outcome".
 - `server/cloud-computer-once.test.ts` — "ends the command and what it started, by the process id the call recorded" (needs POSIX process control the sandbox lacks).
+- `server/drivers/codex.test.ts` — the two "leaves none of a kept process's children running once it is stopped/killed while idle" cases (same process-control limit: the grandchild outlives the kill).
 - `server/bot-box/hostile-home.test.ts` — the npm `.npmrc` case.
 - `scripts/docker-image.test.ts` — "installs the engines once more when one does not start".
 - `server/index.test.ts` — "saves a goal run's turn budget beside the room timeout without clearing it" passes alone but fails inside the full file: an earlier case leaves `rooms.turnTimeoutMinutes` set.
+- `server/index.test.ts` — "keeps credential-card ownership stable while an encrypted phone save is in flight" expects `{ provided: true, resumed: false }` and gets `resumed: true`, on every commit checked back to `4b2591c42`, alone or in the full file.
 
 Run the suites a change touches (`npx vitest run <files>`), not the whole tree.
 

@@ -1,3 +1,5 @@
+import { productName } from "./brand.ts";
+
 /** A backup owns one quiet workspace. Never interrupt a turn to obtain it. */
 export class WorkspaceBackupMaintenance {
   active = false;
@@ -6,7 +8,7 @@ export class WorkspaceBackupMaintenance {
 
   assertAvailable(): void {
     if (this.active) throw Object.assign(new Error(this.pendingRestore
-      ? "A workspace restore is ready. Fully quit and reopen OpenMausBot (or restart the hosted server) to finish."
+      ? `A workspace restore is ready. Fully quit and reopen ${productName()} (or restart the hosted server) to finish.`
       : "A workspace backup is in progress. Try again when it finishes."), { status: 503 });
   }
 
