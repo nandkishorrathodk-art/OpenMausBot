@@ -32,7 +32,7 @@ export const THIS_COMPUTER_NOT_READY = "Parth Lab can't use this computer yet â€
 
 /** What a bot is told when the computer-control helper dies under it: the app restarts the helper by itself. */
 export const COMPUTER_HELPER_STOPPED =
-  "Computer control on this computer stopped because its helper crashed and OpenMausBot is restarting it by itself, so try the same action once more in a few seconds, and if it fails the same way, tell the person computer control is not working and to quit and reopen OpenMausBot.";
+  "Computer control on this computer stopped because its helper crashed and Parth Lab is restarting it by itself, so try the same action once more in a few seconds, and if it fails the same way, tell the person computer control is not working and to quit and reopen Parth Lab.";
 
 const BROWSERS: Record<string, string> = {
   chrome: "Chrome", "google chrome": "Chrome", chromium: "Chromium", safari: "Safari", firefox: "Firefox",

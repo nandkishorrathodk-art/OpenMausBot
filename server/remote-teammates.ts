@@ -16,6 +16,7 @@ import { writeFileAtomic } from "./atomic.ts";
 import { DATA_DIR } from "./config.ts";
 import { clip } from "./host/text-clip.ts";
 import { parseJson } from "./schema.ts";
+import { productName } from "./brand.ts";
 
 export const MAX_REMOTE_TEAMMATES = 50;
 /** The Bot API's wait is at most 300 s; past that plus this margin the other server isn't answering. */
@@ -191,7 +192,7 @@ export class RemoteTeammates {
   }
 
   private assertWritable(): void {
-    if (this.unreadable) throw new RemoteTeammateError("The saved teammates on other servers could not be read. Repair remote-teammates.json and restart OpenMausBot before changing them.", 503);
+    if (this.unreadable) throw new RemoteTeammateError(`The saved teammates on other servers could not be read. Repair remote-teammates.json and restart ${productName()} before changing them.`, 503);
   }
 
   /** Writes `teammates` and only then keeps them, so a failed write leaves the list as the file has it. */

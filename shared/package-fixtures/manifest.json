@@ -103,7 +103,7 @@
       },
       "secretFindings": [],
       "downgrade": {
-        "error": "Packages without bots cannot be opened by older versions of OpenMausBot."
+        "error": "Packages without bots cannot be opened by older versions of Parth Lab."
       }
     },
     "legacy-team.v1.json": {

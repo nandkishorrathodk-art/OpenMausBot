@@ -567,7 +567,7 @@ import {
   type StreamSeen,
   type Viewer,
 } from "./bot-visibility.ts";
-import { describeBrand, loadBrand } from "./brand.ts";
+import { describeBrand, loadBrand, productName } from "./brand.ts";
 import { deliverSseFrame, openSseHeartbeat } from "./sse-fanout.ts"; import { createBotFrames, takesFrame, type BotFrameForm } from "./host/bot-frames.ts";
 import { PhoneSecretBridge, PhoneSecretSubmissionRegistry } from "./phone-secret.ts";
 // Keep these two last, so loading the route table leaves module start-up order as is.
@@ -8967,7 +8967,7 @@ async function deleteBotWithLifecycle(botId: string, revalidate: () => void = ()
           }
           if (vm.container !== "missing" && !vm.managed) {
             return deletionResponse(409, {
-              error: `The container named ${vm.container_name} was not created by OpenMausBot. Remove it manually before deleting this bot`,
+              error: `The container named ${vm.container_name} was not created by ${productName()}. Remove it manually before deleting this bot`,
             });
           }
           localVmCleanup = {

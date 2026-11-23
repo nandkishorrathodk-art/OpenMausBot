@@ -46,7 +46,7 @@ import { checkReach, envPublicUrl, lanProblem, localLinkBase, noRouteLines, publ
 import { lanUrl } from "./lan-address.ts";
 import { isLoopbackHost } from "../electron/server-address.mjs";
 import { parseDuration } from "./headless/args.ts";
-import { signInFromEnv, type AppConfig } from "./config.ts";
+import { signInFromEnv, type AppConfig } from "./config.ts"; import { productName } from "./brand.ts";
 import {
   cleanupTunnelOrigin,
   createTunnelAccount,
@@ -336,7 +336,7 @@ async function showPhonePairing(options: CliOptions, origin: string | undefined,
   if (options.relay) return showRelayPairing({ tty: process.stdout.isTTY === true, status: async () => (await api(options.port, "/api/auth/pairing")).body?.relay, mint: () => mintPairing(options.port, { client: true, label: options.label ?? (options.phone === "android" ? "Android" : "iPhone / iPad"), phone: options.phone ?? "ios" }), log, prefix: cliPrefix() });
   const ready = !!origin && await verifyPhoneEndpoint(options.port, origin);
   if (!ready) {
-    log("Phone access is not reachable yet. OpenMausBot is ready on this computer; no phone pairing code was created.");
+    log(`Phone access is not reachable yet. ${productName()} is ready on this computer; no phone pairing code was created.`);
     log(`Check the HTTPS connection, then run ${cliCommand("pair")} again with the same --data-dir and --port.`);
     return false;
   }

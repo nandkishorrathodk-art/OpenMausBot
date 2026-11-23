@@ -359,7 +359,7 @@ describe("a Gemini Live session", () => {
     answer("On it.");
     await settle();
     expect(t.socket().sent.slice(1)).toEqual([
-      { clientContent: { turns: [{ role: "user", parts: [{ text: "[OpenMausBot] On it." }] }], turnComplete: true } },
+      { clientContent: { turns: [{ role: "user", parts: [{ text: "[Parth Lab] On it." }] }], turnComplete: true } },
     ]);
   });
 

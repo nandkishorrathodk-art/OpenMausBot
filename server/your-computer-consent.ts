@@ -7,6 +7,7 @@ import { optionCardsForTools } from "./message-db.ts";
 import { buildNotification, type Notification } from "./notify.ts";
 import type { BotRecord, Store } from "./store.ts";
 import { turnWaitedOnPerson } from "./waiting-on-person.ts";
+import { productName } from "./brand.ts";
 import {
   cleanAppName,
   cleanSiteName,
@@ -22,7 +23,7 @@ export interface YourComputerBus {
 }
 
 export const YOUR_COMPUTER_WAITING =
-  "OpenMausBot is asking the person whether you may use their own computer, and they have not answered yet, so this call was NOT performed and nothing happened on their screen. Do not ask them again in chat: the question is already in front of them. To keep waiting, take a screenshot (each call waits up to 45 seconds); meanwhile you may work on anything that does not need their computer.";
+  `${productName()} is asking the person whether you may use their own computer, and they have not answered yet, so this call was NOT performed and nothing happened on their screen. Do not ask them again in chat: the question is already in front of them. To keep waiting, take a screenshot (each call waits up to 45 seconds); meanwhile you may work on anything that does not need their computer.`;
 
 /** The claim fails with this, so the turn is told why without a failed-turn row: the person chose, nothing broke. */
 export const YOUR_COMPUTER_DECLINED =

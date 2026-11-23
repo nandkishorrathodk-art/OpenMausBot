@@ -104,7 +104,7 @@ describe("RemoteTeammates", () => {
     writeFileSync(file, "{not json");
     const store = new RemoteTeammates({ file });
     expect(store.list()).toEqual([]);
-    expect(() => store.add({ name: "Far", address: "https://maus.example.com", botId: "b1", key: KEY })).toThrow(/could not be read.*restart OpenMausBot/);
+    expect(() => store.add({ name: "Far", address: "https://maus.example.com", botId: "b1", key: KEY })).toThrow(/could not be read.*restart Parth Lab/);
     expect(readFileSync(file, "utf8")).toBe("{not json");
   });
 

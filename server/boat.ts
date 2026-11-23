@@ -10,7 +10,7 @@ import { boatCredential, boatProviderApi, type ServiceCredential } from "./inclu
 import { relayBody, relayPath } from "./boat-relay.ts"; import { COMMAND_WALL, runToEnd, type CommandOutcome } from "./boat-command.ts";
 import { boatHealth, DEAD_COMPUTER, unansweredStatus } from "./boat-health.ts";
 import { CLOUD_COMPUTER_NO_ANSWER } from "../shared/cloud-computer-recovery.ts";
-import { cloudLimitFromBody, type CloudLimit } from "../shared/place-view.ts";
+import { cloudLimitFromBody, type CloudLimit } from "../shared/place-view.ts"; import { productName } from "./brand.ts";
 import {
   blockedUntilBoatFinishes,
   boatDeletionOperation,
@@ -517,7 +517,7 @@ export async function listManagedBoats(
     try {
       recoveries = boatCreateRecoverySnapshot();
     } catch {
-      return invalidInventory("OpenMausBot could not safely read its cloud computer recovery records");
+      return invalidInventory(`${productName()} could not safely read its cloud computer recovery records`);
     }
     for (const recovery of recoveries) {
       if (!recovery.resolved || !recovery.boxId) continue;
@@ -531,7 +531,7 @@ export async function listManagedBoats(
       if (matchingRows.length === 1) {
         const listedName = typeof matchingRows[0]?.name === "string" ? matchingRows[0].name : "";
         if (listedName !== namedOwner.currentName && listedName !== namedOwner.legacyName) {
-          return invalidInventory("A remembered cloud computer no longer has its OpenMausBot owner name — repair it in boat.dev before continuing");
+          return invalidInventory(`A remembered cloud computer no longer has its ${productName()} owner name — repair it in boat.dev before continuing`);
         }
         continue;
       }
@@ -549,7 +549,7 @@ export async function listManagedBoats(
         inspected.identity.name !== namedOwner.currentName
         && inspected.identity.name !== namedOwner.legacyName
       ) {
-        return invalidInventory("A remembered cloud computer no longer has its OpenMausBot owner name — repair it in boat.dev before continuing");
+        return invalidInventory(`A remembered cloud computer no longer has its ${productName()} owner name — repair it in boat.dev before continuing`);
       }
       const directCandidate = {
         id: inspected.identity.boxId,
@@ -563,7 +563,7 @@ export async function listManagedBoats(
     try {
       deletions = boatDeletionSnapshot();
     } catch {
-      return invalidInventory("OpenMausBot could not safely read its cloud computer deletion records");
+      return invalidInventory(`${productName()} could not safely read its cloud computer deletion records`);
     }
     for (const deletion of deletions) {
       let state: BoatDeletionReconciliation;
@@ -663,7 +663,7 @@ export async function listManagedBoats(
       try {
         adoptResolvedBoat(owner.botId, boxId);
       } catch {
-        return invalidInventory("OpenMausBot could not safely remember this legacy cloud computer's owner — repair it in boat.dev before continuing");
+        return invalidInventory(`${productName()} could not safely remember this legacy cloud computer's owner — repair it in boat.dev before continuing`);
       }
     }
     seenBoatIds.add(boxId);
