@@ -6031,6 +6031,7 @@
   "settings.bots.aboutYouLine": "Cómo te llaman los bots de {place} y qué saben de ti.",
   "settings.bots.awakeLine": "Tu plan mantiene despiertos unos pocos bots a la vez. Elige cuáles.",
   "settings.bots.awakeTitle": "Algunos bots están en pausa",
+  "settings.remoteTeammates.title": "Compañeros en otros servidores",
   "settings.bots.early": "Funciones en prueba",
   "settings.bots.intro": "Lo que los bots de {place} saben de ti, y ajustes para todos ellos.",
   "settings.bots.newBots": "Bots nuevos",
@@ -6481,5 +6482,9 @@
   "botAccess.tools.busy": "Espera a que este bot termine todas sus tareas activas antes de cambiar su selección de herramientas.",
   "settings.import.grokLine": "Trae un bot con sus skills, rutinas, recuerdos y apps.",
   "settings.runCard.rowTitle": "Comandos que ejecutó un bot",
-  "settings.runCard.line": "Muestra los comandos de shell de tu petición actual."
+  "settings.runCard.line": "Muestra los comandos de shell de tu petición actual.",
+  "chat.notice.savedToThread": "Guardado en este hilo",
+  "memoryPage.thisThread": "Este hilo",
+  "memoryPage.everywhere": "En todas partes",
+  "memoryPage.empty": "Aquí todavía no hay nada guardado. Escribe lo que quieras que sepa."
 }

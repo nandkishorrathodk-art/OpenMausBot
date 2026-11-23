@@ -3661,6 +3661,7 @@
   "settings.bots.aboutYouLine": "Як боти на {place} вас називають і що про вас знають.",
   "settings.bots.awakeLine": "Ваш план тримає активними лише кількох ботів одночасно. Виберіть яких.",
   "settings.bots.awakeTitle": "Деякі боти призупинені",
+  "settings.remoteTeammates.title": "Учасники команди на інших серверах",
   "settings.bots.early": "Ранні функції",
   "settings.bots.intro": "Що боти на {place} знають про вас, і налаштування для всіх ботів.",
   "settings.bots.newBots": "Нові боти",
@@ -4150,5 +4151,9 @@
   "settings.import.grokLine": "Перенесіть бота з його навичками, рутинами, спогадами та застосунками.",
   "settings.runCard.rowTitle": "Команди, які виконав бот",
   "settings.runCard.line": "Показує команди оболонки для поточного запиту.",
-  "settings.runCard.show": "Показувати картку запуску"
+  "settings.runCard.show": "Показувати картку запуску",
+  "chat.notice.savedToThread": "Збережено в цій гілці",
+  "memoryPage.thisThread": "Ця гілка",
+  "memoryPage.everywhere": "Усюди",
+  "memoryPage.empty": "Тут поки нічого не запам'ятано. Напишіть усе, що він має знати."
 }

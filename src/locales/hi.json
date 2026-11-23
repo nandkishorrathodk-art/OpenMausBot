@@ -3225,6 +3225,7 @@
   "settings.bots.aboutYouLine": "{place} पर बॉट आपको क्या कहते हैं और आपके बारे में क्या जानते हैं।",
   "settings.bots.awakeLine": "आपका प्लान एक साथ कुछ ही बॉट जगाए रखता है। चुनें कौन से।",
   "settings.bots.awakeTitle": "कुछ बॉट रुके हुए हैं",
+  "settings.remoteTeammates.title": "दूसरे सर्वर पर टीम के साथी",
   "settings.bots.early": "शुरुआती सुविधाएँ",
   "settings.bots.intro": "{place} पर बॉट आपके बारे में क्या जानते हैं, और सभी के लिए सेटिंग।",
   "settings.bots.newBots": "नए बॉट",
@@ -3729,5 +3730,9 @@
   "settings.import.grokLine": "किसी बॉट को उसके स्किल्स, रूटीन, यादों और ऐप्स के साथ लाएँ।",
   "settings.runCard.rowTitle": "बॉट द्वारा चलाए गए कमांड",
   "settings.runCard.line": "आपके मौजूदा अनुरोध के शेल कमांड दिखाता है।",
-  "settings.runCard.show": "रन कार्ड दिखाएँ"
+  "settings.runCard.show": "रन कार्ड दिखाएँ",
+  "chat.notice.savedToThread": "इस थ्रेड में सहेजा गया",
+  "memoryPage.thisThread": "यह थ्रेड",
+  "memoryPage.everywhere": "हर जगह",
+  "memoryPage.empty": "यहाँ अभी कुछ याद नहीं रखा गया है। जो भी आप चाहते हैं कि यह जाने, लिखें।"
 }

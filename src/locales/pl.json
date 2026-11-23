@@ -5913,6 +5913,9 @@
   "skills.loading": "Ładowanie…",
   "skills.empty": "Brak zainstalowanych umiejętności.",
   "memory.title": "Pamięć",
+  "memoryPage.thisThread": "Ten wątek",
+  "memoryPage.everywhere": "Wszędzie",
+  "memoryPage.empty": "Nic tu jeszcze nie zapamiętano. Napisz wszystko, co ma wiedzieć.",
   "memory.enable": "Pozwól temu botowi używać pamięci",
   "memory.enableHelp": "Wyłączenie zatrzymuje zapytania do pamięci, przywoływanie, natywne narzędzia pamięci, porządkowanie i automatyczne dzienniki tur. Istniejące pliki pozostają dostępne do przeglądu.",
   "memory.notesHelp": "Notatki, które ten bot zachowuje między zadaniami. To zwykłe pliki markdown w folderze na tym komputerze — otwórz je w dowolnym edytorze lub w Obsidian.",
@@ -6723,6 +6726,7 @@
   "settings.bots.aboutYouLine": "Jak boty w {place} Cię nazywają i co o Tobie wiedzą.",
   "settings.bots.awakeLine": "Twój plan utrzymuje aktywne tylko kilka botów naraz. Wybierz które.",
   "settings.bots.awakeTitle": "Niektóre boty są wstrzymane",
+  "settings.remoteTeammates.title": "Członkowie zespołu na innych serwerach",
   "settings.bots.early": "Wczesne funkcje",
   "settings.bots.intro": "Co boty w {place} wiedzą o Tobie, i ustawienia dla wszystkich.",
   "settings.bots.newBots": "Nowe boty",
@@ -7182,5 +7186,6 @@
   "templates.load": "Wczytaj",
   "settings.import.grokLine": "Przenieś bota z jego umiejętnościami, rutynami, wspomnieniami i aplikacjami.",
   "settings.runCard.rowTitle": "Polecenia uruchomione przez bota",
-  "settings.runCard.line": "Pokazuje polecenia powłoki dla Twojej bieżącej prośby."
+  "settings.runCard.line": "Pokazuje polecenia powłoki dla Twojej bieżącej prośby.",
+  "chat.notice.savedToThread": "Zapisano w tym wątku"
 }

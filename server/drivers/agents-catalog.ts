@@ -539,6 +539,7 @@ const TOOL_DEFINITIONS = [
         text: { type: "string", minLength: 1, maxLength: 1000, description: "Non-blank new text for append, replace, supersede, or prefer: the fact itself, without a date or bullet. Omit for remove and forget; use remove to delete a passage." },
         old_text: { type: "string", minLength: 1, description: "Exact unique existing passage for replace, supersede, or remove; for forget, words naming it. Omit for append." },
         until: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Optional, for append or supersede: YYYY-MM-DD, the last day a temporary fact holds (an exam this weekend, a trip next week). After that day the entry is hidden from your memory." },
+        scope: { type: "string", enum: ["thread", "everywhere"] },
       },
       required: ["action"],
     },
@@ -591,8 +592,8 @@ const TOOL_DEFINITIONS = [
         limit: { type: "integer", description: "Maximum hits to return, at most 25; default 12." },
         scope: {
           type: "string",
-          enum: ["all", "conversations", "memory", "team"],
-          description: "What to search. Leave it out for both; \"memory\" for only your memory files, \"conversations\" for only your earlier conversations; \"team\" for accepted shared notes.",
+          enum: ["all", "conversations", "memory", "team", "threads"],
+          description: "What to search. Leave it out for both; \"memory\" for only your memory files, \"conversations\" for only your earlier conversations; \"team\" for accepted shared notes; \"threads\" your other chats, or one by thread_id, only if the person refers to it.",
         },
         thread_id: { type: "string", description: "Instead of searching: the thread id from a hit, with message_id, to read that message in full." },
         message_id: { type: "string", description: "The message id from the same hit." },

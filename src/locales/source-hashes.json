@@ -4177,7 +4177,38 @@
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
       "settings.runCard.show": "a2af5173be9b23c9443857220788aa54c035c72a9a5dc1123bfe8d6e531eaa80",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2",
+      "settings.remoteTeammates.line": "6fb5c197e03ee20f443781812f16680c0fac0cea1377bc9c7d33da839e295fe4",
+      "settings.remoteTeammates.add": "080f0f9565305f83ad6959036da0aa3acb9bfa9587ae413822a3f07fa34b6913",
+      "settings.remoteTeammates.addButton": "9fd728c66c9a256b121472dabf32a34317aed01d8427d70ec830289cf23a7cc8",
+      "settings.remoteTeammates.empty": "c2e62558d6abef5ed28e432c6b4a9f5c2d46c9d88077f89f3fbf46cab0470d5e",
+      "settings.remoteTeammates.name": "dcd1d5223f73b3a965c07e3ff5dbee3eedcfedb806686a05b9b3868a2c3d6d50",
+      "settings.remoteTeammates.address": "56ef8f20955f256423d328f65b62106005252551db25d660031887e421cb4684",
+      "settings.remoteTeammates.addressHint": "795b14370e4800d6ac0e14d3f9ea22c0a84afaf11bf703fed3fae90da39da8d0",
+      "settings.remoteTeammates.botId": "10ac141e8ad82d692b494e9511028800d4d2c6aa3ec8525a4e3e2e83d7db7108",
+      "settings.remoteTeammates.key": "ae5bae18e4da274817e0d64d345c96b865b91df70f83a4372cfb8f1b1ae177a8",
+      "settings.remoteTeammates.keyHint": "07a3ae63762bde829b079cc751bcbcfd21581f14b9782ae99711c98fab6b4c7e",
+      "settings.remoteTeammates.save": "9ff885c521c7d304a0000620118f947b1443413ff38768a12d2ebce8d7f13936",
+      "settings.remoteTeammates.adding": "c6de6f45c827f464b161b668ae93192ce4e6585c4029d8dd71795cbd7f922719",
+      "settings.remoteTeammates.added": "d39f2128ee4a899f6a9232c3990f47ab346cb93d3efbe7840f8bb80b7ee86ccb",
+      "settings.remoteTeammates.test": "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25",
+      "settings.remoteTeammates.testing": "407b7a04662f2aabdfb3f017054466068e8155fc44815f88d9530833f30f7ff1",
+      "settings.remoteTeammates.connected": "f357fd29a79aafd9e7496cbcb9a1560e91b2ade28178e81b8019a94f12a427cc",
+      "settings.remoteTeammates.unreachable": "ad5c26b13869c8b7756c7c22efe338447a3a2912e41267e23a7a7b4dbc4f3af1",
+      "settings.remoteTeammates.wrongKey": "1cb3fea15942f7cfea943b489229b4cb12c4439ec7ec8fdb89191531629c04d0",
+      "settings.remoteTeammates.refused": "80b16eeaf20ac068408a828acfae98b90e356bf1c63258c3dbea7f7088b8c6fd",
+      "settings.remoteTeammates.busy": "5e80e76e4ac6ab31b2cc42e986f065ef6e21a67993e0a7ca73e8c9b401cf6d99",
+      "settings.remoteTeammates.badAnswer": "36f0d17f4851e6b945da6f0658807852c29bd133ec7d7f2a43aec4427e92daae",
+      "settings.remoteTeammates.remove": "c3812fc4acb861d5182fc2b8155f327f736fbe5e5eb86a7bd7afcb6dc5497282",
+      "settings.remoteTeammates.removeNamed": "e6a3c4a1250a6ad3f10faa22333e5e50a6ba78e5b28a3b26f5743d9f8c7ede93",
+      "settings.remoteTeammates.removeTitle": "01c1f0250884f59318b310f94ab575cdbf6fc21434dcc27756f349a6526b2bde",
+      "settings.remoteTeammates.removeBody": "fa14446a509e08ecd41cb4519606bf3681e5077f7619be78a6a1d00492edf769",
+      "settings.remoteTeammates.failed": "4def98c892406e31099ba18e5d6a60db12420dd723a27a5ab77235d20adb0beb"
     },
     "es": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -10662,7 +10693,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "fr": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -14543,7 +14579,12 @@
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
       "settings.runCard.show": "a2af5173be9b23c9443857220788aa54c035c72a9a5dc1123bfe8d6e531eaa80",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "hi": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -18276,7 +18317,12 @@
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
       "settings.runCard.show": "a2af5173be9b23c9443857220788aa54c035c72a9a5dc1123bfe8d6e531eaa80",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "it": {
       "connectedWorkspaces.localTitle": "7d6deafeab011d734c3fdd1bfd6f69544fbb746a004019269bdb48544b01164b",
@@ -29652,7 +29698,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "ja": {
       "connectedWorkspaces.localTitle": "7d6deafeab011d734c3fdd1bfd6f69544fbb746a004019269bdb48544b01164b",
@@ -37679,7 +37730,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "ko": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -45396,7 +45452,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "pl": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -52582,7 +52643,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "pt-br": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -64247,7 +64313,38 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2",
+      "settings.remoteTeammates.line": "6fb5c197e03ee20f443781812f16680c0fac0cea1377bc9c7d33da839e295fe4",
+      "settings.remoteTeammates.add": "080f0f9565305f83ad6959036da0aa3acb9bfa9587ae413822a3f07fa34b6913",
+      "settings.remoteTeammates.addButton": "9fd728c66c9a256b121472dabf32a34317aed01d8427d70ec830289cf23a7cc8",
+      "settings.remoteTeammates.empty": "c2e62558d6abef5ed28e432c6b4a9f5c2d46c9d88077f89f3fbf46cab0470d5e",
+      "settings.remoteTeammates.name": "dcd1d5223f73b3a965c07e3ff5dbee3eedcfedb806686a05b9b3868a2c3d6d50",
+      "settings.remoteTeammates.address": "56ef8f20955f256423d328f65b62106005252551db25d660031887e421cb4684",
+      "settings.remoteTeammates.addressHint": "795b14370e4800d6ac0e14d3f9ea22c0a84afaf11bf703fed3fae90da39da8d0",
+      "settings.remoteTeammates.botId": "10ac141e8ad82d692b494e9511028800d4d2c6aa3ec8525a4e3e2e83d7db7108",
+      "settings.remoteTeammates.key": "ae5bae18e4da274817e0d64d345c96b865b91df70f83a4372cfb8f1b1ae177a8",
+      "settings.remoteTeammates.keyHint": "07a3ae63762bde829b079cc751bcbcfd21581f14b9782ae99711c98fab6b4c7e",
+      "settings.remoteTeammates.save": "9ff885c521c7d304a0000620118f947b1443413ff38768a12d2ebce8d7f13936",
+      "settings.remoteTeammates.adding": "c6de6f45c827f464b161b668ae93192ce4e6585c4029d8dd71795cbd7f922719",
+      "settings.remoteTeammates.added": "d39f2128ee4a899f6a9232c3990f47ab346cb93d3efbe7840f8bb80b7ee86ccb",
+      "settings.remoteTeammates.test": "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25",
+      "settings.remoteTeammates.testing": "407b7a04662f2aabdfb3f017054466068e8155fc44815f88d9530833f30f7ff1",
+      "settings.remoteTeammates.connected": "f357fd29a79aafd9e7496cbcb9a1560e91b2ade28178e81b8019a94f12a427cc",
+      "settings.remoteTeammates.unreachable": "ad5c26b13869c8b7756c7c22efe338447a3a2912e41267e23a7a7b4dbc4f3af1",
+      "settings.remoteTeammates.wrongKey": "1cb3fea15942f7cfea943b489229b4cb12c4439ec7ec8fdb89191531629c04d0",
+      "settings.remoteTeammates.refused": "80b16eeaf20ac068408a828acfae98b90e356bf1c63258c3dbea7f7088b8c6fd",
+      "settings.remoteTeammates.busy": "5e80e76e4ac6ab31b2cc42e986f065ef6e21a67993e0a7ca73e8c9b401cf6d99",
+      "settings.remoteTeammates.badAnswer": "36f0d17f4851e6b945da6f0658807852c29bd133ec7d7f2a43aec4427e92daae",
+      "settings.remoteTeammates.remove": "c3812fc4acb861d5182fc2b8155f327f736fbe5e5eb86a7bd7afcb6dc5497282",
+      "settings.remoteTeammates.removeNamed": "e6a3c4a1250a6ad3f10faa22333e5e50a6ba78e5b28a3b26f5743d9f8c7ede93",
+      "settings.remoteTeammates.removeTitle": "01c1f0250884f59318b310f94ab575cdbf6fc21434dcc27756f349a6526b2bde",
+      "settings.remoteTeammates.removeBody": "fa14446a509e08ecd41cb4519606bf3681e5077f7619be78a6a1d00492edf769",
+      "settings.remoteTeammates.failed": "4def98c892406e31099ba18e5d6a60db12420dd723a27a5ab77235d20adb0beb"
     },
     "ru": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -71487,7 +71584,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "tr": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -77465,7 +77567,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "uk": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -81619,7 +81726,12 @@
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
       "settings.runCard.show": "a2af5173be9b23c9443857220788aa54c035c72a9a5dc1123bfe8d6e531eaa80",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "vi": {
       "voice.gemini.keyPlaceholder": "8c87ba2043a4a89d63c90cae8a6dafd5cbd193652e923b97988e381a74773e10",
@@ -87597,7 +87709,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "zh-tw": {
       "connectedWorkspaces.localTitle": "7d6deafeab011d734c3fdd1bfd6f69544fbb746a004019269bdb48544b01164b",
@@ -97874,7 +97991,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     },
     "zh": {
       "hostedMcp.otherAppsSetup": "b1dbc7573965f26789d835d7476b43d982daa02816580baf60e11da042e0d071",
@@ -108052,7 +108174,12 @@
       "settings.import.grokLine": "0b4f49ef34ad9e63d1b413e4cbbbec0e66ceb08b0520c1cfeba5f610882df88b",
       "settings.runCard.rowTitle": "15350662cb57f57da462b45ca11d9656730c185a82f94d9ab4ba8c41173a4da6",
       "settings.runCard.line": "c53e6ad2bf8490b202c810cd3c32c518cee913ba5d97953b93c350d02102784f",
-      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648"
+      "settings.goalBudget.title": "f8579f79e0fdbe67dcbbf89e14342661c00970d55ddc7548c2bd7461ab137648",
+      "memoryPage.thisThread": "bafc95570440f21442301daac35197fd29dd3a566fc7b3133587f31c4278229c",
+      "memoryPage.everywhere": "dcc10bfd55acda929a7dbd11cf657c55622f991c9bdb8dd1ee4b1a064215efdb",
+      "memoryPage.empty": "1fe786f321345cd3d462244d7c07c0ace8f7ee7eea273c44456061ec113137cf",
+      "chat.notice.savedToThread": "632b59b31de35bf2209b4b00c5110055145b632439143ee5b64413d05b4a27e6",
+      "settings.remoteTeammates.title": "0e5e6ac278a7795fbe278ed6dc2b5d150c554dd31270d4d3221ceba3bc58e5e2"
     }
   }
 }

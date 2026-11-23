@@ -5523,6 +5523,7 @@
   "settings.bots.aboutYouLine": "{place} üzerindeki botların size nasıl seslendiği ve sizin hakkınızda ne bildiği.",
   "settings.bots.awakeLine": "Planınız aynı anda yalnızca birkaç botu uyanık tutar. Hangilerini seçin.",
   "settings.bots.awakeTitle": "Bazı botlar duraklatıldı",
+  "settings.remoteTeammates.title": "Diğer sunuculardaki ekip arkadaşları",
   "settings.bots.early": "Erken özellikler",
   "settings.bots.intro": "{place} üzerindeki botların sizin hakkınızda bildikleri ve hepsi için ayarlar.",
   "settings.bots.newBots": "Yeni botlar",
@@ -5974,5 +5975,9 @@
   "botAccess.tools.busy": "Araç seçimini değiştirmeden önce bu botun tüm etkin görevleri bitirmesini bekleyin.",
   "settings.import.grokLine": "Bir botu becerileri, rutinleri, anıları ve uygulamalarıyla getir.",
   "settings.runCard.rowTitle": "Bir botun çalıştırdığı komutlar",
-  "settings.runCard.line": "Mevcut isteğin için kabuk komutlarını gösterir."
+  "settings.runCard.line": "Mevcut isteğin için kabuk komutlarını gösterir.",
+  "chat.notice.savedToThread": "Bu konuşmaya kaydedildi",
+  "memoryPage.thisThread": "Bu konuşma",
+  "memoryPage.everywhere": "Her yerde",
+  "memoryPage.empty": "Burada henüz hatırlanan bir şey yok. Bilmesini istediğin her şeyi yaz."
 }
