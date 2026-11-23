@@ -8,12 +8,12 @@ import {
   MIN_GOAL_MAX_TURNS,
   parseGoalMaxTurns,
 } from "@/lib/goal-turn-budget";
-import { api, useStore, type ConfigStatus } from "@/state/store";
+import { api, type ConfigStatus } from "@/state/store";
+import { useStoreDispatch, useStoreSelector } from "@/state/store-select";
 import { t } from "@/lib/i18n";
 
 export function RoomGoalBudgetSettings() {
-  const { state, dispatch } = useStore();
-  const confirmedTurns = goalMaxTurns(state.config);
+  const confirmedTurns = useStoreSelector((s) => goalMaxTurns(s.config)), dispatch = useStoreDispatch();
   const [value, setValue] = useState(String(confirmedTurns));
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState("");
