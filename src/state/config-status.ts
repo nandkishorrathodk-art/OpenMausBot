@@ -53,7 +53,8 @@ export interface ConfigStatus {
   composio: SavedKey & { mode?: "managed" | "self-hosted" | "unavailable" };
   /** `included`: cloud computers come with Cloud Pro, no key is saved. */
   box: SavedKey & { included?: boolean };
-  vps: { configured: boolean; sshAlias: string; servers?: { name: string; sshAlias: string }[] };
+  /** `servers`: named servers for the per-bot picker; empty for client sessions, missing from an older server. */
+  vps: { configured: boolean; sshAlias: string; servers?: { name: string; sshAlias: string; memoryGb?: number; cpus?: number }[]; memoryGb?: number; cpus?: number };
   /** Either field is absent until a person saves it; read them with roomTurnTimeoutMinutes() and goalMaxTurns(). */
   rooms?: { turnTimeoutMinutes?: number; goalMaxTurns?: number };
   /** Per-call ceiling (minutes) for a bot's MCP tools. Absent from servers

@@ -14,6 +14,7 @@ import { ENGAGEMENT_ASSET_TOOL_DEFINITION, ENGAGEMENT_ASSET_TOOL } from "./agent
 import { APP_SETTINGS_TOOL_DEFINITION } from "./agents-app-settings-tool.ts";
 import { THREAD_POST_TOOL_DEFINITION } from "./agents-thread-post-tool.ts";
 import { RENAME_THREAD_TOOL_DEFINITION } from "./agents-thread-title-tool.ts";
+import { WORKFLOW_TOOL_DEFINITIONS } from "./agents-workflow-tool.ts";
 import { WAIT_TOOL_DEFINITIONS, WAIT_TOOL_NAMES } from "./agents-wait-tools.ts"; import { CHECK_BACK_TOOL_DEFINITIONS, CHECK_BACK_TOOL_NAMES } from "./agents-check-back-tool.ts";
 import { COMPUTER_ASK_TOOL_DEFINITIONS, COMPUTER_ASK_TOOL_NAMES } from "./agents-computer-ask-tool.ts";
 import { IMAGE_TOOL_DEFINITIONS, IMAGE_TOOL_NAMES } from "./agents-image-tools.ts";
@@ -254,6 +255,7 @@ const TOOL_DEFINITIONS = [
     },
   },
   RENAME_THREAD_TOOL_DEFINITION,
+  ...WORKFLOW_TOOL_DEFINITIONS,
   {
     name: "start_thread",
     description:

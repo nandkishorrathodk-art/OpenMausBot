@@ -18,6 +18,7 @@ import { recordEvents, type EventRecorder } from "../testing/events.ts";
 import { publishedMessages, replyProblems } from "../harness/text-items.testkit.ts";
 import { caseTokens, LIVE_REPLY_CASES, liveReplyScripts } from "../testing/live-reply-cases.ts";
 import { CodexDriver, codexNativeIncomingLogMessage, codexUpdateCommand } from "./codex.ts";
+import { CODEX_LINUX_SANDBOX_NOTE } from "./codex-instructions.ts";
 import { codexCliOverrides } from "./codex-process.ts";
 import { codexReleaseUpdate } from "./codex-update.ts";
 import { parseToml } from "../toml-lite.ts";
@@ -38,6 +39,8 @@ import { botBox } from "../bot-box/box.ts";
 import { boxEnvironment } from "../bot-box/env.ts";
 import { autoVerdict } from "../auto-approve.ts";
 import { formatQuestionAnswers } from "../../shared/ask-question.ts";
+
+const codexSandboxSuffix = process.platform === "linux" ? `\n\n${CODEX_LINUX_SANDBOX_NOTE}` : "";
 
 vi.mock("./codex-release.ts", async (importOriginal) => ({
   ...await importOriginal<typeof import("./codex-release.ts")>(),
@@ -811,7 +814,7 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
     const turnStart = seen.calls.at(-1);
     expect(turnStart.params.input[0].text).toBe("list files");
     const threadStart = seen.calls.find((c: { method: string }) => c.method === "thread/start");
-    expect(threadStart.params).toMatchObject({ model: "gpt-5.6-sol", modelProvider: "openai", developerInstructions: "You are Testy." });
+    expect(threadStart.params).toMatchObject({ model: "gpt-5.6-sol", modelProvider: "openai", developerInstructions: `You are Testy.${codexSandboxSuffix}` });
   });
 
   it("keeps the developer slot stable and delivers volatile context in-turn", async () => {
@@ -839,7 +842,7 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
     const third = await send("split-3.json", "third", "Memory: moved to Toronto.", "codex-thread-1");
     const threadStarts = first.filter((c) => c.method === "thread/start");
     expect(threadStarts).toHaveLength(1);
-    expect(threadStarts[0].params.developerInstructions).toBe("Stable rules.");
+    expect(threadStarts[0].params.developerInstructions).toBe(`Stable rules.${codexSandboxSuffix}`);
     for (const calls of [first, second, third]) {
       expect(calls.some((c) => c.method === "thread/inject_items")).toBe(false);
     }
@@ -2946,7 +2949,14 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
       }>;
       const threadCalls = calls.filter((call) => ["thread/start", "thread/resume"].includes(call.method));
       expect(threadCalls.length).toBeGreaterThan(0);
-      for (const call of threadCalls) expect(call.params.developerInstructions).toBe(system ?? "");
+      const expectedDeveloper = system
+        ? `${system}${codexSandboxSuffix}`
+        : codexSandboxSuffix
+          ? `No Parth Lab bot-specific instructions remain.${codexSandboxSuffix}`
+          : "";
+      // A call naming a permission profile leaves the sandbox to that profile, so it carries no sandbox note; the
+      // legacy-sandbox retry after a refused profile does.
+      for (const call of threadCalls) expect(call.params.developerInstructions).toBe(call.params.permissions ? system ?? "" : expectedDeveloper);
       if (index > 0) expect(threadCalls[0].method).toBe("thread/resume");
       const updates = calls.filter((call) => call.method === "thread/inject_items");
       expect(updates).toHaveLength(index === 2 || index === 3 ? 1 : 0);
@@ -2973,10 +2983,13 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
       // One app-server serves all three turns, so its calls add up: the rules are replaced once, when they change.
       const calls = JSON.parse(readFileSync(dump, "utf8")).calls;
       expect(calls.filter((call: { method: string }) => call.method === "thread/resume")).toHaveLength(0);
-      expect(calls.find((call: { method: string }) => call.method === "thread/start").params.developerInstructions).toBe("Bot rules.\n\nPrivate native rules.");
+      const modeSuffix = approvalMode === "full" ? "" : codexSandboxSuffix;
+      expect(calls.find((call: { method: string }) => call.method === "thread/start").params.developerInstructions).toBe(`Bot rules.${modeSuffix}\n\nPrivate native rules.`);
       const updates = calls.filter((call: { method: string }) => call.method === "thread/inject_items");
       expect(updates).toHaveLength(index ? 1 : 0);
-      if (index) expect(JSON.stringify(updates[0].params)).toContain("No Parth Lab bot-specific instructions remain.\\n\\nPrivate native rules.");
+      if (index) expect(JSON.stringify(updates[0].params)).toContain(JSON.stringify(`No Parth Lab bot-specific instructions remain.${modeSuffix}
+
+Private native rules.`).slice(1, -1));
       expect(calls.filter((call: { method: string }) => call.method === "turn/start").at(-1).params.input).toEqual([{ type: "text", text: `message-${index}` }]);
     }
     const nativeLog = readFileSync(join(NATIVE_DIR, `${threadId}.ndjson`), "utf8");
@@ -3204,14 +3217,14 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
       requestType: "question",
       tool: "ask_user",
       summary: "Which source should I use?",
-      choices: ["Directly in OpenMausBot", "The official server in Executor"],
-      questions: [{ question: "Which source should I use?", options: [{ label: "Directly in OpenMausBot" }, { label: "The official server in Executor" }] }],
+      choices: ["Directly in Parth Lab", "The official server in Executor"],
+      questions: [{ question: "Which source should I use?", options: [{ label: "Directly in Parth Lab" }, { label: "The official server in Executor" }] }],
     });
     expect(recorder.events.find((e) => e.type === "item.completed" && e.itemType === "assistant_text")).toMatchObject({
-      text: "Which source should I use?\n- Directly in OpenMausBot\n- The official server in Executor",
+      text: "Which source should I use?\n- Directly in Parth Lab\n- The official server in Executor",
     });
 
-    const answer = "The user answered your questions.\n\nQ: Which source should I use?\nA: Directly in OpenMausBot";
+    const answer = "The user answered your questions.\n\nQ: Which source should I use?\nA: Directly in Parth Lab";
     await expect(instance.adapter.respondToRequest("t-async-question", opened.requestId!, { behavior: "answer", message: answer })).resolves.toBe("answered");
     expect(await recorder.until((e) => e.type === "request.resolved")).toMatchObject({ requestId: opened.requestId, behavior: "answer", source: "user" });
     expect(JSON.parse(readFileSync(dump, "utf8")).calls.find((c: any) => c.method === "turn/steer")?.params?.input).toEqual([{ type: "text", text: answer }]);
@@ -3586,7 +3599,7 @@ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:m.id,result})+'\\n');});`)
       expect(second.done).toMatchObject({ ok: true });
       expect(seen().pid).not.toBe(pid);
       expect(processIsAlive(pid)).toBe(false);
-      expect(methods("thread/resume")[0]!.params.developerInstructions).toBe("Bot rules.\n\nNew native rules.");
+      expect(methods("thread/resume")[0]!.params.developerInstructions).toBe(`Bot rules.${codexSandboxSuffix}\n\nNew native rules.`);
       expect(second.events.filter((event) => event.type === "turn.started")).toHaveLength(1);
       expect(second.events.some((event) => event.type === "turn.retrying" || event.type === "runtime.error")).toBe(false);
       expect(closes("t-config")).toEqual([{ close: "configuration changed", contractChanged: ["config:developer_instructions"] }]);

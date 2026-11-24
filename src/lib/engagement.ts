@@ -1,5 +1,6 @@
 import { engagementReportFilename, type EngagementRefusal, type EngagementScope, type RoomAssetsResponse, type RoomFindingsResponse, type RoomRefusalsResponse, type RoomScopeResponse } from "../../shared/engagement";
 import { downloadMarkdownTranscript } from "./export-transcript";
+import { serverFetch } from "./relay-server";
 import { api, ApiError } from "@/state/store";
 
 /** The room's engagement scope, or null when it has none. Owner or admin only; the server refuses anyone else. */
@@ -33,7 +34,7 @@ export async function readRoomRefusals(roomId: string): Promise<EngagementRefusa
 /** Saves the engagement's client report as a markdown file. The server renders it, so the download and any
  * other reader of the route see the same words. */
 export async function downloadRoomReport(roomId: string, roomName: string): Promise<void> {
-  const response = await fetch(`/api/groups/${encodeURIComponent(roomId)}/report`);
+  const response = await serverFetch(`/api/groups/${encodeURIComponent(roomId)}/report`);
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     const error = (body as { error?: unknown }).error;

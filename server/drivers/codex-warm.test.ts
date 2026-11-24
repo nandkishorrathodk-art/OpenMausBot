@@ -49,7 +49,7 @@ describe("a Codex app-server's launch contract", () => {
     expect(before).not.toContain("model=");
   });
 
-  it("computes what can change outside OpenMausBot, config.toml, the CLI and the login, exactly as the contract does", () => {
+  it("computes what can change outside Parth Lab, config.toml, the CLI and the login, exactly as the contract does", () => {
     const home = mkdtempSync(join(tmpdir(), "omb-identity-"));
     const write = (account: string) => writeFileSync(join(home, "auth.json"), JSON.stringify({ auth_mode: "chatgpt", tokens: { account_id: account, access_token: "t" } }));
     writeFileSync(join(home, "config.toml"), "model = \"a\"\n");

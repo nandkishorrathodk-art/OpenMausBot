@@ -195,6 +195,8 @@ These fail before any change; do not treat them as regressions:
 - `scripts/docker-image.test.ts` — "installs the engines once more when one does not start".
 - `server/index.test.ts` — "saves a goal run's turn budget beside the room timeout without clearing it" passes alone but fails inside the full file: an earlier case leaves `rooms.turnTimeoutMinutes` set.
 - `server/index.test.ts` — "keeps credential-card ownership stable while an encrypted phone save is in flight" expects `{ provided: true, resumed: false }` and gets `resumed: true`, on every commit checked back to `4b2591c42`, alone or in the full file.
+- `server/drivers/codex-warm.test.ts` — "close an idle process after the idle time, and stop counting one that is taken or gone": the fake-timer idle sweep drops the kept server before the assertion in this sandbox.
+- `src/lib/i18n.test.ts` — "is true only for a pack other than English that has every English key": `pt-br` lacks the eight `settings.goalBudget.*` and `settings.limits.goalTurns*` keys, which were never translated.
 
 Run the suites a change touches (`npx vitest run <files>`), not the whole tree.
 
