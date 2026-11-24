@@ -128,6 +128,20 @@ rebrand, and the rebrand surface `electron/` carries that this file does not.
   `electron/data-dir-lease.mjs` keeps a hardcoded fallback of the catalog's
   `native.boot.sharedFolderAdvice`, so renaming one half leaves the pair broken
   or the app showing two names on one surface.
+- Two credential rules came from upstream and must not be loosened here. A
+  GitHub sign-in's token lives in its own folder under `<data>/github/`, never in
+  a bot's box and never in a backup, no route returns it, and server callers read
+  it through `githubToken()` (`server/github/token.ts`); on This computer the
+  person's own `gh` sign-in is read, never changed. And a paired phone's provider
+  key crosses the LAN only inside an encrypted session: `PUT /api/config` and
+  `POST /api/keys/test` answer 403 on the plain listener
+  (`companion/src/proxy.ts`), which `companion/test/provider-key-save.test.ts`
+  pins.
+- `CLOUD_PUSH_CODE_WORK` in `server/system-prompt.ts` is model-facing prose about
+  a Cloud disk: commit and push to a new branch, never force-push, never push to
+  the default branch, never commit secrets. `server/system-prompt.test.ts` pins
+  its wording, and `server/cloud-home-server.test.ts` compares the section the
+  model receives against `cloudHomePrompt` itself, so both move with it.
 
 ## Building the Windows installer locally
 
