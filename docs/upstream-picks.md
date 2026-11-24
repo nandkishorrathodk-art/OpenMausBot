@@ -1,11 +1,16 @@
 # Upstream picks
 
-`main` is a fork of `milind-soni/OpenMausBot` rebranded to "Parth Lab". We are
-1,123 commits behind `upstream/main` and do not merge it wholesale: 186 of those
-commits touch `src/locales/`, and the engagement ledgers (`server/engagement.ts`,
-`shared/engagement.ts`) do not exist upstream, so a merge brings nothing for
-them. This file records the upstream commits worth taking, in the order to take
-them, and why each one is safe.
+`main` is a fork of `milind-soni/OpenMausBot` rebranded to "Parth Lab".
+
+`main` now carries `upstream/main` whole: commit `72a1c869ef` merged
+`310e731edb` (182 commits) and reconciled the rebrand by hand, and every earlier
+pick below came in with it. A later upstream commit is taken the same way, by
+merging `upstream/main` again — not cherry-picked.
+
+The table below stays as the record of what each pick fixed, and of the
+resolutions its files need: the locales keep the fork's own keys beside
+upstream's, and the engagement ledgers (`server/engagement.ts`,
+`shared/engagement.ts`) exist only here, so a merge never touches them.
 
 Every commit below was cherry-picked with `-n` against `ba583223f` and applied
 without a conflict.
