@@ -273,7 +273,7 @@ test("on Linux the lending indicator borrows the one tray icon and hands Open an
 
   lending.update({ clouds: [], using: [], paused: false });
   assert.equal(made[0].isDestroyed(), false);
-  assert.equal(made[0].tooltip, "OpenMausBot");
+  assert.equal(made[0].tooltip, "Parth Lab");
   assert.deepEqual(labels(), openQuit);
 
   lending.update({ clouds: ["My Cloud"], using: [], paused: false });

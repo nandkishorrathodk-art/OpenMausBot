@@ -49,7 +49,7 @@ export function createSystemTray({ Tray, Menu, nativeImage, iconPath, getWindow,
           if (returned) return;
           returned = true; lent = false;
           if (tray.isDestroyed()) return;
-          tray.setToolTip("OpenMausBot");
+          tray.setToolTip("Parth Lab");
           label();
         },
       };
