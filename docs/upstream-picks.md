@@ -4,7 +4,7 @@
 
 `main` now carries `upstream/main` whole: commit `72a1c869ef` merged
 `310e731edb` (182 commits), then `f61ff1d246`, then `134cc5f8c4` (394 commits),
-the rebrand reconciled by hand each time. A later upstream commit is taken the same
+then `96ff844559` (91 commits), the rebrand reconciled by hand each time. A later upstream commit is taken the same
 way, by merging `upstream/main` again — not cherry-picked.
 
 The table below stays as the record of what each pick fixed, and of the

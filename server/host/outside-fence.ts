@@ -39,6 +39,10 @@ const EXACT: ReadonlySet<string> = new Set([
   "POST /api/internal/post-to-room",
   // The engagement's own ledger: the room comes from this conversation, never the body, so a confined turn writes only where it speaks.
   "POST /api/internal/findings",
+  // A board item is one of the bot's rooms' threads, so a confined turn adds and settles only where it speaks.
+  "POST /api/internal/board/add",
+  "POST /api/internal/board/list",
+  "POST /api/internal/board/update",
   "POST /api/internal/retry-thread",
   "POST /api/internal/trigger-requests",
   "POST /api/internal/manage-room",
