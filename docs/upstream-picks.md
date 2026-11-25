@@ -3,8 +3,8 @@
 `main` is a fork of `milind-soni/OpenMausBot` rebranded to "Parth Lab".
 
 `main` now carries `upstream/main` whole: commit `72a1c869ef` merged
-`310e731edb` (182 commits) and a later merge took it to `f61ff1d246`, the
-rebrand reconciled by hand each time. A later upstream commit is taken the same
+`310e731edb` (182 commits), then `f61ff1d246`, then `134cc5f8c4` (394 commits),
+the rebrand reconciled by hand each time. A later upstream commit is taken the same
 way, by merging `upstream/main` again — not cherry-picked.
 
 The table below stays as the record of what each pick fixed, and of the
