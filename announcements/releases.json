@@ -1,11 +1,11 @@
 {
   "$schema": "./releases.schema.json",
   "version": 1,
-  "updatedAt": "2026-11-27T15:36:37Z",
+  "updatedAt": "2026-11-27T15:39:49Z",
   "releases": [
     {
       "version": "0.1.185",
-      "date": "2026-11-27T15:36:37Z",
+      "date": "2026-11-27T15:39:49Z",
       "sections": [
         {
           "title": "Persona",
@@ -29,7 +29,7 @@
           "items": [
             "Ye build GitHub Actions ke asli Windows runner par bana hai (cross-build nahi), aur workflow ne packaged server ko start karke `/api/health` verify kiya.",
             "macOS/Linux builds is release mein nahi hain — sirf Windows installer.",
-            "Updater is fork se updates nahi khinchega: `app-update.yml` upstream repo (`OpenMausBot`) par point karta hai. Naya version install karne ke liye ye installer dobara chalayein."
+            "**Auto-update is fork se aata hai:** is build ka `app-update.yml` `owner: nandkishorrathodk-art`, `repo: OpenMausBot` par point karta hai, aur `latest.yml` isi release mein hai — jo bhi yahan naya release publish karega, installed copies wahi se update lenge."
           ]
         }
       ]
