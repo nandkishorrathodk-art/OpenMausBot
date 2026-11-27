@@ -1,8 +1,39 @@
 {
   "$schema": "./releases.schema.json",
   "version": 1,
-  "updatedAt": "2026-11-26T23:22:24Z",
+  "updatedAt": "2026-11-27T15:36:37Z",
   "releases": [
+    {
+      "version": "0.1.185",
+      "date": "2026-11-27T15:36:37Z",
+      "sections": [
+        {
+          "title": "Persona",
+          "items": [
+            "**Generalist identity, discipline and mindset.** Identity, discipline aur mindset ko field-neutral banaya: kaam khud carry karo, sirf wahi poocho jo sirf person settle kar sakta hai, irreversible cheezein unke approve par chhodo, claims evidence se prove karo, live facts memory se upar rakho, aur close call par `decide` model se probability lo.",
+            "**\"security operator\" → \"operator\"** har model-facing jagah: bot persona, room prompt, live-call instructions, goal-run briefs, roster aur uska role fallback, skill/memory review prompts.",
+            "**Setup ab poochhta hai \"what work this role takes on\"**, na ki \"which security discipline\". Chief ab machine learning, data engineering, design, finance aur security ko specialisms ke roop mein naam deta hai.",
+            "**Reply habits** ke reconnaissance/exploitation examples neutral examples se badle."
+          ]
+        },
+        {
+          "title": "Fixes",
+          "items": [
+            "**Chief ko room ke Scope, Findings aur Refusals ka jhootha wada band.** Wo feature server par hai hi nahi.",
+            "**Toota hua persona sentence theek:** \"Parth Lab, Parth Lab's point of contact for everything in Parth Lab\" → \"main contact at Parth Lab\".",
+            "**Prompt budgets lock in:** direct chat 14245 → 12886 bytes, setup chat 16829 → 15470 bytes."
+          ]
+        },
+        {
+          "title": "Notes",
+          "items": [
+            "Ye build GitHub Actions ke asli Windows runner par bana hai (cross-build nahi), aur workflow ne packaged server ko start karke `/api/health` verify kiya.",
+            "macOS/Linux builds is release mein nahi hain — sirf Windows installer.",
+            "Updater is fork se updates nahi khinchega: `app-update.yml` upstream repo (`OpenMausBot`) par point karta hai. Naya version install karne ke liye ye installer dobara chalayein."
+          ]
+        }
+      ]
+    },
     {
       "version": "0.1.184",
       "date": "2026-11-26T23:22:08Z",
@@ -1185,90 +1216,6 @@
             "**A system stop is no longer counted as your stop.**",
             "**A read-only HighLevel grant lets HighLevel's reads through.**",
             "**A paired client shows and opens the host's Local VM** for a bot that runs there."
-          ]
-        }
-      ]
-    },
-    {
-      "version": "0.1.154",
-      "date": "2026-11-12T00:19:37Z",
-      "sections": [
-        {
-          "title": "Settings, reorganised",
-          "items": [
-            "**Three groups, always in the same order:** the place you are in (This computer or a Cloud), Your account, and This app. Every page says what it applies to.",
-            "**Simple mode shows fewer pages.** Turn on Advanced mode at the bottom of Settings to see the rest.",
-            "**One AI page** for engines, provider keys and models.",
-            "**Search settings** from the top of the window. A result names the page it lives on.",
-            "**Phone & devices is in the profile menu,** so pairing a phone is two clicks from anywhere."
-          ]
-        },
-        {
-          "title": "Replies appear as they are written",
-          "items": [
-            "**A bot's reply now streams into the chat** instead of arriving all at once, in chats and in rooms.",
-            "**Streamed text is shown as the bot produces it.** Saved secrets are masked once the message is saved, as before."
-          ]
-        },
-        {
-          "title": "Put a site or web app online",
-          "items": [
-            "**Publish to Netlify.** A bot can put a site or web app online on your own Netlify account.",
-            "**Included hosting.** On a Cloud plan, a bot can publish to the hosting your plan includes, with no Netlify account of your own.",
-            "**Published apps.** One page lists everything your bots have put online, with a preview beside the chat and Delete."
-          ]
-        },
-        {
-          "title": "Pairing a phone is clearer",
-          "items": [
-            "**Only the pairing code is a QR code now.** The desktop app no longer shows store codes or download links: install MausBot from the App Store or Google Play, then pair.",
-            "**The pairing screen says what to scan with:** open MausBot on your phone and scan the code from inside the app.",
-            "**A paired phone can delete a bot.**"
-          ]
-        },
-        {
-          "title": "Apps",
-          "items": [
-            "**Gmail or Google Calendar added as an MCP server and not signed in?** The bot now offers the one-step connect card in the chat, or uses the app if it is already connected.",
-            "**A bot is told when an app it asked to connect already has an account.**"
-          ]
-        },
-        {
-          "title": "My Cloud",
-          "items": [
-            "**A clear reason when a cloud computer can't start:** hours used up, too many at once, or started too often, with the date the hours come back. A free trial gets its own wording.",
-            "**Empty files move to My Cloud,** files changed without a new timestamp are picked up, and two files with the same name are reported before a folder syncs."
-          ]
-        },
-        {
-          "title": "Team Cloud",
-          "items": [
-            "**A bot is its maker's until they share it** with the team.",
-            "**A secret a member types in their private chat stays theirs.**",
-            "**Simpler team screens,** with \"Owner\" wording throughout and nothing shown that a member can't use."
-          ]
-        },
-        {
-          "title": "Update a self-hosted server from the app",
-          "items": [
-            "**Update server.** When a server you're connected to is behind, Settings has an **Update server** button. It backs up first, updates to the stable version, and goes back by itself if the new version doesn't work. If the app is then older than the server, the same row offers **Update app**.",
-            "It works on servers set up with the one-command installer. On a hand-made Docker setup, run `sudo./update-runner.sh --install` once. Servers installed with npm are shown the commands to run.",
-            "**The installer sets file permissions itself.** If you installed a server from a root shell with unusual settings, run the install command again: it closes the install folder to other users and tells you if it changed anything."
-          ]
-        },
-        {
-          "title": "Fixes",
-          "items": [
-            "**A chat you watched to the end no longer shows as unread** on your phone or after a reload.",
-            "**Stop reaches the running turn** after the connection restarts.",
-            "**OpenCode never runs a model it can't route,** and says so plainly.",
-            "**Goals:** a decision is recovered when its closing tag is missing or followed by extra text.",
-            "**Memory:** Japanese words with a long vowel mark are recalled, and tidying only touches notes the model was shown.",
-            "**Search** matches upper and lower case in every language.",
-            "**Calendar:** every page is read before a bot reports when you're free.",
-            "**Data:** decimals sort correctly, export file names don't collide, and compressed files load with a folder.",
-            "**Notion integration tokens are masked** in chats and logs.",
-            "**Emailed sign-in codes stop being read** when the turn ends."
           ]
         }
       ]
