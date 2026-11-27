@@ -23,14 +23,6 @@ vi.mock("../DesktopCapabilities", async (importOriginal) => ({
 vi.mock("../Avatar", () => ({ BotAvatar: () => null, MausAvatar: () => null }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => true }));
-const engagement = vi.hoisted(() => ({ readScope: vi.fn(), saveScope: vi.fn(), readFindings: vi.fn(), readAssets: vi.fn(), readRefusals: vi.fn() }));
-vi.mock("@/lib/engagement", () => ({
-  readRoomScope: engagement.readScope,
-  saveRoomScope: engagement.saveScope,
-  readRoomFindings: engagement.readFindings,
-  readRoomAssets: engagement.readAssets,
-  readRoomRefusals: engagement.readRefusals,
-}));
 
 const bot = (id: string, name: string): Bot => ({
   id, threadId: `${id}-thread`, name, title: "", description: "", color: "green",
@@ -85,11 +77,6 @@ const patches = () => fixture.dispatch.mock.calls.map(([action]) => action).filt
 
 beforeEach(() => {
   fixture.dispatch.mockReset();
-  engagement.readScope.mockReset().mockResolvedValue(null);
-  engagement.saveScope.mockReset().mockResolvedValue(null);
-  engagement.readFindings.mockReset().mockResolvedValue([]);
-  engagement.readAssets.mockReset().mockResolvedValue([]);
-  engagement.readRefusals.mockReset().mockResolvedValue([]);
   fixture.config = jev(true);
   document.documentElement.dataset.reducedMotion = "true";
   vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(() => {});
