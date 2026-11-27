@@ -195,7 +195,7 @@ describe("the Devices page", () => {
   it("names a phone's way in only while that way is on", async () => {
     companion = { ...companion, routes: { wifi: off, relay: { on: true, since: NOW }, tailscale: off, https: off } };
     await render();
-    expect($("[data-device-row='phone:iphone'] [data-device-route]")?.textContent).toBe("Anywhere, through MausBot");
+    expect($("[data-device-row='phone:iphone'] [data-device-route]")?.textContent).toBe("Anywhere, through Parth Lab");
   });
 
   it("names no way for a phone kept to home whose ways are off, while Anywhere is on, and asks nothing of the person", async () => {
@@ -612,6 +612,43 @@ describe("Add a device, in the page", () => {
     const foot = $("[data-pair-reach]")!;
     expect(foot.className).toContain("text-ink-secondary");
     expect($("[data-add-panel] [data-copy-link]")?.nextElementSibling).toBe(foot);
+    expect($("[data-host-firewall]")).toBeNull();
+  });
+
+  it("says when ufw likely drops the phone on Wi-Fi and gives the command, only for a Wi-Fi-only code", async () => {
+    const relayed = { v: 1 as const, k: "k", h: "h", r: ["relay1.openmausbot.com"] };
+    const hosted = [{ url: "https://c-ada.example.com", kind: "hosted" as const, priority: 0 }];
+    const cases = [
+      { name: "Wi-Fi only", shows: true, over: { e2e: { enabled: true, relay: "off" as const, node: null, descriptor: { v: 1 as const, k: "k" } } } },
+      { name: "relay in the QR", shows: false, over: { e2e: { enabled: true, relay: "connected" as const, node: null, descriptor: relayed } } },
+      { name: "HTTPS address in the code", shows: false, over: { e2e: { enabled: false, relay: "off" as const, node: null, descriptor: null }, endpoints: hosted } },
+    ];
+    const base = companion;
+    for (const { name, shows, over } of cases) {
+      // Windows' Public-network note stays out of this card, as before.
+      companion = { ...base, port: 8810, lan: "192.168.1.5", hosts: ["192.168.1.5"], hostFirewall: "ufw", publicNetwork: "Wi-Fi", ...over };
+      bridge.pairing.mockImplementation(async (open: boolean) => {
+        companion = { ...companion, pairing: open ? { code: "482913", token: `omb_pair_${"a".repeat(43)}`, expiresAt: NOW + 600_000 } : null };
+        return companion;
+      });
+      // oxlint-disable-next-line eslint/no-await-in-loop -- one page per case.
+      await render();
+      // oxlint-disable-next-line eslint/no-await-in-loop -- one page per case.
+      await click("[data-add-group=phones]");
+      expect($("[data-pair-qr]"), name).not.toBeNull();
+      const note = $("[data-add-panel] [data-host-firewall]");
+      if (shows) {
+        expect(note?.textContent, name).toContain("This computer's firewall (ufw) may block your phone on Wi-Fi.");
+        expect(note?.querySelector("code")?.textContent, name).toBe("sudo ufw allow 8810/tcp");
+        expect($("[data-pair-reach]")?.nextElementSibling, name).toBe(note);
+      } else {
+        expect(note, name).toBeNull();
+      }
+      expect(document.body.textContent, name).not.toContain("set to Public");
+      // oxlint-disable-next-line eslint/no-await-in-loop -- one page per case.
+      await act(async () => root.unmount());
+      root = createRoot(host);
+    }
   });
 
   it("asks for the private network first when Add a computer comes before it, with the later steps shown but quiet", async () => {
@@ -670,7 +707,7 @@ describe("Add a device, in the page", () => {
       "npx openmausbot account login && npx openmausbot serve --tunnel", "npx openmausbot serve --tailscale",
     ]);
     const why = $("[data-add-server-why]")!;
-    expect(why.textContent).toBe("These start MausBot on that machine. They need Node.js 24 or later; a terminal is the window where you type commands.");
+    expect(why.textContent).toBe("These start Parth Lab on that machine. They need Node.js 24 or later; a terminal is the window where you type commands.");
     expect(why.compareDocumentPosition($("[data-server-command]")!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect($("[data-add-panel] [data-place-add=own-server]")).not.toBeNull();
     expect(layers()).toBe(0);
@@ -1124,7 +1161,7 @@ describe("Add a computer's words", () => {
     await click("[data-network-action]");
     await click("[data-add-group=computers]");
     expect([...document.querySelectorAll("[data-step]")].map((step) => step.getAttribute("data-step-state"))).toEqual(["done", "now", "now"]);
-    expect($("[data-step='2']")?.textContent).toContain("On the other computer, install MausBot and Tailscale");
+    expect($("[data-step='2']")?.textContent).toContain("On the other computer, install Parth Lab and Tailscale");
     expect($("[data-add-install-why]")?.textContent).toContain("another computer reaches this one only through Tailscale");
     expect($("[data-add-network-why]")).toBeNull();
     expect($("[data-step='3'] [data-copy-link]")?.className).toContain("ui-button-primary");

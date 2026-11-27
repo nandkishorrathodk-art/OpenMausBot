@@ -1,5 +1,5 @@
 import { botOwner, nameFromEmail } from "../shared/bot-owner.ts";
-import { canManage, hasAuthority, inChargeOfEvery, peerName, renderRoster, reachablePeers, type RosterMember, type TeamPrompt } from "./peer-roster.ts"; import { chiefLevel } from "./chief-level.ts";
+import { canManage, hasAuthority, inChargeOfEvery, linkedLayout, peerName, renderRoster, reachablePeers, type RosterMember, type TeamPrompt } from "./peer-roster.ts"; import { chiefLevel } from "./chief-level.ts";
 import type { TaskRecord } from "./store.ts"; import type { LinkedChiefView } from "./host/linked-roster.ts";
 
 export type ChiefTeamMember = RosterMember;
@@ -53,17 +53,25 @@ export function chiefOfStaffPrompt(
   const reachable = reachablePeers(bots, chief ?? { id: chiefId, name: "" }, also);
   const team = chief ? reachable.filter((bot) => hasAuthority(chief, bot)) : reachable;
   const others = chief ? reachable.filter((bot) => !hasAuthority(chief, bot)) : [];
+  // Linked: every bot of both places, one rule for every bot (peer-roster.ts `linkedLayout`).
+  const layout = linked?.far ? linkedLayout([...team, ...others], linked.far) : undefined;
+  const teamMax = layout ? Math.min(team.length, layout.max) : ROSTER_MAX_BOTS;
+  const othersMax = Math.max(ROSTER_MAX_BOTS - team.length, OTHERS_MIN_BOTS);
+  // The lines named with the link off stay exactly as they are; only those past them are names alone.
+  const compact = (full: number) => (layout ? { compact: layout.compact, full, keepId: layout.keepId } : {});
   const roster = renderRoster(team, {
-    max: ROSTER_MAX_BOTS,
+    max: teamMax,
     empty: "- No other visible operators are available yet.",
     about: true,
     department: chiefSection,
+    ...compact(ROSTER_MAX_BOTS),
   });
   const othersRoster = others.length ? renderRoster(others, {
-    max: Math.max(ROSTER_MAX_BOTS - team.length, OTHERS_MIN_BOTS),
+    max: layout ? layout.max - teamMax : othersMax,
     empty: "",
     about: false,
     department: chiefSection,
+    ...compact(othersMax),
   }) : "";
 
   const delegation = canDelegate
@@ -107,7 +115,7 @@ export function chiefOfStaffPrompt(
     roster,
     othersRoster && (person ? "Other operators you can reach (they report to someone else):" : "Other operators you can reach, in other departments:"),
     othersRoster,
-    linked?.roster,
+    layout ? layout.far : linked?.roster,
   ].filter(Boolean).join("\n");
   return { rules, roster: listed };
 }

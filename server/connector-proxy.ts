@@ -1,6 +1,5 @@
 // Connection requests become Parth Lab chat cards: the agent never authors an auth URL and credentials never pass
 // through its transcript. stdout is the MCP transport: never log there.
-import readline from "node:readline";
 import { randomUUID } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
 import {
@@ -20,6 +19,8 @@ import { AUTH_CONFIG_ID } from "../shared/connector-availability.ts";
 import { fitToolListResult } from "./mcp-tool-schema.ts";
 import { toolSchemaProfileFromEnv } from "./tool-schema-profile.ts";
 import { capToolListResult, toolLimitFromEnv } from "./tool-count-limit.ts";
+import { toolsListResultForSessionShare } from "./tool-list-share.ts";
+import { readStdioLines } from "./stdio-lines.ts";
 
 type Json = Record<string, unknown>;
 
@@ -267,9 +268,9 @@ function withArgumentNotes(name: string, response: Json, changed: readonly strin
 }
 
 function fittedList(frame: Json): Json {
-  if ((!SCHEMA_PROFILE && TOOL_LIMIT === undefined) || !("result" in frame)) return frame;
+  if (!("result" in frame)) return frame;
   const log = (line: string) => process.stderr.write(`connector-proxy: ${line}\n`);
-  return { ...frame, result: capToolListResult(fitToolListResult(frame.result, SCHEMA_PROFILE, log), TOOL_LIMIT, log) };
+  return { ...frame, result: toolsListResultForSessionShare(capToolListResult(fitToolListResult(frame.result, SCHEMA_PROFILE, log), TOOL_LIMIT, log), process.env, log) };
 }
 
 /** A refusal that answers the same way every time: an HTTP 4xx other than 429, or a result that is not a list (the
@@ -394,8 +395,7 @@ async function handle(received: Json): Promise<void> {
   }
 }
 
-const input = readline.createInterface({ input: process.stdin, terminal: false });
-input.on("line", (line) => {
+readStdioLines(process.stdin, (line) => {
   const trimmed = line.trim();
   if (!trimmed) return;
   let message: Json;
@@ -430,5 +430,4 @@ input.on("line", (line) => {
     if (method === "tools/call") send(textResult(message.id, messageText, true));
     else send(jsonRpcError(message.id, messageText));
   });
-});
-input.on("close", () => process.exit(0));
+}, () => process.exit(0));

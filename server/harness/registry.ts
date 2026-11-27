@@ -18,6 +18,7 @@ import { withTurnScope } from "../crash-guard.ts";
 import { withWslNotice } from "./wsl-launch.ts";
 import { modelManifest, startModelManifestRefresh } from "../model-manifest/manifest.ts";
 import { machinePressure } from "../machine-pressure.ts";
+import { signInMethodOf } from "../sign-in-trace.ts";
 export { engineMemory } from "../engine-memory.ts";
 import { clientInstall } from "../contracts.ts";
 import type {
@@ -63,11 +64,9 @@ function withServerInstall(install: AnyProviderDriver["install"], npmPresent: bo
 export function signInOf(inst: ProviderInstance) {
   return inst.startAuthentication
     ? {
-        method: inst.authenticationMethod ?? (inst.getAuthentication && inst.completeAuthentication
-          ? "paste-code" as const // a link to open, then a code pasted back (Claude)
-          : inst.getAuthentication
-            ? "device-code" as const // a code to enter at the provider's page (Codex)
-            : "callback-url" as const), // a link and a callback URL (managed engines)
+        // Named, else a link then a code pasted back (Claude), a code to enter at the provider's page (Codex), or a link
+        // and a callback URL (managed engines).
+        method: signInMethodOf(inst),
         signOut: inst.signOut !== undefined,
       }
     : undefined;
@@ -147,6 +146,10 @@ export class ProviderRegistry {
   private snapshotGeneration = 0;
   private manifestWatched = false;
   private readonly signedInListeners = new Set<(instanceId: InstanceId) => void>();
+  /** The newest read that said plainly whether each engine is signed in, by the order reads began: a read that does not
+   * say, or began before the one kept, keeps it. */
+  private readonly lastAuth = new Map<InstanceId, { authenticated: boolean; read: number }>();
+  private readsBegun = 0;
   /** Per instance object: settings that reload an engine make a new one, so its status is read afresh. */
   private readsOf = new WeakMap<ProviderInstance, { snapshot: ProviderSnapshot; at: number; generation: number }>();
   private driversByKind: Map<string, AnyProviderDriver>;
@@ -590,7 +593,7 @@ export class ProviderRegistry {
   private async read(instance: ProviderInstance): Promise<ProviderSnapshot> {
     let snapshot: ProviderSnapshot;
     let answered = true, inconclusive = false;
-    const generation = this.snapshotGeneration;
+    const generation = this.snapshotGeneration, begun = ++this.readsBegun;
     try {
       snapshot = await instance.snapshot();
       inconclusive = snapshot.state === "unavailable" && snapshot.busy === true;
@@ -635,7 +638,10 @@ export class ProviderRegistry {
       this.unread?.delete(instance.instanceId);
       this.saveStatus();
       if (!inconclusive) this.healWrongCli(instance.instanceId, snapshot);
-      if (before?.authenticated === false && snapshot.state === "available" && snapshot.authenticated === true) {
+      const kept = this.lastAuth.get(instance.instanceId), knew = kept ? kept.authenticated : before?.authenticated;
+      const newest = !kept || kept.read < begun;
+      if (newest && !inconclusive && snapshot.state === "available" && typeof snapshot.authenticated === "boolean") this.lastAuth.set(instance.instanceId, { authenticated: snapshot.authenticated, read: begun });
+      if (newest && !inconclusive && knew === false && snapshot.state === "available" && snapshot.authenticated === true) {
         for (const listener of this.signedInListeners) listener(instance.instanceId);
       }
     }
@@ -646,6 +652,11 @@ export class ProviderRegistry {
    * in the app, in the engine's own browser callback, or in a terminal. */
   onSignedIn(listener: (instanceId: InstanceId) => void): void {
     this.signedInListeners.add(listener);
+  }
+
+  /** A sign-in the app made and tells itself: the next read that finds it signed in tells nothing new. */
+  sawSignedIn(instanceId: InstanceId): void {
+    this.lastAuth.set(instanceId, { authenticated: true, read: ++this.readsBegun });
   }
 
   private saveStatus(): void {
@@ -731,6 +742,7 @@ export class ProviderRegistry {
     this.byId.clear();
     this.cliByInstance.clear();
     this.lastSnapshots.clear();
+    this.lastAuth.clear();
     this.seeds.clear();
   }
 
@@ -742,6 +754,7 @@ export class ProviderRegistry {
     this.byId.delete(instanceId);
     this.cliByInstance.delete(instanceId);
     this.lastSnapshots.delete(instanceId);
+    this.lastAuth.delete(instanceId);
     this.seeds.delete(instanceId);
     await entry?.live?.dispose();
   }

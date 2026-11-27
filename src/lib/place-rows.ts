@@ -1,16 +1,15 @@
 // One list of bots: with "This computer and My Cloud together" on (electron/places-together.mjs), the other place's bots
-// sit among this page's own, in the same list, Unread and order, instead of in a group of their own. A row of the other
-// place becomes a Bot-shaped value the sidebar places and draws like any other. Its id is its place's key and its own id
+// sit among this page's own, in its departments and order (src/lib/one-list.ts lays them out). A row of the other place
+// becomes a Bot-shaped value the sidebar places and draws like any other. Its id is its place's key and its own id
 // (`cloud:scout`), so two bots with one id in two places never meet, and nothing that writes to this place's server is
 // ever handed one: what such a row sends is either "open it", which main does where the bot lives, or dropped.
 //
-// The one list is this computer's page's: the page the rail's first circle opens. My Cloud's page, opened from its own
-// circle, lists My Cloud's bots only, as it does with the switch off, so the rail still shows the Cloud on its own.
+// Both pages draw it, the same way: this computer's page, and My Cloud's own page, which lists this computer's bots.
 //
 // Everything here is keyed by a place, not by "My Cloud": today the places are this computer and My Cloud, and a
 // person's own always-on machine (a server of their own, or a computer at home) is meant to join the same list later
 // as one more place, with its own key, kind, name and state.
-import { useEffect, useSyncExternalStore, type Dispatch, type RefObject } from "react";
+import type { Dispatch } from "react";
 import { BOT_BODY_IDS, type BotBodyId } from "../../shared/bot-body";
 import { MASCOT_FACE_COLORS, mascotBodyColorSchema, mascotMaterialSchema, type MascotFaceColor } from "../../shared/bot-avatar";
 import type { Action, Bot } from "@/state/store";
@@ -78,6 +77,8 @@ export function placedBot(row: PlaceBotRow, health: PlaceHealth, place: Place = 
     // No engine of this place: no model badge, and nothing here runs it.
     modelSelection: { instanceId: "", model: "" },
     messages: [],
+    // Its department there: the one list draws a bot of the home place in it on the other page too.
+    ...(row.section ? { section: row.section } : {}),
     placedFrom: { place, id: row.id, health, ...(row.preview ? { preview: row.preview } : {}), ...(row.chat ? { chat: row.chat } : {}) },
     ...(row.lastAt !== undefined ? { lastAt: row.lastAt } : {}),
   };
@@ -98,8 +99,10 @@ let lastList: readonly PlacedBot[] = NONE;
  * asleep, waking or can't be reached: a read never takes rows away to put them back. */
 let lastRows: { home: BotHome; rows: PlaceBotRow[] } | null = null;
 
-/** The one list is on for this page: the switch is on, main lists the other place, and this is this computer's page. */
-export const oneListOn = (state: PlacesTogetherState | null): boolean => state?.on === true && state.other !== null && state.here === "computer";
+/** The one list is on for this page: the switch is on and main lists the other place. On My Cloud's page only from an
+ * app that says which place is home (and keeps where bots are moved): with an older one, that page lists its own bots
+ * only, as it did before. */
+export const oneListOn = (state: PlacesTogetherState | null): boolean => state?.on === true && state.other !== null && (state.here === "computer" || state.home !== undefined);
 
 function placedList(state: PlacesTogetherState | null): readonly PlacedBot[] {
   if (state === lastState) return lastList;
@@ -123,10 +126,8 @@ function placedList(state: PlacesTogetherState | null): readonly PlacedBot[] {
 
 /** The other place's bots for the one list, matching the sidebar's search (`query`, already trimmed and lower case).
  * The same empty list while the switch is off, in a browser, and on any other place's page. */
-export function useOtherPlaceBots(query: string, list?: RefObject<HTMLElement | null>): readonly PlacedBot[] {
-  useQuietList(list);
-  const answered = usePlacesTogetherPart(placedList);
-  const all = useSyncExternalStore(subscribeQuiet, () => settled(answered), () => settled(answered));
+export function useOtherPlaceBots(query: string): readonly PlacedBot[] {
+  const all = usePlacesTogetherPart(placedList);
   if (!query || !all.length) return all;
   if (lastSearch.all !== all || lastSearch.query !== query) {
     lastSearch = { all, query, found: all.filter((bot) => bot.name.toLowerCase().includes(query) || bot.title.toLowerCase().includes(query)) };
@@ -135,87 +136,6 @@ export function useOtherPlaceBots(query: string, list?: RefObject<HTMLElement | 
 }
 /** The last search's rows, kept while the list and the words stay the same (no hook: the sidebar calls this on every draw). */
 let lastSearch: { all: readonly PlacedBot[]; query: string; found: readonly PlacedBot[] } = { all: NONE, query: "", found: NONE };
-
-// Rows of the other place never push rows the person can already see. They come in after this page's own and are
-// ranked (Unread, working first) only while the list is quiet: the pointer is not over it and it has not been clicked,
-// typed in or scrolled for QUIET_MS. Until then a new row of the other place is listed at the end of the main list as
-// a plain row, and a row that changed keeps the place it had; both take their place once the list is quiet.
-export const QUIET_MS = 2_000;
-const quiet = { inside: false, lastAt: -Infinity, version: 0, pending: false, timer: null as ReturnType<typeof setTimeout> | null };
-const quietListeners = new Set<() => void>();
-const subscribeQuiet = (listener: () => void) => { quietListeners.add(listener); return () => { quietListeners.delete(listener); }; };
-const isQuiet = () => !quiet.inside && Date.now() - quiet.lastAt >= QUIET_MS;
-/** What each row of the other place was last ranked by. */
-let ranked = new Map<string, PlacedBot>();
-const plain = new WeakMap<PlacedBot, PlacedBot>();
-let lastSettled: { answered: readonly PlacedBot[]; version: number; list: readonly PlacedBot[] } | null = null;
-
-function settleWhenQuiet(): void {
-  if (quiet.timer !== null) clearTimeout(quiet.timer);
-  quiet.timer = null;
-  if (quiet.inside || !quiet.pending) return;
-  quiet.timer = setTimeout(() => {
-    quiet.timer = null;
-    if (!isQuiet()) { settleWhenQuiet(); return; }
-    quiet.version += 1;
-    for (const listener of quietListeners) listener();
-  }, Math.max(0, quiet.lastAt + QUIET_MS - Date.now()));
-}
-
-/** A row of the other place as it is ranked before its place in the list is settled: no unread, no work, no time. */
-function plainRow(bot: PlacedBot): PlacedBot {
-  let row = plain.get(bot);
-  if (!row) { row = { ...bot, unread: false, busy: undefined, activity: undefined, lastAt: undefined }; plain.set(bot, row); }
-  return row;
-}
-
-function settled(answered: readonly PlacedBot[]): readonly PlacedBot[] {
-  if (lastSettled && lastSettled.answered === answered && lastSettled.version === quiet.version) return lastSettled.list;
-  let list: readonly PlacedBot[];
-  if (isQuiet()) {
-    ranked = new Map(answered.map((bot) => [bot.id, bot]));
-    quiet.pending = false;
-    list = answered;
-  } else {
-    const next = answered.map((bot) => ranked.get(bot.id) ?? plainRow(bot));
-    quiet.pending = next.some((bot, index) => bot !== answered[index]);
-    const before = lastSettled?.list;
-    list = before && before.length === next.length && next.every((bot, index) => bot === before[index]) ? before : next;
-    settleWhenQuiet();
-  }
-  lastSettled = { answered, version: quiet.version, list };
-  return list;
-}
-
-/** Follows the pointer and the person's clicks, keys and scrolling on the list, for QUIET_MS. */
-function useQuietList(list?: RefObject<HTMLElement | null>): void {
-  useEffect(() => {
-    const element = list?.current;
-    if (!element) return;
-    const touched = () => { quiet.lastAt = Date.now(); settleWhenQuiet(); };
-    const enter = () => { quiet.inside = true; settleWhenQuiet(); };
-    const leave = () => { quiet.inside = false; settleWhenQuiet(); };
-    const events: Array<[string, () => void]> = [["pointerenter", enter], ["pointerleave", leave], ["pointerdown", touched], ["keydown", touched], ["wheel", touched]];
-    for (const [name, handler] of events) element.addEventListener(name, handler, { passive: true });
-    element.addEventListener("scroll", touched, { capture: true, passive: true });
-    return () => {
-      for (const [name, handler] of events) element.removeEventListener(name, handler);
-      element.removeEventListener("scroll", touched, { capture: true });
-      quiet.inside = false;
-    };
-  }, [list]);
-}
-
-/** The sidebar's parts with the other place's rows after this place's own in the main list: the busy-first order and
- * Unread then take every row the same way. Departments, pins and tiles stay this place's own. */
-export function withOtherPlace<T extends { unsectionedBots: Bot[] }>(parts: T, placed: readonly PlacedBot[]): T {
-  return placed.length ? { ...parts, unsectionedBots: [...parts.unsectionedBots, ...placed] } : parts;
-}
-
-/** This place's own rows only: what a drag or Alt+Up/Down arranges and saves to this place's server. */
-export function ownRows<T extends object>(bots: T[]): T[] {
-  return bots.some(isPlacedBot) ? bots.filter((bot) => !isPlacedBot(bot)) : bots;
-}
 
 const openers = new Map<string, Dispatch<Action>>();
 
@@ -284,8 +204,7 @@ export function placeMark(place: Place, health: PlaceHealth, working: boolean, n
   return mark(device.icon, kind === "my-cloud" ? t("together.mark.livesCloud") : kind === "this-computer" ? t("together.mark.livesComputer") : t("together.mark.livesOn", { place: place.label }), "hover");
 }
 
-/** This page's place while the one list is on; null while it is off, in a browser, on My Cloud's page and on any other
- * place's page. */
+/** This page's place while the one list is on; null while it is off, in a browser, and on any other place's page. */
 const hereOf = (state: PlacesTogetherState | null): BotHome | null => (oneListOn(state) ? state!.here : null);
 
 /** The mark a row draws, given this page's place while the one list is on (`here`, from useOneListHere once for the
@@ -323,9 +242,5 @@ export function resetPlaceRowsForTest(): void {
   lastList = NONE;
   lastSearch = { all: NONE, query: "", found: NONE };
   lastRows = null;
-  ranked = new Map();
-  lastSettled = null;
-  if (quiet.timer !== null) clearTimeout(quiet.timer);
-  Object.assign(quiet, { inside: false, lastAt: -Infinity, version: 0, pending: false, timer: null });
   openers.clear();
 }

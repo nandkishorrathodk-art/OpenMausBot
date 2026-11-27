@@ -1,4 +1,4 @@
-// Pins the bytes of OpenMausBot's own prompt text a turn carries: the fixed sections of a bot's system prompt, what a
+// Pins the bytes of Parth Lab's own prompt text a turn carries: the fixed sections of a bot's system prompt, what a
 // Claude turn appends with --append-system-prompt-file, and what a Codex turn sets as developer instructions. Each may
 // move at most 2% either way (lower a number to lock in a win); a bigger change moves its baseline by hand.
 import { describe, expect, it } from "vitest";
@@ -6,7 +6,7 @@ import { chiefOfStaffSystemPrompt } from "./chief-of-staff.ts";
 import { codexDeveloperInstructions, syncCodexInstructions } from "./drivers/codex-instructions.ts";
 import { volatileContextNote, withVolatileNote } from "./drivers/prompt-split.ts";
 import { meetingsUnavailablePrompt } from "./meetings/prompt.ts";
-import { REPLY_HABITS_PROMPT } from "./reply-habits.ts";
+import { replyHabitsPrompt } from "./reply-habits.ts";
 import { setupSystemPrompt } from "./setup-mode.ts";
 import { computerSelectionPrompt } from "./surface.ts";
 import { memoryRulesPrompt, workspaceDir } from "./workspace.ts";
@@ -35,8 +35,9 @@ const KINDS: ComputerPromptKind[] = ["vm-private", "vm-shared", "box", "vps", "l
 
 async function measured(): Promise<Record<string, number>> {
   const bytes = (text: string) => Buffer.byteLength(text, "utf8");
-  const chat = buildSystemPrompt(botPersona(BOT), "", directChatParts(false));
-  const setup = buildSystemPrompt(botPersona(BOT), "", directChatParts(true));
+  // A direct chat has the agents tools, so its reply habits carry the publishing sentence.
+  const chat = buildSystemPrompt(botPersona(BOT), "", directChatParts(false), { env: {} });
+  const setup = buildSystemPrompt(botPersona(BOT), "", directChatParts(true), { env: {} });
   const chief = chiefOfStaffSystemPrompt(BOT.id, [{ ...BOT, chiefOfStaff: true }] as never, true, undefined, [] as never);
   let resumed = "";
   await syncCodexInstructions("budget", "native-budget", chat.stable, "", true, async (_method, params) => {
@@ -44,7 +45,7 @@ async function measured(): Promise<Record<string, number>> {
     return {};
   });
   return {
-    "reply-habits": bytes(REPLY_HABITS_PROMPT),
+    "reply-habits": bytes(replyHabitsPrompt(true)),
     "tool-bridge": bytes(AGENTS_TOOL_BRIDGE_PROMPT),
     "sign-in": bytes(SIGN_IN_PROMPT),
     "chief-of-staff": bytes(chief),
@@ -64,34 +65,34 @@ async function measured(): Promise<Record<string, number>> {
 
 /** Bytes when the budget was last set; the test allows at most 2% either way. */
 const PROMPT_BUDGET_BASELINE: Record<string, number> = {
-  "reply-habits": 3620,
-  "tool-bridge": 593,
-  "sign-in": 2552,
-  "chief-of-staff": 8044,
+  "reply-habits": 3898,
+  "tool-bridge": 591,
+  "sign-in": 2584,
+  "chief-of-staff": 8042,
   "memory-rules": 2246,
   "setup": 2584,
   "meetings": 296,
-  "computer-selection": 1269,
+  "computer-selection": 1267,
   "credential": 1045,
-  "routine": 2634,
-  "profile": 1036,
+  "routine": 2683,
+  "profile": 1034,
   "team-memory": 286,
   // Both sandbox kinds carry +130 bytes on purpose: the person's own files (C:\Users\…, /Users/…, Desktop) are reached only on This computer.
-  "computer:vm-private": 6271,
-  "computer:vm-shared": 6230,
-  "computer:box": 4698,
-  "computer:vps": 5372,
-  "computer:local": 5615,
-  "claude:direct-chat": 15102,
-  "claude:setup-chat": 17686,
+  "computer:vm-private": 6304,
+  "computer:vm-shared": 6263,
+  "computer:box": 4731,
+  "computer:vps": 5405,
+  "computer:local": 5644,
+  "claude:direct-chat": 15425,
+  "claude:setup-chat": 18009,
   "claude:volatile-note": 178,
-  "codex:direct-chat": 15102,
-  "codex:setup-chat": 17686,
-  "codex:resumed-instructions": 213,
+  "codex:direct-chat": 15425,
+  "codex:setup-chat": 18009,
+  "codex:resumed-instructions": 211,
   "codex:volatile-note": 95,
 };
 
-describe("OpenMausBot's prompt text per turn", () => {
+describe("Parth Lab's prompt text per turn", () => {
   it("stays within its pinned budget", async () => {
     const now = await measured();
     expect(Object.keys(now).sort()).toEqual(Object.keys(PROMPT_BUDGET_BASELINE).sort());

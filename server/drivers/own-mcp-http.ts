@@ -1,4 +1,4 @@
-// Parth Lab's own MCP servers (agents, browser, computer, data, email, device) reached by URL instead of a stdio proxy
+// OpenMausBot's own MCP servers (agents, browser, computer, data, email, device) reached by URL instead of a stdio proxy
 // process each: every engine process otherwise starts one Node helper per server, about 7 threads each, all counted
 // against a container's pids limit. The URL form is the endpoint those proxies forward to (routes/own-mcp-http.ts), with
 // the same capability token, so identity and permissions are the stdio form's. The permission prompt server (ogb, over the
@@ -7,13 +7,14 @@
 // port is the box's bridge to the harness gate (bot-box/harness-gate.ts), which passes /api/internal/ only, and the box
 // keeps loopback out of its egress proxy (NO_PROXY).
 import { botBox } from "../bot-box/box.ts";
+import { withSessionToolBudget } from "./session-tool-budget.ts";
 import { acpOwnServersOverHttp, ownMcpOverHttp, type AcpMcpServer } from "./turn-mcp.ts";
 
 /** "1" turns the URL form on for every engine that can take it; "0" keeps every engine on stdio proxies, the ACP agents
  * that take the URL form by default included. */
 export const OWN_MCP_HTTP_ENV = "OMB_OWN_MCP_HTTP";
 
-/** Whether Claude, Codex and the ACP agents that do not take the URL form by default get Parth Lab's own servers by URL:
+/** Whether Claude, Codex and the ACP agents that do not take the URL form by default get OpenMausBot's own servers by URL:
  * only with OMB_OWN_MCP_HTTP=1, and not while the bot box is on, where their HTTP clients have not been checked. */
 export function ownMcpHttpEnabled(env: NodeJS.ProcessEnv = process.env, boxed: boolean = botBox.enabled()): boolean {
   return !boxed && env[OWN_MCP_HTTP_ENV] === "1";
@@ -36,7 +37,7 @@ export function loopbackUnproxied(env: Record<string, string | undefined>, http:
 
 type StdioMount = { command?: unknown; args?: unknown; env?: unknown; alwaysLoad?: unknown };
 
-/** One --mcp-config entry as Claude Code's HTTP form when it is one of Parth Lab's own stdio proxies (Claude Code 1.0.60,
+/** One --mcp-config entry as Claude Code's HTTP form when it is one of OpenMausBot's own stdio proxies (Claude Code 1.0.60,
  * 2.0.0, 2.1.257 and 2.1.325 checked: `type: "http"` with headers connects and lists tools), else null. `alwaysLoad` stays. */
 export function claudeOwnHttpMount(server: unknown): Record<string, unknown> | null {
   const mount = server as StdioMount | null;
@@ -45,7 +46,7 @@ export function claudeOwnHttpMount(server: unknown): Record<string, unknown> | n
   return http ? { type: "http", url: http.url, headers: http.headers, ...(mount.alwaysLoad === true ? { alwaysLoad: true } : {}) } : null;
 }
 
-/** Turns every one of Parth Lab's own proxies in a Claude --mcp-config into its HTTP form, when the setting is on;
+/** Turns every one of OpenMausBot's own proxies in a Claude --mcp-config into its HTTP form, when the setting is on;
  * true when any was. */
 export function claudeOwnMcpOverHttp(servers: Record<string, unknown>, enabled: boolean = ownMcpHttpEnabled()): boolean {
   if (!enabled) return false;
@@ -57,7 +58,7 @@ export function claudeOwnMcpOverHttp(servers: Record<string, unknown>, enabled: 
   return converted;
 }
 
-/** How an ACP engine's turn gets Parth Lab's own servers: `http` in every session, `advertised` in a session whose agent
+/** How an ACP engine's turn gets OpenMausBot's own servers: `http` in every session, `advertised` in a session whose agent
  * said in its `initialize` answer that it reaches MCP servers by URL (`agentCapabilities.mcpCapabilities.http`; the ACP spec
  * lets a client send an `http` server only to such an agent), else `stdio`. */
 export type AcpOwnMcpTransport = "http" | "advertised" | "stdio";
@@ -74,11 +75,14 @@ export function acpAgentTakesHttpMcp(init: unknown): boolean {
   return (init as { agentCapabilities?: { mcpCapabilities?: { http?: unknown } } } | null | undefined)?.agentCapabilities?.mcpCapabilities?.http === true;
 }
 
-/** The servers a session/new or session/load sends: under `advertised`, Parth Lab's own as this server's endpoints when
+/** The servers a session/new or session/load sends: under `advertised`, OpenMausBot's own as this server's endpoints when
  * the session's agent takes them, by its `initialize` answer or, for an agent that takes them without saying so, by
- * `takesUnadvertised`. Deciding here, after `initialize`, lets an agent's first session use the URL form too. */
+ * `takesUnadvertised`. Deciding here, after `initialize`, lets an agent's first session use the URL form too. An agent
+ * with a session-wide budget for tool definitions (`toolBudget`, by its `initialize` answer) has every server OpenMausBot
+ * serves or relays share it out, by URL or stdio alike. */
 export function acpSessionMcpServers(servers: AcpMcpServer[], transport: AcpOwnMcpTransport, init: unknown,
-  takesUnadvertised?: (init: unknown) => boolean): AcpMcpServer[] {
-  return transport === "advertised" && (acpAgentTakesHttpMcp(init) || takesUnadvertised?.(init) === true) ? acpOwnServersOverHttp(servers) : servers;
-
+  takesUnadvertised?: (init: unknown) => boolean, toolBudget?: (init: unknown) => number | undefined): AcpMcpServer[] {
+  const budget = toolBudget?.(init);
+  const shared = budget === undefined ? servers : withSessionToolBudget(servers, budget);
+  return transport === "advertised" && (acpAgentTakesHttpMcp(init) || takesUnadvertised?.(init) === true) ? acpOwnServersOverHttp(shared) : shared;
 }

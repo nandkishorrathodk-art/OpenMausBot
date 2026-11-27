@@ -14,6 +14,7 @@ import { ENGAGEMENT_ASSET_TOOL_DEFINITION, ENGAGEMENT_ASSET_TOOL } from "./agent
 import { APP_SETTINGS_TOOL_DEFINITION } from "./agents-app-settings-tool.ts";
 import { THREAD_POST_TOOL_DEFINITION } from "./agents-thread-post-tool.ts";
 import { RENAME_THREAD_TOOL_DEFINITION } from "./agents-thread-title-tool.ts";
+import { SET_MAIN_THREAD_TOOL_DEFINITION } from "./agents-main-thread-tool.ts";
 import { WORKFLOW_TOOL_DEFINITIONS, WORKFLOW_TOOL_NAMES } from "./agents-workflow-tool.ts";
 import { WAIT_TOOL_DEFINITIONS, WAIT_TOOL_NAMES } from "./agents-wait-tools.ts"; import { CHECK_BACK_TOOL_DEFINITIONS, CHECK_BACK_TOOL_NAMES } from "./agents-check-back-tool.ts"; import { BOARD_TOOL_DEFINITIONS, BOARD_TOOL_NAMES } from "./agents-board-tools.ts";
 import { COMPUTER_ASK_TOOL_DEFINITIONS, COMPUTER_ASK_TOOL_NAMES } from "./agents-computer-ask-tool.ts";
@@ -247,15 +248,15 @@ const TOOL_DEFINITIONS = [
   {
     name: "close_thread",
     description:
-      "Mark a thread you opened (or one of your own) as finished once you have read its result: it leaves the person's default sidebar list (still under all threads, with a note saying you closed it) and list_threads reports it as closed. Nothing is deleted — deleting stays the person's decision — and a thread that is still running cannot be closed; wait for it or leave it. Use the thread id from list_threads or from the start_thread result. If a close is refused, do not retry it.",
+      "Mark a thread you opened (or one of your own) as finished once you have read its result: it leaves the person's default sidebar list (still under all threads, with a note saying you closed it) and list_threads reports it as closed. Nothing is deleted — deleting stays the person's decision — and a thread that is still running cannot be closed; wait for it or leave it. In a room thread, leave thread_id out to close the one you are in once your reply ends. If a close is refused, do not retry it.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
       properties: { thread_id: { type: "string", description: "The thread id from list_threads or start_thread." } },
-      required: ["thread_id"],
     },
   },
   RENAME_THREAD_TOOL_DEFINITION,
+  SET_MAIN_THREAD_TOOL_DEFINITION,
   ...WORKFLOW_TOOL_DEFINITIONS,
   {
     name: "start_thread",
@@ -766,6 +767,7 @@ const TOOL_DEFINITIONS = [
         gist: { type: "string", description: "Optional one-line summary of the change." },
         base_revision: { type: "string", description: "To update a skill shared with your team: its revision from skills_list." },
         source: { type: "string", description: "create or update: the URL, folder or 'conversation' it came from. import: owner/repo, a GitHub link to the skill's folder or SKILL.md, or a skills.sh link." },
+        all_bots: { type: "boolean", description: "create/import: on all the person's bots, if they asked." },
       },
       required: ["action"],
     },
@@ -829,7 +831,7 @@ const WATCHER_TOOL_NAMES = new Set(["create_options_card"]);
 
 const LOCAL_VM_TOOL_NAMES = new Set(["vm_exec"]);
 /** Refused in a room's thread (routes/waits.ts), and list_waits, since a room holds no wait. */
-const ROOM_REFUSED_TOOL_NAMES = new Set([...WAIT_TOOL_NAMES, ...CHECK_BACK_TOOL_NAMES, "burst", "rename_thread"]);
+const ROOM_REFUSED_TOOL_NAMES = new Set([...WAIT_TOOL_NAMES, ...CHECK_BACK_TOOL_NAMES, "burst", "rename_thread", "set_main_thread"]);
 /** Shown only in a room: an engagement's ledger and inventory have no meaning outside one. */
 export const ROOM_ONLY_TOOL_NAMES = new Set([ENGAGEMENT_FINDING_TOOL, ENGAGEMENT_ASSET_TOOL]);
 const CLOUD_HOME_SURFACE = {
@@ -871,7 +873,6 @@ function catalogTools(profile: CatalogProfile) {
     (profile.memoryEnabled !== false || (tool.name !== "memory_update" && tool.name !== "memory_log")) &&
     (profile.computerSelection === true || tool.name !== "select_computer") &&
     (profile.room !== true || !ROOM_REFUSED_TOOL_NAMES.has(tool.name)) && (profile.board === true || !BOARD_TOOL_NAMES.has(tool.name)) &&
-    (profile.room !== true || !ROOM_REFUSED_TOOL_NAMES.has(tool.name)) &&
     (profile.room === true || !ROOM_ONLY_TOOL_NAMES.has(tool.name)) &&
 
     (profile.imageGeneration === true || !IMAGE_TOOL_NAMES.has(tool.name)) && (profile.appHosting === true || !HOSTING_TOOL_NAMES.has(tool.name)) &&

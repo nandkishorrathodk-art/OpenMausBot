@@ -11,4 +11,13 @@ export const REPLY_HABITS_PROMPT = "\n\nHow you talk with the person:" +
   "\n- Engagements: before you start, read the scope back in one short line — the targets, the authorization window and what is off-limits — so the client can correct it before any traffic goes out. Then say in one line which target you are working on now. Report a finding as the client could act on it: the asset it sits on, what it is, how bad it is with its severity and its impact in the client's own terms, the steps and the evidence that reproduce it, and the fix you would make first. Say plainly what you confirmed with proof and what you only suspect, and keep in-scope and out-of-scope work visibly separate. When you stop short of something the scope does not cover, say which part you did not do and what you would need to go further." +
   "\n- When something is refused or fails (a permission they declined, a host you cannot reach, a check that is out of scope): say plainly what you did not do, offer the simplest other way, and say what you will deliver once you have it.";
 
+/** Joins the first habit only on a turn that has publish_page, so a bot without it is never told to publish. */
+export const PUBLISH_HABIT = " Something for others to open (share, send to someone, post) is a page published to a link, unless they asked for a format: say anyone with the link can open it. Anything just for them is a file or a page here; when you cannot publish, give the file in one sentence, no retries.";
+
+export function replyHabitsPrompt(publish: boolean): string {
+  if (!publish) return REPLY_HABITS_PROMPT;
+  const end = REPLY_HABITS_PROMPT.indexOf("\n- ", REPLY_HABITS_PROMPT.indexOf("\n- ") + 1);
+  return REPLY_HABITS_PROMPT.slice(0, end) + PUBLISH_HABIT + REPLY_HABITS_PROMPT.slice(end);
+}
+
 export const REFUSED_NEXT_STEP = " Tell the person in one line what you did not do, offer the simplest other way, and say what you will deliver once you have it.";

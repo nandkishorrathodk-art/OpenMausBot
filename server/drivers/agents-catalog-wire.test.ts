@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { waitForExit } from "../testing/cleanup.ts";
+import { fitToolListForBudget, toolSchemaProfile } from "../tool-schema-profile.ts";
 import { availableTools, catalogProfileFromEnv, ROOM_ONLY_TOOL_NAMES } from "./agents-catalog.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -66,7 +67,8 @@ function profiles(): Record<string, Profile> {
   // The plan's included app hosting reaches only a Cloud home the Admin wired for it; the fullest profile carries it.
   all["skills+shared+voice+x+team+images+hosting"] = { env: { ...all["skills+shared+voice+x+team+images"]!.env, OMB_APP_HOSTING: "1" } };
   all["default+hosting"] = { env: { ...all.default!.env, OMB_APP_HOSTING: "1" } };
-  // A Team Cloud with its board on mounts the three board tools, in a chat and in a room; never on the fullest profile.
+  // Every Team Cloud bot has the three board tools, in a chat and in a room. The Team profiles without them, the fullest
+  // one among them, still pin the rest of the list but no longer ship as they are: see the Gemini check below.
   all["skills+shared+voice+x+team+board"] = { env: { ...all["skills+shared+voice+x+team"]!.env, OMB_TEAM_BOARD: "1" } };
   all["default+room+board"] = { env: { ...all["default+room"]!.env, OMB_TEAM_PEOPLE: "1", OMB_TEAM_BOARD: "1" } };
   // A bot whose person turned groups off; the fullest profile has every group on.
@@ -91,39 +93,39 @@ const FULL = "skills+shared+voice+x+team+images+hosting";
 
 /** Bytes when the budget was last set; a profile may move at most 2% either way (lower it to lock in a win). */
 const BUDGET_BASELINE: Record<string, number> = {
-  "default": 62529,
-  "voice": 63310,
-  "shared": 64794,
-  "shared+voice": 65575,
-  "skills": 64918,
-  "skills+voice": 65699,
-  "skills+shared": 67183,
-  "skills+shared+voice": 67964,
-  "non-chief": 53706,
-  "voice+non-chief": 54487,
-  "shared+non-chief": 55971,
-  "shared+voice+non-chief": 56752,
-  "skills+non-chief": 56095,
-  "skills+voice+non-chief": 56876,
-  "skills+shared+non-chief": 58360,
-  "skills+shared+voice+non-chief": 59141,
-  "skills+shared+voice+cloud-home": 67720,
-  "skills+shared+voice+non-chief+cloud-home": 58897,
-  "default+legacy-switches": 62529,
-  "default+mausbot": 63180,
-  "skills+shared+voice+mausbot": 68615,
-  "skills+shared+voice+x": 71803,
-  "skills+shared+voice+x+team": 71803,
-  "default+no-computer-pick": 61321,
-  "default+room": 63023,
-  "non-chief+room": 54200,
-  "skills+shared+voice+x+team+images": 73750,
-  "default+images": 64476,
-  "skills+shared+voice+x+team+images+hosting": 75613,
-  "default+hosting": 64392,
-  "default+tools-off": 58212,
-  "skills+shared+voice+x+team+board": 73858,
-  "default+room+board": 65078,
+  "default": 63370,
+  "voice": 64151,
+  "shared": 65635,
+  "shared+voice": 66416,
+  "skills": 65861,
+  "skills+voice": 66642,
+  "skills+shared": 68126,
+  "skills+shared+voice": 68907,
+  "non-chief": 54547,
+  "voice+non-chief": 55328,
+  "shared+non-chief": 56812,
+  "shared+voice+non-chief": 57593,
+  "skills+non-chief": 57038,
+  "skills+voice+non-chief": 57819,
+  "skills+shared+non-chief": 59303,
+  "skills+shared+voice+non-chief": 60084,
+  "skills+shared+voice+cloud-home": 68663,
+  "skills+shared+voice+non-chief+cloud-home": 59840,
+  "default+legacy-switches": 63370,
+  "default+mausbot": 64021,
+  "skills+shared+voice+mausbot": 69558,
+  "skills+shared+voice+x": 72746,
+  "skills+shared+voice+x+team": 72746,
+  "default+no-computer-pick": 62162,
+  "default+room": 63312,
+  "non-chief+room": 54489,
+  "skills+shared+voice+x+team+images": 74693,
+  "default+images": 65317,
+  "skills+shared+voice+x+team+images+hosting": 76617,
+  "default+hosting": 65294,
+  "default+tools-off": 58783,
+  "skills+shared+voice+x+team+board": 74738,
+  "default+room+board": 65304,
 };
 
 const RPC_PREFIX = '{"jsonrpc":"2.0","id":1,"result":';
@@ -285,7 +287,7 @@ describe("agents proxy tools/list golden", () => {
     }
   });
 
-  it("mounts the three board tools only on a Team Cloud with the board on, in a chat and in a room, and adds nothing else", () => {
+  it("mounts the three board tools where the harness says (every Team Cloud bot), in a chat and in a room, and adds nothing else", () => {
     const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
     expect(names(wires["skills+shared+voice+x+team+board"]!).filter((tool) => !BOARD_TOOLS.includes(tool))).toEqual(names(wires["skills+shared+voice+x+team"]!));
     expect(names(wires["default+room+board"]!).filter((tool) => !BOARD_TOOLS.includes(tool))).toEqual(names(wires["default+room"]!));
@@ -293,6 +295,15 @@ describe("agents proxy tools/list golden", () => {
       for (const tool of BOARD_TOOLS) expect(names(wires[name]!).includes(tool), `${name}: ${tool}`).toBe(profile.env.OMB_TEAM_BOARD === "1");
     }
   });
+
+  it("fits a Team Cloud's real fullest list, the board tools included, under Gemini's list budget with every name kept", async () => {
+    const tools = toolsOf(await toolsListWire(PROXY_SOURCE, { ...PROFILES[FULL]!.env, OMB_TEAM_BOARD: "1" })) as Array<Tool & { inputSchema?: unknown }>;
+    for (const tool of BOARD_TOOLS) expect(tools.map((one) => one.name)).toContain(tool);
+    const gemini = toolSchemaProfile("gemini")!;
+    const fitted = fitToolListForBudget(tools, gemini);
+    expect(Buffer.byteLength(JSON.stringify(fitted), "utf8")).toBeLessThanOrEqual(gemini.maxListBytes!);
+    expect(fitted.map((tool) => tool.name)).toEqual(tools.map((tool) => tool.name));
+  }, 60_000);
 
   it("mounts generate_image and edit_image only when an image provider is set up, and adds nothing else", () => {
     const names = (wire: string) => toolsOf(wire).map((tool) => tool.name);
@@ -372,7 +383,7 @@ describe("agents proxy tools/list golden", () => {
     expect(names("default+no-computer-pick")).toEqual(names("default").filter((tool) => tool !== "select_computer"));
     for (const name of ["default", "non-chief"]) {
       expect(names(`${name}+room`), name).toEqual([
-        ...names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "check_back", "burst", "rename_thread"].includes(tool)),
+        ...names(name).filter((tool) => !["select_computer", "wait_until", "list_waits", "cancel_wait", "check_back", "burst", "rename_thread", "set_main_thread"].includes(tool)),
         ...ROOM_ONLY_TOOL_NAMES,
       ]);
     }
