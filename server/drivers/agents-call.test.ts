@@ -786,7 +786,7 @@ describe("list_bots", () => {
   it("names the bots of the person's other places after the ones here, so none of them is taken for no such bot", async () => {
     const result = await list({ bots: [{ id: "bot-scout", name: "Scout", model: "m", status: "available" }], elsewhere });
     expect(result.text).toMatch(/^Bots you can reach .*\n- Scout \[id: bot-scout, model: m\]\n\n.*resume you automatically\.\n\nThe person's bots in their other places/su);
-    expect((await list({ bots: [], elsewhere })).text).toBe(`No other bots you can reach yet.\n\n${elsewhere}`);
-    expect((await list({ bots: [] })).text).toBe("No other bots you can reach yet.");
+    expect((await list({ bots: [], elsewhere })).text).toBe(`No other operators you can reach yet.\n\n${elsewhere}`);
+    expect((await list({ bots: [] })).text).toBe("No other operators you can reach yet.");
   });
 });
