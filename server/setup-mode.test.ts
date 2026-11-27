@@ -125,7 +125,7 @@ describe("setupSystemPrompt for a Chief of Staff", () => {
   it("tells a Chief to stay the Chief and add the job to what it already does", () => {
     const chief = setupSystemPrompt(true, { chief: true, connectedApps: AVAILABLE });
     expect(chief).toContain("You are also the Chief of Staff, and setting yourself up does not change that");
-    expect(chief).toContain("add this security role to your standing instructions instead of replacing them");
+    expect(chief).toContain("add this role to your standing instructions instead of replacing them");
     for (const prompt of [setupSystemPrompt(true, { connectedApps: AVAILABLE }), setupSystemPrompt(true, { chief: false, connectedApps: AVAILABLE })]) {
       expect(prompt).not.toContain("Chief of Staff");
     }

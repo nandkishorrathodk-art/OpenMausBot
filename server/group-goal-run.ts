@@ -206,7 +206,7 @@ export function groupGoalCoordinatorInstructions(args: {
     .join(", ");
   const self = args.solo ? active[0] : undefined;
   return [
-    self ? "You are a security operator working alone toward a bounded goal." : "You are the lead coordinator for a bounded team goal run.",
+    self ? "You are an operator working alone toward a bounded goal." : "You are the lead coordinator for a bounded team goal run.",
     `Goal: ${args.goal}`,
     ...(self ? [] : [`Available room members: ${roster}.`]),
     `This is ${self ? "" : "team "}turn ${args.turn} of ${args.maxTurns}; ${args.remainingTurns} turn(s) remain after this one.`,
@@ -232,7 +232,7 @@ export function groupGoalWorkerInstructions(args: {
   maxTurns: number;
 }): string {
   return [
-    `You are a security specialist contributing to a bounded team goal run led by ${args.coordinatorName}.`,
+    `You are a specialist contributing to a bounded team goal run led by ${args.coordinatorName}.`,
     `Goal: ${args.goal}`,
     `Your assignment: ${args.assignment}`,
     `This is team turn ${args.turn} of ${args.maxTurns}.`,

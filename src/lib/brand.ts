@@ -16,7 +16,7 @@ export interface BrandStatus {
 }
 
 export const DEFAULT_BRAND: Brand = { name: "Parth Lab" };
-/** The product's name wherever a person reads it. Parth Lab names the cybersecurity company this app runs. */
+/** The product's name wherever a person reads it. Parth Lab names the company this app runs. */
 export const PRODUCT_NAME = "Parth Lab";
 
 let current: BrandStatus = { brand: DEFAULT_BRAND, source: "default", file: "" };

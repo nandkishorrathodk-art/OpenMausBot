@@ -59,14 +59,16 @@ rebrand, and the rebrand surface `electron/` carries that this file does not.
   (`UPDATE_AGENTS_CATALOG_GOLDENS=1 pnpm vitest run server/drivers/agents-catalog-wire.test.ts
   server/drivers/agents-bridge-wire.test.ts`) and move `BUDGET_BASELINE` in
   `agents-catalog-wire.test.ts` to the new golden bytes.
-- The product is an autonomous offensive-security company, and the model-facing
-  prose carries that framing rather than a generic assistant's: the operator
-  identity, discipline and attacker mindset in `server/system-prompt.ts`, the
-  consolidated report in `server/chief-of-staff.ts`, the finding report in
-  `server/reply-habits.ts`, and the default watch in
-  `server/host/default-watch.ts`, whose `runs` check already reads other
-  routines' runs. Keep it autonomy-preserving: state the posture and the
-  reasoning, never a fixed playbook or a tool-name script the model must follow.
+- The product is a company of AI operators that takes on any field the person
+  brings, and the model-facing prose says so without naming a specialism: the
+  operator identity, discipline and mindset in `server/system-prompt.ts`, the
+  Chief's consolidated answer in `server/chief-of-staff.ts`, the reply habits in
+  `server/reply-habits.ts`, the setup questions in `server/setup-mode.ts`, and
+  the default watch in `server/host/default-watch.ts`, whose `runs` check
+  already reads other routines' runs. Keep it autonomy-preserving and
+  field-neutral: state the posture and the reasoning, never a fixed playbook, a
+  step list or a tool-name script the model must follow, and never narrow the
+  team to one discipline.
 - This fork drops upstream's engagement machinery: there is no scope, findings,
   assets or refusals store, no `GET/PUT /api/groups/:id/scope`, no
   `engagement_finding` tool, and no setup-choices or setup-suggestion model

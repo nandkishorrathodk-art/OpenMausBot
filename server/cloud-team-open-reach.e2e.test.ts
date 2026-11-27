@@ -121,7 +121,7 @@ it("keeps Bob's Chief supervising only Bob's bots, while it can reach Bolt too",
   await expect.poll(() => turns().length, { timeout: 30_000 }).toBeGreaterThan(before);
   await expect.poll(settled, { timeout: 20_000 }).toBe(true);
   const system = turns().filter((turn) => turn.botId === chief.id).at(-1)!.system;
-  const [, mine = "", others = ""] = system.split(/Security operators that report to Bob \(your team\):|Other operators you can reach \(they report to someone else\):/);
+  const [, mine = "", others = ""] = system.split(/Operators that report to Bob \(your team\):|Other operators you can reach \(they report to someone else\):/);
   expect(mine).toContain("Scout");
   expect(mine).toContain("Quill");
   expect(mine).not.toContain("Bolt");

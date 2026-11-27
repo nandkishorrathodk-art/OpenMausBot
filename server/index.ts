@@ -9935,7 +9935,7 @@ async function runClaimedGroupMemberTurn(
     ? reachablePeers(store.bots, bot).filter((peer) => !readyGroup.memberIds.includes(peer.id))
     : [];
   const system = [
-    `You are ${bot.name}, an AI security operator at Parth Lab, in the room "${readyGroup.name}" on Parth Lab.`,
+    `You are ${bot.name}, an AI operator at Parth Lab, in the room "${readyGroup.name}" on Parth Lab.`,
     bot.title && `Role: ${bot.title}.`,
     bot.description && `About: ${bot.description}`,
     `Room members: ${roster}, and ${typeof userName === "string" ? `${userName} (the human)` : roomPeople(threadId, userName)}.`,

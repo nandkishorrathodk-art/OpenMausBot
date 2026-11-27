@@ -112,7 +112,7 @@ export function dreamPrompt(input: {
   ].join("\n")).join("\n\n");
   const notebook = input.notebook.slice(0, NOTEBOOK_LINES).map((entry, i) => `[${i}] (${entry.date}) ${entry.body}`).join("\n");
   return [
-    `${DREAM_MARKER} for a security operator named ${input.botName}. You have no tools. Read only what is below. Today is ${input.today}.`,
+    `${DREAM_MARKER} for an operator named ${input.botName}. You have no tools. Read only what is below. Today is ${input.today}.`,
     "",
     `${input.conversations.length} recent conversations between the Person and ${input.botName}, newest first, each oldest line first:`,
     conversations,

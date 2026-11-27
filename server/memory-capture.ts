@@ -84,7 +84,7 @@ export function capturePrompt(input: { botName: string; turns?: readonly Capture
   const limit = captureItemLimit(conversations.length);
   const notebook = input.notebook.trim() ? input.notebook.trim().slice(-NOTEBOOK_MAX) : "(empty)";
   return [
-    `${CAPTURE_MARKER} for a security operator named ${input.botName}. You have no tools. Read only what is below. Today is ${weekday(input.today)}, ${input.today}.`,
+    `${CAPTURE_MARKER} for an operator named ${input.botName}. You have no tools. Read only what is below. Today is ${weekday(input.today)}, ${input.today}.`,
     "",
     many
       ? `${conversations.length} separate conversations, each oldest first. The Person in one may not be the Person in another, so never combine what was said in two of them into one item:`
