@@ -37,8 +37,6 @@ export function restoredWorkspaceConfig(portable: unknown, destination: unknown)
 export function excludedWorkspaceAuthPath(path: string): boolean {
   if (inSecretFolder(path)) return true;
   if (/^command-allowlist\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
-  // A client's authorization to test their systems is theirs: a restored copy must never be read as one for the destination.
-  if (/^engagement-scopes\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
   if (/^mcp-oauth\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;
   // Bot API keys saved for teammates on other servers stay on the server they were saved on, like any other credential.
   if (/^remote-teammates\.json(?:$|\.\d+\.[0-9a-f-]+\.tmp$)/.test(path)) return true;

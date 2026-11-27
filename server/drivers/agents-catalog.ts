@@ -9,8 +9,6 @@ import { DEVS_TOOL_DEFINITIONS } from "./agents-devs-tools.ts";
 import { HELPER_TOOL_DEFINITIONS } from "./agents-helper-tools.ts";
 import { WHAT_CHANGED_TOOL_DEFINITION } from "./agents-what-changed-tool.ts";
 import { USAGE_LIMITS_TOOL_DEFINITION } from "./agents-usage-tool.ts";
-import { ENGAGEMENT_FINDING_TOOL_DEFINITION, ENGAGEMENT_FINDING_TOOL } from "./agents-finding-tool.ts";
-import { ENGAGEMENT_ASSET_TOOL_DEFINITION, ENGAGEMENT_ASSET_TOOL } from "./agents-asset-tool.ts";
 import { APP_SETTINGS_TOOL_DEFINITION } from "./agents-app-settings-tool.ts";
 import { THREAD_POST_TOOL_DEFINITION } from "./agents-thread-post-tool.ts";
 import { RENAME_THREAD_TOOL_DEFINITION } from "./agents-thread-title-tool.ts";
@@ -811,8 +809,6 @@ const TOOL_DEFINITIONS = [
     },
   },
   APP_SETTINGS_TOOL_DEFINITION,
-  ENGAGEMENT_FINDING_TOOL_DEFINITION,
-  ENGAGEMENT_ASSET_TOOL_DEFINITION,
 ].map((tool) => {
   const annotations = agentToolAnnotations(tool.name);
   return annotations ? { ...tool, annotations } : tool;
@@ -832,8 +828,6 @@ const WATCHER_TOOL_NAMES = new Set(["create_options_card"]);
 const LOCAL_VM_TOOL_NAMES = new Set(["vm_exec"]);
 /** Refused in a room's thread (routes/waits.ts), and list_waits, since a room holds no wait. */
 const ROOM_REFUSED_TOOL_NAMES = new Set([...WAIT_TOOL_NAMES, ...CHECK_BACK_TOOL_NAMES, "burst", "rename_thread", "set_main_thread"]);
-/** Shown only in a room: an engagement's ledger and inventory have no meaning outside one. */
-export const ROOM_ONLY_TOOL_NAMES = new Set([ENGAGEMENT_FINDING_TOOL, ENGAGEMENT_ASSET_TOOL]);
 const CLOUD_HOME_SURFACE = {
   type: "string", enum: ["auto", "cloud", "browser"],
   description: "auto = suitable configured computer, cloud = the bot's cloud computer, browser = built-in browser. Omit to list. This server runs in the cloud: the user's own computer and a Local VM are not places here.",
@@ -873,7 +867,6 @@ function catalogTools(profile: CatalogProfile) {
     (profile.memoryEnabled !== false || (tool.name !== "memory_update" && tool.name !== "memory_log")) &&
     (profile.computerSelection === true || tool.name !== "select_computer") &&
     (profile.room !== true || !ROOM_REFUSED_TOOL_NAMES.has(tool.name)) && (profile.board === true || !BOARD_TOOL_NAMES.has(tool.name)) &&
-    (profile.room === true || !ROOM_ONLY_TOOL_NAMES.has(tool.name)) &&
 
     (profile.imageGeneration === true || !IMAGE_TOOL_NAMES.has(tool.name)) && (profile.appHosting === true || !HOSTING_TOOL_NAMES.has(tool.name)) &&
     (profile.meetings === true || (!MEETING_TOOL_NAMES.has(tool.name) && tool.name !== "reset_cloud_computer")) &&

@@ -61,67 +61,19 @@ rebrand, and the rebrand surface `electron/` carries that this file does not.
   `agents-catalog-wire.test.ts` to the new golden bytes.
 - The product is an autonomous offensive-security company, and the model-facing
   prose carries that framing rather than a generic assistant's: the operator
-  identity, engagement discipline and attacker mindset in
-  `server/system-prompt.ts`; the engagement intake and consolidated report in
-  `server/chief-of-staff.ts`; the finding report in `server/reply-habits.ts`;
-  the setup-card capability list in `server/setup-suggestions.ts`; and the
-  default watch in `server/host/default-watch.ts`, whose `runs` check already
-  reads other routines' runs. Keep it autonomy-preserving: state the posture and
-  the reasoning, never a fixed playbook or a tool-name script the model must
-  follow. `server/testing/fixtures/setup-suggestions-eval.json` records the
-  exact prompt for each scenario, so a change to `setupSuggestionPrompt` means
-  regenerating those `prompts` entries (they are a pure function of the
-  scenario) while leaving the recorded `replies` alone.
-- An engagement runs in a room, and only a room: the scope, findings and
-  refusals stores are keyed by `groupId`, `GET/PUT /api/groups/:id/scope` answers
-  400 for a DM, and the scope line reaches a turn only through
-  `commandScope.prompt(readyGroup.id)` in the room prompt. The Chief's intake in
-  `server/chief-of-staff.ts` therefore tells it to create the room with
-  `manage_room` when an engagement arrives, and `manage_room`'s description in
-  `server/drivers/agents-catalog.ts` allows creation for that reason too — keep
-  the two in step, since the description is a golden
-  (`server/drivers/agents-catalog-goldens/`) and the intake text is pinned by
-  `server/chief-of-staff.test.ts` and budgeted in `turn-prompt-budget.test.ts`.
-  Only a person who holds the authorization may set a scope: never make the
-  scope bot-writable, or a bot could widen the boundary it is checked against.
-- The engagement ledger (`server/engagement-findings.ts`) is the room-scoped
-  record of what the team has found, validated and fixed. Its `engagement_finding`
-  tool is room-only: the catalog shows it through `ROOM_ONLY_TOOL_NAMES`, so
-  adding such a tool moves only the two room goldens and their `BUDGET_BASELINE`
-  entries while every other profile stays byte-identical. Its internal route
-  (`server/routes/engagement-findings.ts`) resolves the room from the caller's own
-  conversation rather than the body, and its path is in
-  `server/host/outside-fence.ts`'s list, so a confined turn writes and reads only
-  where it speaks.
-- The engagement scope (`server/engagement-scope.ts`) and the findings ledger are
-  wired to a person-facing surface in the room panel: `EngagementScopePage` and
-  `EngagementFindingsPage` under `src/components/room-panel/` read and write
-  `GET/PUT /api/groups/:id/scope` (owner or admin; a bot's shell is refused) and
-  `GET /api/groups/:id/findings`, reached from the room card's Engagement section.
-  A direct message has neither, and both the room card and the server enforce it:
-  the scope and findings routes answer 400 for a DM, and the internal findings
-  route answers 409, so no path records a finding a person can never read. The
-  two records' shapes live in `shared/engagement.ts`, which both the server
-  modules and the pages import, so a field change moves one file.
-- What a refused command reached for is itself a record: `EngagementRefusalsStore`
-  (`server/engagement-refusals.ts`) keeps, per room, the commands the scope refused,
-  with the hosts they reached for or which side of the window they fell outside. The
-  store is fed from the one place commands are checked — `createCommandScope`'s
-  `onRefusal` callback, called from `server/index.ts` — so a refusal can never run
-  unrecorded, and it is best-effort: a damaged store never blocks a command.
-  `EngagementRefusalsPage` reads `GET /api/groups/:id/refusals` (400 for a DM, 403
-  for a room this caller may not read) and shows the most recent refusal first.
-  What is still open: `createCommandScope`'s check is a heuristic on command text
-  rather than a sandbox. It reads a destination written as one integer
-  (`0xc0a80101`, `3232235777`) and bash's `/dev/tcp/host/port`, but an address
-  assembled inside a script or reached through a redirect is still not seen, so
-  it bounds an honest operator's mistakes and is not a containment boundary.
-- A card outlives the turn that asked: stopping that turn marks its secret and
-  connector cards `stopped`, and a value provided afterwards is recorded
-  (`provided: true`) but starts nothing — `resumeSecretCard` in
-  `server/host/secret-cards.ts` resumes no stopped card, so a cancelled task
-  never comes back to life through a card. The engagement report counts every
-  status in one `By status` line, so its numbers always add up to `Findings`.
+  identity, discipline and attacker mindset in `server/system-prompt.ts`, the
+  consolidated report in `server/chief-of-staff.ts`, the finding report in
+  `server/reply-habits.ts`, and the default watch in
+  `server/host/default-watch.ts`, whose `runs` check already reads other
+  routines' runs. Keep it autonomy-preserving: state the posture and the
+  reasoning, never a fixed playbook or a tool-name script the model must follow.
+- This fork drops upstream's engagement machinery: there is no scope, findings,
+  assets or refusals store, no `GET/PUT /api/groups/:id/scope`, no
+  `engagement_finding` tool, and no setup-choices or setup-suggestion model
+  call (`smartSetupChoices` is gone). A room is a room, and the model-facing
+  text must not promise a boundary or a card the server does not have. Do not
+  reintroduce them by merging upstream wholesale; take the commits in
+  `docs/upstream-picks.md` instead.
 - When a rebrand reaches a string, move its verbatim twin in the same change.
   `src/lib/phone-setup.ts`'s `PUBLIC_ACCOUNT_MESSAGES` matches
   `electron/companion-account-messages.mjs`'s `FRIENDLY_MESSAGES` by regex, and

@@ -38,7 +38,7 @@ async function boot(env: Record<string, string>, features: Record<string, boolea
   const data = join(home, ".openmausbot");
   mkdirSync(data, { recursive: true });
   writeFileSync(join(data, "config.json"), JSON.stringify({
-    features: { smartSetupChoices: false, ...features },
+    features: { ...features },
     instances: {
       quick: { driver: "claudeAgent", displayName: "Quick fixture", environment: { FAKE_CLAUDE_MODE: "happy", FAKE_CLAUDE_REPLIES: JSON.stringify(Array.from({ length: 8 }, () => SECRET_REPLY)) }, config: { cli: FAKE_CLAUDE } },
       slow: { driver: "claudeAgent", displayName: "Slow fixture", environment: { FAKE_CLAUDE_MODE: "slow", FAKE_CLAUDE_SLOW_FINISH_GATE: join(home, "finish-gate") }, config: { cli: FAKE_CLAUDE } },

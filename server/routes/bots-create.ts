@@ -55,7 +55,6 @@ export interface BotCreateRouteDeps {
   /** A Team Cloud: a new bot records who created it, and may name who it reports to. */
   team?: { name: string; people: Pick<TeamPeople, "has"> } | null;
   /** Starts writing personal answers for a new bot's setup card; never awaited. */
-  personaliseSetupCard?(bot: BotRecord): void;
   /** The Chief of Staff of a scope changed: these bots' flags did. */
   chiefChanged?(changed: readonly BotRecord[]): void;
   /** The request may make a bot that arrives by a move (`arriving`): the app's own main process on this computer, or My
@@ -301,7 +300,6 @@ export function createBotCreateRoutes(deps: BotCreateRouteDeps): RouteHandler {
         try { routines!.update(routine.id, { enabled: true }); }
         catch { warnings.push(`Bot created; routine ${routine.id} could not be activated.`); }
       }
-      deps.personaliseSetupCard?.(bot);
       return json(res, 201, {
         ...(warnings.length ? { warnings } : {}), ...(deps.paused(bot.id) ? { paused: true } : {}),
         bot: {

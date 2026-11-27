@@ -11,7 +11,6 @@ import { backgroundTextSlots, type JobSlots } from "./job-slots.ts";
 import type { ProviderAdapter, ProviderInstance, SmallModelFallback, TextGenerationOptions } from "./contracts.ts";
 import { refusesModel } from "./quick-model-fallback.ts";
 import type { LightModel, LightModelEngine } from "./suggested-reply/light-model.ts";
-import { fastModelFor } from "./turn-route.ts";
 import type { UsageRow, UsageTrigger } from "./usage-ledger.ts";
 
 /** config.json `helper`: a connected instance and optionally one of its models. Stored config only, so a settings
@@ -41,7 +40,7 @@ export function helperSelection(cfg: HelperConfig, env: Record<string, string | 
 
 /** "representative": a person's assistant answering a teammate's question for them, which must never get tools. */
 /** "suggested-reply": the composer's next-line suggestion, only ever on the bot's own engine's smallest model. */
-export type SideJob = "compaction" | "memory" | "skill-review" | "setup-suggestions" | "representative" | "status-reply" | "skill-burger" | "suggested-reply";
+export type SideJob = "compaction" | "memory" | "skill-review" | "representative" | "status-reply" | "skill-burger" | "suggested-reply";
 
 export type SideJobInstance = Pick<ProviderInstance, "instanceId" | "driverKind" | "enabled" | "generateText" | "generateMemoryText" | "models" | "quickModelsUsable" | "openRouter"> & {
   adapter: { capabilities: Pick<ProviderAdapter["capabilities"], "agentsMcp"> };
@@ -98,7 +97,7 @@ type TextCall = (prompt: string, options?: TextGenerationOptions) => Promise<str
 
 /** Jobs someone is waiting on, and the representative, which must never get tools, run only on a one-off text call:
  * generateMemoryText starts a whole agent process. */
-const ONE_OFF_ONLY: ReadonlySet<SideJob> = new Set(["compaction", "setup-suggestions", "representative", "status-reply", "skill-burger"]);
+const ONE_OFF_ONLY: ReadonlySet<SideJob> = new Set(["compaction", "representative", "status-reply", "skill-burger"]);
 
 function ownCall(job: SideJob, instance: SideJobInstance): TextCall | undefined {
   const call = ONE_OFF_ONLY.has(job) ? instance.generateText : instance.generateText ?? instance.generateMemoryText;
@@ -107,8 +106,8 @@ function ownCall(job: SideJob, instance: SideJobInstance): TextCall | undefined 
 
 /** A turn or a person is waiting on these, so they start at once. */
 const NEVER_QUEUED: ReadonlySet<SideJob> = new Set(["compaction", "representative", "status-reply"]);
-/** A person sees these soon (a new bot's suggestions card): they wait ahead of memory upkeep and skill review. */
-const SEEN_SOON: ReadonlySet<SideJob> = new Set(["setup-suggestions", "skill-burger", "suggested-reply"]);
+/** A person sees these soon, so they wait ahead of memory upkeep and skill review. */
+const SEEN_SOON: ReadonlySet<SideJob> = new Set(["skill-burger", "suggested-reply"]);
 
 function memoryModelFailure(error: unknown): MemoryModelFailure {
   if (error instanceof DOMException && error.name === "TimeoutError") return "timeout";
@@ -141,15 +140,6 @@ export function createSideJobs(deps: SideJobsDeps): SideJobs {
       deps.smallModels.remember(instance.instanceId, model);
     },
   });
-
-  /** The engine's fastest model by the quick-turn rule. Not for Claude: its one-off call already runs its own small model,
-   * without thinking. */
-  const quickModel = (bot: SideJobBot, own: SideJobInstance): { model?: string } => {
-    if (own.driverKind === "claudeAgent" || own.quickModelsUsable?.() === false) return {};
-    const current = bot.modelSelection.instanceId === own.instanceId && bot.modelSelection.model ? bot.modelSelection.model : own.models.default;
-    const model = fastModelFor(own.models, current, deps.smallModels.refused(own.instanceId));
-    return model && (!deps.modelAllowed || deps.modelAllowed({ instanceId: own.instanceId, model })) ? { model } : {};
-  };
 
   /** A refused quick model is remembered, so the next card skips it; there is no time left to retry this one. */
   const rememberRefusal = (write: SideJobText["generateText"], own: SideJobInstance, model: string): SideJobText["generateText"] =>
@@ -306,11 +296,6 @@ export function createSideJobs(deps: SideJobsDeps): SideJobs {
     if (call) {
       // The summary belongs to a turn that already passed the spend limit and is not booked on its own.
       if (job === "compaction") return { via: "engine", generateText: call };
-      if (job === "setup-suggestions") {
-        const quick = quickModel(bot, own);
-        const write = booked(job, bot, own, call, { kind: "bot", botId: bot.id }, () => ({ fallback: ownFallback(bot, own), ...quick }));
-        return { via: "engine", generateText: quick.model ? rememberRefusal(write, own, quick.model) : write };
-      }
       if (job === "memory" && own.openRouter && own.enabled && own.generateText) {
         return {
           via: "engine",

@@ -188,7 +188,7 @@ beforeAll(async () => {
   ].join("\n"), { mode: 0o700 });
   writeFileSync(join(data, "config.json"), JSON.stringify({
     // These tests compare whole conversations; a setup card refreshing after a rename would change under them.
-    features: { smartSetupChoices: false },
+    features: {},
     threads: { maxConcurrentPerBot: 2 },
     instances: {
       gated: {

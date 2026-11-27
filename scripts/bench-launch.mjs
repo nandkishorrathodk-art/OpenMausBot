@@ -92,7 +92,7 @@ function seed() {
   });
   const seeded = JSON.parse(out.trim().split("\n").at(-1));
   writeFileSync(join(paths.data, "config.json"), JSON.stringify({
-    features: { smartSetupChoices: false },
+    features: {},
     instances: { claude: { driver: "claudeAgent", config: { cli: join(appRoot, "server", "testing", "fake-claude-cli.ts") } } },
   }));
   writeFileSync(paths.seed, JSON.stringify(seeded));

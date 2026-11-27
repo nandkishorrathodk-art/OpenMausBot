@@ -37,7 +37,7 @@ of the sign-in, never `~/.grok`:
 
    ```json
    {
-     "features": { "smartSetupChoices": false },
+     "features": {},
      "instances": {
        "grok": {
          "driver": "grokAgent",

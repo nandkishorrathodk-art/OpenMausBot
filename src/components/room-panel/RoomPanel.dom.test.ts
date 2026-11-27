@@ -246,35 +246,6 @@ describe("Members", () => {
   });
 });
 
-describe("Engagement", () => {
-  it("offers the room's scope, assets, findings and refused commands, and keeps them off a direct message", async () => {
-    render(room());
-    expect($('[data-panel-page="engagement-scope"]')).not.toBeNull();
-    click($('[data-panel-page="engagement-assets"]'));
-    await settle();
-    expect(page()).toBe("engagement-assets");
-    expect($('[data-panel-page-view="engagement-assets"] h3')?.textContent).toBe("Assets");
-    click($("[data-panel-back]"));
-    await settle();
-    click($('[data-panel-page="engagement-findings"]'));
-    await settle();
-    expect(page()).toBe("engagement-findings");
-    expect($('[data-panel-page-view="engagement-findings"] h3')?.textContent).toBe("Findings");
-    click($("[data-panel-back]"));
-    await settle();
-    click($('[data-panel-page="engagement-refusals"]'));
-    await settle();
-    expect(page()).toBe("engagement-refusals");
-    expect($('[data-panel-page-view="engagement-refusals"] h3')?.textContent).toBe("Refused commands");
-    flushSync(() => root.render([
-      createElement(RoomPanel, { key: "panel", group: room({ dm: true }) }),
-      createElement(Probe, { key: "probe" }),
-    ]));
-    expect($('[data-panel-page="engagement-scope"]')).toBeNull();
-    expect($('[data-panel-page="engagement-assets"]')).toBeNull();
-    expect($('[data-panel-page="engagement-refusals"]')).toBeNull();
-  });
-});
 
 describe("Escape", () => {
   it("leaves a page first, then closes the panel and hands focus back to the room's name", async () => {

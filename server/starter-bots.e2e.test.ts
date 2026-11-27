@@ -52,7 +52,7 @@ if (process.argv[2] !== "--version") {
 await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-claude-cli.ts")).href)});
 `, { mode: 0o755 });
     writeFileSync(join(this.dataDir, "config.json"), JSON.stringify({
-      features: { smartSetupChoices: false },
+      features: {},
       instances: {
         ...Object.fromEntries(["codex", "cursor", "githubCopilot", "qwen", "hermes", "pi"].map((id) => [id, { driver: "not-a-real-driver" }])),
         claude: { driver: "claudeAgent", displayName: "Claude", config: { cli: claude } },

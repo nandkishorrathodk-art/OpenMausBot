@@ -65,10 +65,10 @@ async function measured(): Promise<Record<string, number>> {
 
 /** Bytes when the budget was last set; the test allows at most 2% either way. */
 const PROMPT_BUDGET_BASELINE: Record<string, number> = {
-  "reply-habits": 3898,
+  "reply-habits": 3084,
   "tool-bridge": 591,
   "sign-in": 2584,
-  "chief-of-staff": 8042,
+  "chief-of-staff": 6367,
   "memory-rules": 2246,
   "setup": 2584,
   "meetings": 296,
@@ -83,11 +83,11 @@ const PROMPT_BUDGET_BASELINE: Record<string, number> = {
   "computer:box": 4731,
   "computer:vps": 5405,
   "computer:local": 5644,
-  "claude:direct-chat": 15425,
-  "claude:setup-chat": 18009,
+  "claude:direct-chat": 14245,
+  "claude:setup-chat": 16829,
   "claude:volatile-note": 178,
-  "codex:direct-chat": 15425,
-  "codex:setup-chat": 18009,
+  "codex:direct-chat": 14245,
+  "codex:setup-chat": 16829,
   "codex:resumed-instructions": 211,
   "codex:volatile-note": 95,
 };

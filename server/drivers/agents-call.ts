@@ -21,7 +21,7 @@ import { callResearchTool, RESEARCH_TOOL_NAMES } from "./agents-research-tools.t
 import { callHelperTool, HELPER_TOOL_NAMES } from "./agents-helper-tools.ts";
 import { callWhatChangedTool, WHAT_CHANGED_TOOL } from "./agents-what-changed-tool.ts";
 import { callUsageLimitsTool, USAGE_LIMITS_TOOL } from "./agents-usage-tool.ts";
-import { callEngagementFindingTool, ENGAGEMENT_FINDING_TOOL } from "./agents-finding-tool.ts"; import { callEngagementAssetTool, ENGAGEMENT_ASSET_TOOL } from "./agents-asset-tool.ts";
+
 import { callThreadPostTool, THREAD_POST_TOOL } from "./agents-thread-post-tool.ts"; import { callListThreadsTool, closedThreadText, LIST_THREADS_TOOL } from "./agents-list-threads-tool.ts"; import { callSetMainThreadTool, SET_MAIN_THREAD_TOOL } from "./agents-main-thread-tool.ts"; import { callRenameThreadTool, RENAME_THREAD_TOOL } from "./agents-thread-title-tool.ts"; import { callWorkflowTool, WORKFLOW_TOOL_NAMES } from "./agents-workflow-tool.ts";
 import { callWaitTool, WAIT_TOOL_NAMES } from "./agents-wait-tools.ts"; import { callCheckBackTool, CHECK_BACK_TOOL_NAMES } from "./agents-check-back-tool.ts"; import { BOARD_TOOL_NAMES, callBoardTool } from "./agents-board-tools.ts";
 import { callBurstTool } from "./agents-burst-tool.ts";
@@ -261,7 +261,6 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
   if (TRIGGER_TOOL_NAMES.has(name)) return callTriggerTool(name, args, context);
   if (WAIT_TOOL_NAMES.has(name)) return callWaitTool(name, args, context); if (CHECK_BACK_TOOL_NAMES.has(name)) return callCheckBackTool(args, context); if (BOARD_TOOL_NAMES.has(name)) return callBoardTool(name, args, context);
   if (name === USAGE_LIMITS_TOOL) return callUsageLimitsTool(context, args);
-  if (name === ENGAGEMENT_FINDING_TOOL) return callEngagementFindingTool(args, context); if (name === ENGAGEMENT_ASSET_TOOL) return callEngagementAssetTool(args, context);
   if (COMPUTER_ASK_TOOL_NAMES.has(name)) return callComputerAskTool(args, context);
   // Second lock: with sharing off the catalog already omits these tools.
   if (SHARED_COMPUTER_TOOL_NAMES.has(name) && !context.sharedComputers) {

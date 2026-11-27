@@ -92,7 +92,7 @@ function newDataDir(): string {
   const dir = mkdtempSync(join(process.platform === "win32" ? tmpdir() : "/tmp", "openmausbot-bench-"));
   mkdirSync(join(dir, "tmp"), { recursive: true });
   writeFileSync(join(dir, "config.json"), JSON.stringify({
-    features: { smartSetupChoices: false },
+    features: {},
     language: "en",
     instances: { claude: { driver: "claudeAgent", displayName: "Bench fixture", config: { cli: join(ROOT, "server", "testing", "fake-claude-cli.ts") } } },
   }, null, 2));

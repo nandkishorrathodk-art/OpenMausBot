@@ -1,6 +1,4 @@
 import type { RoomCreateResponse, RoomUpdateResponse, WireGroup } from "../../shared/wire.ts";
-import { buildEngagementReport, engagementReportFilename } from "../../shared/engagement.ts";
-import type { EngagementAsset, EngagementFinding, EngagementRefusal, EngagementScope } from "../engagement.ts";
 import { validateBotCwd } from "../bot-cwd.ts";
 import type { VisibleSet } from "../bot-visibility.ts";
 import type { RequestAuth } from "../request-auth.ts";
@@ -19,19 +17,6 @@ export interface GroupRouteDeps {
   publicGroupState(record: GroupRecord): WireGroup;
   /** A room as this person has read it (a Team Cloud); the room itself anywhere else. */
   groupFor?(auth: RequestAuth, group: WireGroup): WireGroup;
-  /** The engagement's authorized targets; null when the room has none. Only the person who holds the
-   * authorization may set it, so no bot's tool can widen the scope it is then checked against. */
-  scope: { get(roomId: string): EngagementScope | null; set(roomId: string, value: unknown): EngagementScope | null };
-  /** Whether this caller is a person who may set a room's engagement scope, never a bot's shell. */
-  canManageScope(auth: RequestAuth): boolean;
-  /** The flaws the engagement has recorded, for the room panel to show. */
-  findings: { list(roomId: string): EngagementFinding[] };
-  /** What the engagement has found inside its scope, for the room panel to show. */
-  assets: { list(roomId: string): EngagementAsset[] };
-  /** Whether a location is inside a room's authorized scope, so the panel can flag an asset outside it. */
-  assetInScope(roomId: string, location: string): boolean;
-  /** The commands the engagement's scope refused, for the room panel to show. */
-  refusals: { list(roomId: string): EngagementRefusal[] };
 }
 
 /** A room's default responder from a request body; null when it is not one, or names a bot outside the room. */
@@ -106,58 +91,6 @@ export function createGroupRoutes(deps: GroupRouteDeps): RouteHandler {
       const updated = store.patchGroup(m[1], patch);
       if (!updated) return json(res, 404, { error: "no such room" });
       return json(res, 200, { group: own(publicGroupState(updated)) } satisfies RoomUpdateResponse);
-    }
-    m = path.match(/^\/api\/groups\/([\w-]+)\/scope$/);
-    if (m && (method === "GET" || method === "PUT")) {
-      if (!deps.canManageScope(auth)) return json(res, 403, { error: "Only the owner or an admin can set an engagement scope." });
-      const group = store.group(m[1]);
-      if (!group) return json(res, 404, { error: "no such room" });
-      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold an engagement scope" });
-      if (method === "GET") return json(res, 200, { scope: deps.scope.get(group.id) });
-      const body = await readBody(req);
-      try {
-        return json(res, 200, { scope: deps.scope.set(group.id, body?.scope ?? null) });
-      } catch (error) {
-        return json(res, (error as { status?: number }).status ?? 400, { error: error instanceof Error ? error.message : "invalid engagement scope" });
-      }
-    }
-    m = path.match(/^\/api\/groups\/([\w-]+)\/findings$/);
-    if (m && method === "GET") {
-      const group = store.group(m[1]);
-      if (!group) return json(res, 404, { error: "no such room" });
-      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement findings" });
-      if (!visible.group(group.id)) return json(res, 403, { error: "This room's findings are not yours to read." });
-      return json(res, 200, { findings: deps.findings.list(group.id) });
-    }
-    m = path.match(/^\/api\/groups\/([\w-]+)\/assets$/);
-    if (m && method === "GET") {
-      const group = store.group(m[1]);
-      if (!group) return json(res, 404, { error: "no such room" });
-      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement assets" });
-      if (!visible.group(group.id)) return json(res, 403, { error: "This room's assets are not yours to read." });
-      return json(res, 200, { assets: deps.assets.list(group.id).map((asset) => ({ ...asset, inScope: deps.assetInScope(group.id, asset.location) })) });
-    }
-    m = path.match(/^\/api\/groups\/([\w-]+)\/refusals$/);
-    if (m && method === "GET") {
-      const group = store.group(m[1]);
-      if (!group) return json(res, 404, { error: "no such room" });
-      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement refusals" });
-      if (!visible.group(group.id)) return json(res, 403, { error: "This room's refusals are not yours to read." });
-      return json(res, 200, { refusals: deps.refusals.list(group.id) });
-    }
-    m = path.match(/^\/api\/groups\/([\w-]+)\/report$/);
-    if (m && method === "GET") {
-      const group = store.group(m[1]);
-      if (!group) return json(res, 404, { error: "no such room" });
-      if (group.dm) return json(res, 400, { error: "direct-message channels do not hold engagement findings" });
-      if (!visible.group(group.id)) return json(res, 403, { error: "This room's findings are not yours to read." });
-      const markdown = buildEngagementReport({ room: group.name, scope: deps.scope.get(group.id), findings: deps.findings.list(group.id) });
-      res.writeHead(200, {
-        "content-type": "text/markdown; charset=utf-8",
-        "content-disposition": `attachment; filename="${engagementReportFilename(group.name)}"`,
-      });
-      res.end(markdown);
-      return;
     }
     return PASS;
   };

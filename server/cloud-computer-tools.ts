@@ -203,12 +203,6 @@ export async function cloudComputerRpc(
     disk?: { began(cfg: AppConfig, boxId: string): void; ended(cfg: AppConfig, boxId: string): void; after(cfg: AppConfig, boxId: string, texts: readonly string[], failed: boolean): Promise<string | null> };
     /** Whether the computer answered this call: a call refused before it was sent, or one that got no answer, did not. */
     settled?(answered: boolean): void;
-    /**
-     * Why a call may not reach the host it names, or null. Only `exec` and `open_url` carry a destination the room's
-     * scope can read; a click is a point on a screen, so it is not checked here and the scope stays a record of what
-     * the team reached for, never the wall around the desktop.
-     */
-    scopeOf?(name: unknown, args: unknown): string | null;
   },
 ): Promise<{ tools: typeof CLOUD_COMPUTER_TOOLS } | CloudComputerResult> {
   const started = Date.now();
@@ -223,8 +217,6 @@ export async function cloudComputerRpc(
   const deadline = started + (deps.budgetMs ?? cloudComputerCallBudgetMs(params.name));
   const problem = cloudComputerCallProblem(params.name, args);
   if (problem) return { isError: true, content: [{ type: "text", text: problem }] };
-  const scopeRefusal = deps.scopeOf?.(params.name, args);
-  if (scopeRefusal) return { isError: true, content: [{ type: "text", text: scopeRefusal }] };
   const control = await deps.gate();
   // A refusal acts on no Boat, so it answers even when the turn has ended meanwhile.
   if (control.held) return { isError: true, content: [{ type: "text", text: controlRefusal(control) }] };

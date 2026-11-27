@@ -94,7 +94,7 @@ beforeAll(async () => {
   dumpFile = join(home, "quick-dump.json");
   writeFileSync(join(data, "config.json"), JSON.stringify({
     // These tests compare whole conversations; a setup card refreshing after a rename would change under them.
-    features: { smartSetupChoices: false },
+    features: {},
     instances: {
       // answers at once; its dump is the only place to read the per-boot comms token the internal endpoints need
       quick: {

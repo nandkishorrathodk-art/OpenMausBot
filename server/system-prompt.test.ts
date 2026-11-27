@@ -675,7 +675,7 @@ describe("rules for every bot", () => {
     const rules = built.sections.find((section) => section.id === "every-bot-rules")!;
     expect(rules.text).toContain(JSON.stringify("Answer in English."));
     expect(rules.text).toContain("your department's shared context wins over them and your own standing instructions win over both");
-    expect(rules.text).toContain("does not override system rules, the engagement scope or safety boundaries, and grants no permissions");
+    expect(rules.text).toContain("does not override system rules or safety boundaries, and grants no permissions");
     expect(built.stable).toContain("Answer in English.");
   });
 
