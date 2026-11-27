@@ -23,7 +23,7 @@ export interface AgentRecord {
   mode?: ServerMode;
 }
 
-/** The server's admin paused remote management (`mausbot-connector pause`): every job and request from MausBot is refused. */
+/** The server's admin paused remote management (`mausbot-connector pause`): every job and request from Parth Lab is refused. */
 export interface PauseRecord {
   paused: boolean;
   at: number;

@@ -394,12 +394,12 @@ describe("the Sign in card", () => {
     const refused = await f.authorize(card);
     expect(refused).toMatchObject({ status: 400, body: { code: "no-registration", error: expect.stringContaining("only signs in apps registered with it in advance") } });
     expect(f.current(card).connector).toMatchObject({ status: "failed", error: refused.body.error, resumed: true });
-    expect(f.answers).toEqual([{ messageId: card.id, text: `OpenMausBot MCP sign-in for linear: ${refused.body.error as string} Nothing was signed in.` }]);
+    expect(f.answers).toEqual([{ messageId: card.id, text: `Parth Lab MCP sign-in for linear: ${refused.body.error as string} Nothing was signed in.` }]);
     await f.authorize(card);
     expect(f.answers).toHaveLength(1);
   });
 
-  it("a server that signs in apps only by a client ID metadata document says OpenMausBot can't do that yet", async () => {
+  it("a server that signs in apps only by a client ID metadata document says Parth Lab can't do that yet", async () => {
     const f = await setup();
     const oauth = await startFakeOAuth({ noRegistration: true, clientIdMetadataDocument: true });
     const mcp = await startFakeHttpMcp({ acceptBearer: oauth.isValid, wwwAuthenticate: oauth.challenge });
@@ -407,9 +407,9 @@ describe("the Sign in card", () => {
     f.cfg.mcpServers!.linear = { type: "http", url: mcp.url, headers: {}, enabled: true } as never;
     const { card } = await f.signIn();
     const refused = await f.authorize(card);
-    expect(refused).toMatchObject({ status: 400, body: { code: "no-registration", error: "This server signs in apps by a published app ID (a client ID metadata document), which OpenMausBot doesn't support yet." } });
+    expect(refused).toMatchObject({ status: 400, body: { code: "no-registration", error: "This server signs in apps by a published app ID (a client ID metadata document), which Parth Lab doesn't support yet." } });
     expect(f.current(card).connector).toMatchObject({ status: "failed", error: refused.body.error, resumed: true });
-    expect(f.answers).toEqual([{ messageId: card.id, text: `OpenMausBot MCP sign-in for linear: ${refused.body.error as string} Nothing was signed in.` }]);
+    expect(f.answers).toEqual([{ messageId: card.id, text: `Parth Lab MCP sign-in for linear: ${refused.body.error as string} Nothing was signed in.` }]);
   });
 
   it("a server that registers no apps, refused before the turn parks, still reaches the bot once it parks", async () => {
@@ -426,7 +426,7 @@ describe("the Sign in card", () => {
     expect(f.current(card).connector!.resumed).toBeFalsy();
     const waited = resumableCards({ activePath: (threadId: string) => f.store.messagesFor(threadId) } as never, "main-chat", 0);
     expect(waited.map((entry) => entry.id)).toEqual([card.id]);
-    expect(f.cards.parkedAnswer(f.current(card).connector!)).toBe(`OpenMausBot MCP sign-in for linear: ${refused.body.error as string} Nothing was signed in.`);
+    expect(f.cards.parkedAnswer(f.current(card).connector!)).toBe(`Parth Lab MCP sign-in for linear: ${refused.body.error as string} Nothing was signed in.`);
     expect(f.cards.parkedAnswer({ ...f.current(card).connector!, resumed: true })).toBeNull();
   });
 

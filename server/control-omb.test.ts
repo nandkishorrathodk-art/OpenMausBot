@@ -230,7 +230,7 @@ describe("control-omb command mapping", () => {
     });
     await expect(runControlOmb(["set-model", "--bot", "bot-1", "--instance", "claude", "--model", "model-b"], {
       callTool: callTool as any, env: {},
-    })).rejects.toThrow("explicit OpenMausBot instance");
+    })).rejects.toThrow("explicit Parth Lab instance");
   });
 });
 

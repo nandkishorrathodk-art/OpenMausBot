@@ -6,7 +6,7 @@
 # data. It also records whether the bots' sandbox (bubblewrap) can run in a rootless container, and with what.
 # The files the installer places (update.sh) come from this checkout.
 # ONLY ON A THROWAWAY HOST (a CI runner): it writes into this user's ~/.local/share/openmausbot and removes it at the
-# end, and restarts this user's systemd. It refuses to start where a MausBot Podman install already exists, and anywhere
+# end, and restarts this user's systemd. It refuses to start where a Parth Lab Podman install already exists, and anywhere
 # but a CI runner (GITHUB_ACTIONS or CI set to true): it runs sudo.
 #   OUT=<evidence folder> bash deploy/e2e/podman.sh
 set -euo pipefail
@@ -25,7 +25,7 @@ UNIT="$HOME/.config/containers/systemd/openmausbot.container"
 INSTALL=(env "OMB_INSTALL_SOURCE=file://$ROOT" sh "$ROOT/deploy/podman/install.sh")
 FINDINGS="$OUT/findings.txt"
 if [ -e "$DIR" ] || [ -e "$UNIT" ]; then
-  echo "This user already has a MausBot Podman install ($DIR or $UNIT). This test replaces and removes it: run it on a throwaway host." >&2
+  echo "This user already has a Parth Lab Podman install ($DIR or $UNIT). This test replaces and removes it: run it on a throwaway host." >&2
   exit 2
 fi
 : >"$FINDINGS"
@@ -65,7 +65,7 @@ if ! grep -q "^$(id -un):" /etc/subuid; then
   podman system migrate
 fi
 podman version | tee "$OUT/podman-version.txt"
-# What listens beyond loopback before MausBot: with the host's network, anything the server or Chrome opens is a host port.
+# What listens beyond loopback before Parth Lab: with the host's network, anything the server or Chrome opens is a host port.
 outside() { ss -ltnH | awk '{ print $4 }' | grep -vE '^(127\.[0-9.]+|\[::1\]|\[::ffff:127\.[0-9.]+\]):[0-9]+$' | sort -u; }
 outside >"$OUT/outside-before.txt"
 new_outside() { outside | comm -13 "$OUT/outside-before.txt" -; }
@@ -115,7 +115,7 @@ finding "linger: without it the installer printed 'sudo loginctl enable-linger $
 step "install $OLD_VERSION as this user's service (run again, now with linger)"
 OMB_INSTALL_IMAGE="$REPO:v$OLD_VERSION" "${INSTALL[@]}" >"$OUT/install.txt" 2>&1 || { cat "$OUT/install.txt"; fail "the install failed"; }
 cat "$OUT/install.txt"
-contains "$OUT/install.txt" "MausBot is running as your user's service (openmausbot), on http://127.0.0.1:8799." "the install did not finish"
+contains "$OUT/install.txt" "Parth Lab is running as your user's service (openmausbot), on http://127.0.0.1:8799." "the install did not finish"
 contains "$OUT/install.txt" "It starts at boot, without anyone logged in." "the install did not see linger"
 grep -q "^Image=$REPO@sha256:[0-9a-f]\{64\}$" "$UNIT" || fail "the unit does not pin the image by digest: $(grep '^Image=' "$UNIT")"
 grep -q "^UserNS=keep-id:uid=[0-9]*,gid=[0-9]*$" "$UNIT" || fail "the unit does not map the image's user to this one"

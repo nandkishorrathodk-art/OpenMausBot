@@ -240,7 +240,7 @@ describe("Auto rooms ask the decision model who answers", { timeout: 90_000 }, (
     const request = routeRequests().at(-1)!;
     expect(request.auth).toBe(`Bearer ${KEY}`);
     expect(Object.keys(request.body.questions.answer.criteria)).toEqual([bots.Maya!.id, bots.Theo!.id, bots.Ravi!.id, "__everyone__"]);
-    expect(request.body.questions.answer.criteria[bots.Theo!.id]).toMatch(/^Theo, Theo title bot\./);
+    expect(request.body.questions.answer.criteria[bots.Theo!.id]).toMatch(/^Theo, Theo title operator\./);
     expect(request.body.state.new_message.text).toBe("The signup button overlaps the footer on Safari mobile.");
     expect(request.body.state.bots_in_room).toEqual(["Maya", "Theo", "Ravi"]);
   });

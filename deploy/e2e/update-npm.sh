@@ -82,7 +82,7 @@ chmod 755 /usr/sbin/curl /usr/sbin/sleep
 
 cat >"$unit_file" <<EOF
 [Unit]
-Description=OpenMausBot npm update fixture
+Description=Parth Lab npm update fixture
 
 [Service]
 User=$account
@@ -143,7 +143,7 @@ new_pid=$(health pid)
 [[ $(health pid) == "$new_pid" ]]
 
 stable 0.1.3
-expect_failure 'OpenMausBot 0.1.2 is running again'
+expect_failure 'Parth Lab 0.1.2 is running again'
 [[ $(health version) == 0.1.2 && ! -e $home/.openmausbot/0.1.3 && ! -e $journal ]]
 compgen -G "$home/.openmausbot-update.*/failed-data.*/data/0.1.3" >/dev/null
 

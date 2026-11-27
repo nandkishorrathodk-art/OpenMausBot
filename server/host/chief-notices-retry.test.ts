@@ -397,7 +397,7 @@ describe("a Chief's retry of a thread that failed the Chief's own request", () =
     expect(f.startTurn).not.toHaveBeenCalled();
   });
 
-  it("retries every other thread as before: another bot's request, the person's own work, or OpenMausBot's automatic retry", async () => {
+  it("retries every other thread as before: another bot's request, the person's own work, or Parth Lab's automatic retry", async () => {
     for (const [requested, automatic] of [["someone-else", false], [undefined, false], ["chief", true]] as const) {
       const coordinateBots = vi.fn(async () => sent);
       const f = fixture({ failedRequester: () => (requested ? { botId: requested, consult: false } : undefined) });

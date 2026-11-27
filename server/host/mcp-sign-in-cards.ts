@@ -57,7 +57,7 @@ const NO_CARD: Reply = { status: 404, body: { error: "no such connection request
  * replaced, set aside, or refused before the browser opened. */
 const ENDED: Partial<Record<McpSignInPhase, ServerLineKey>> = { expired: "server.mcp.signIn.expired", failed: "server.mcp.signIn.failed" };
 
-const failedText = (slug: string, reason: string): string => `OpenMausBot MCP sign-in for ${slug}: ${reason} Nothing was signed in.`;
+const failedText = (slug: string, reason: string): string => `Parth Lab MCP sign-in for ${slug}: ${reason} Nothing was signed in.`;
 
 export const isMcpSignInCard = (message: Message | undefined): message is McpCard =>
   message?.kind === "connector" && message.connector?.source === "mcp";

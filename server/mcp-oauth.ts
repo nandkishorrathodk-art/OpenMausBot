@@ -520,7 +520,7 @@ export class McpOAuthManager {
       const response = await fetch(url, {
         method: "POST",
         headers: { "content-type": "application/json", accept: "application/json, text/event-stream" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "OpenMausBot", version: "1" } } }),
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "Parth Lab", version: "1" } } }),
         redirect: "error",
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
@@ -536,14 +536,14 @@ export class McpOAuthManager {
   private async register(meta: McpAuthMetadata, redirectUri: string): Promise<ClientAuth> {
     if (!meta.registrationEndpoint) {
       throw new McpOAuthError("no-registration", meta.clientIdMetadataDocument
-        ? "This server signs in apps by a published app ID (a client ID metadata document), which OpenMausBot doesn't support yet."
+        ? "This server signs in apps by a published app ID (a client ID metadata document), which Parth Lab doesn't support yet."
         : "This server only signs in apps registered with it in advance. Edit the server and add that app's client ID under Sign-in app.");
     }
     const response = await fetch(meta.registrationEndpoint, {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({
-        client_name: "OpenMausBot",
+        client_name: "Parth Lab",
         redirect_uris: [redirectUri],
         grant_types: ["authorization_code", "refresh_token"],
         response_types: ["code"],
