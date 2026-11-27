@@ -21,7 +21,7 @@ test("macOS: a real bundle built in a temporary home is structurally valid", { s
   });
   const result = await installer.installApp({ id: "la_realtest00000000", name: "Real Test" });
   assert.equal(result.ok, true);
-  const bundle = path.join(home, "Applications", "MausBot Apps", "Real Test.app");
+  const bundle = path.join(home, "Applications", "Parth Lab Apps", "Real Test.app");
   assert.equal(result.app.path, bundle);
   const plist = path.join(bundle, "Contents", "Info.plist");
   assert.equal((await run("/usr/bin/plutil", ["-lint", plist])).code, 0);
@@ -33,7 +33,7 @@ test("macOS: a real bundle built in a temporary home is structurally valid", { s
   assert.equal(icns.toString("latin1", 0, 4), "icns");
   assert.equal(icns.readUInt32BE(4), icns.length);
   assert.deepEqual(fs.readdirSync(path.join(root, "user-data", "app-install")), ["installed.json"]);
-  assert.deepEqual(fs.readdirSync(path.join(home, "Applications", "MausBot Apps")), ["Real Test.app"]);
+  assert.deepEqual(fs.readdirSync(path.join(home, "Applications", "Parth Lab Apps")), ["Real Test.app"]);
 
   assert.deepEqual(await installer.uninstallApp("la_realtest00000000"), { ok: true, removed: true });
   assert.equal(fs.existsSync(bundle), false);
@@ -55,7 +55,7 @@ test("macOS: a real Desktop copy built in a temporary home is structurally valid
   const added = await installer.addToDesktop(id);
   assert.equal(added.ok, true);
   assert.equal(added.app.desktop, true);
-  const launcher = path.join(home, "Applications", "MausBot Apps", "Desk Test.app");
+  const launcher = path.join(home, "Applications", "Parth Lab Apps", "Desk Test.app");
   const copy = path.join(desktop, "Desk Test.app");
   assert.deepEqual(fs.readdirSync(desktop), ["Desk Test.app"]);
   const plist = path.join(copy, "Contents", "Info.plist");
@@ -75,5 +75,5 @@ test("macOS: a real Desktop copy built in a temporary home is structurally valid
   assert.deepEqual(fs.readdirSync(desktop), []);
   assert.equal(await installer.isInstalled(id), true);
   assert.deepEqual(await installer.uninstallApp(id), { ok: true, removed: true });
-  assert.deepEqual(fs.readdirSync(path.join(home, "Applications", "MausBot Apps")), []);
+  assert.deepEqual(fs.readdirSync(path.join(home, "Applications", "Parth Lab Apps")), []);
 });

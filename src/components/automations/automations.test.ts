@@ -389,7 +389,7 @@ describe("on a Cloud", () => {
     expect(mount(createElement(AutomationPanel, props)).textContent).toContain("Keep Parth Lab open so it can receive.");
     root!.unmount();
     fixture.state.config = { cloudHome: true };
-    expect(mount(createElement(AutomationPanel, props)).textContent).not.toContain("Keep MausBot open");
+    expect(mount(createElement(AutomationPanel, props)).textContent).not.toContain("Keep Parth Lab open");
   });
 });
 

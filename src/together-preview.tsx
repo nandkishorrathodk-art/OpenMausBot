@@ -33,9 +33,9 @@ const here = (id: string, name: string, color: string, title: string, line: stri
 }) as Bot;
 const page: BotHome = params.get("page") === "cloud" ? "cloud" : "computer", homePlace: BotHome = params.get("home") === "cloud" ? "cloud" : "computer";
 const otherState = (["asleep", "waking", "offline", "signin"] as const).find((name) => name === params.get("other")) ?? null;
-// Each place's own bots: the page's are its store, the other place's come as rows. Each place has its own MausBot: the
+// Each place's own bots: the page's are its store, the other place's come as rows. Each place has its own Parth Lab: the
 // tile on its own page, and a row (first, as main lists it) among its rows on the other page.
-const chief = here("mausbot", "MausBot", "violet", "Today", "Your week is planned; three things need you.", { chiefOfStaff: true } as Partial<Bot>);
+const chief = here("mausbot", "Parth Lab", "violet", "Today", "Your week is planned; three things need you.", { chiefOfStaff: true } as Partial<Bot>);
 const computerBots: Bot[] = [
   here("ledger", "Ledger", "orange", "Invoices", "The March invoices are filed in your Drive.", { section: "Finance" }),
   here("git", "Git Tasks", "teal", "Release notes", "Release notes drafted from the last 40 commits."),

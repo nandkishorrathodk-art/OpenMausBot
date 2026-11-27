@@ -61,7 +61,7 @@ describe.skipIf(checkoutUnderTmp)("a bot box on a My Cloud keeps only its own en
     expect(visibleInBox(plan, cloud.edge)).toBe("none");
   });
 
-  it("a Codex bot on the default account keeps that login through MausBot's own Codex home, and no other engine's", () => {
+  it("a Codex bot on the default account keeps that login through Parth Lab's own Codex home, and no other engine's", () => {
     const own = join(dataDir, "providers", "codex-own", "h1", "codex");
     expect(linkSharedCodexHome(join(home, ".codex"), own, "person")).toBe(true);
     const env = { HOME: home, CODEX_HOME: own };

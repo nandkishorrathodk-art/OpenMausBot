@@ -17,7 +17,7 @@ export interface SettingsContext {
   /** main says this page is the app's home (home:page): This computer's page, or My Cloud's own page once it is home.
    * The one source for whether This app's rows (Open at login, Logs and diagnostics) and the account live here. */
   home: boolean;
-  /** a MausBot Cloud's page, personal or a team's */
+  /** a Parth Lab Cloud's page, personal or a team's */
   cloud: boolean;
   team: boolean;
   /** this app drives another computer (paired-client mode) */

@@ -61,7 +61,7 @@ export function createDesktopItems({ platform, path, fs, home, run, desktop, exe
     return { path: file, kind: "desktop-entry", desktop: true };
   }
 
-  /** Leftover staging folders of a Desktop bundle that was being written when MausBot stopped. */
+  /** Leftover staging folders of a Desktop bundle that was being written when Parth Lab stopped. */
   async function sweep(dir) {
     if (platform !== "darwin" || !dir) return;
     for (const name of await fs.readdir(dir).catch(() => [])) {

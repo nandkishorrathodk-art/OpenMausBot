@@ -101,11 +101,11 @@ afterEach(() => {
 });
 
 describe("CloudWelcome on a Team Cloud", () => {
-  const OWN = { id: "mine", threadId: "tm", name: "MausBot", defaultBot: { person: "nuno@acme.test" } };
+  const OWN = { id: "mine", threadId: "tm", name: "Parth Lab", defaultBot: { person: "nuno@acme.test" } };
   const FIRST = { id: "b2", threadId: "t2", name: "Poppy", chiefOfStaff: true };
   beforeEach(() => { fixture.state.config.team = { id: "team-acme", name: "Acme" }; fixture.state.bots = [OWN, FIRST]; });
 
-  it("an empty team isn't told its bots are already here: the Owner's own MausBot and the first bot are no work", async () => {
+  it("an empty team isn't told its bots are already here: the Owner's own Parth Lab and the first bot are no work", async () => {
     render();
     await vi.waitFor(() => expect(host.querySelector('[data-bring-choice="fresh"]')).not.toBeNull());
     expect(text()).not.toContain("Your bots are already here");

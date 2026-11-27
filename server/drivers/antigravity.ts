@@ -344,7 +344,7 @@ export const AntigravityDriver: ProviderDriver<AcpConfig> = {
   ...AcpAntigravityDriver,
   metadata: { ...AcpAntigravityDriver.metadata, signInAccount: "Google" },
   async create(input: DriverCreateInput<AcpConfig>): Promise<ProviderInstance> {
-    // A rebuilt instance may run another CLI, or the same one after a sign-in made outside MausBot.
+    // A rebuilt instance may run another CLI, or the same one after a sign-in made outside Parth Lab.
     nativeSignIn.forget(input.instanceId);
     const base = await AcpAntigravityDriver.create(input);
     scheduleAntigravityTempSweep(input.instanceId);

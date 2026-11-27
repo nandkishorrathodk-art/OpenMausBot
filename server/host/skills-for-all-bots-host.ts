@@ -235,7 +235,7 @@ export function createSkillsForAllBotsHost(deps: SkillsForAllBotsHostDeps) {
     // A skill still off here may be an import nobody has read yet: it reaches every bot only once it is on somewhere.
     if (!own.enabled) return { status: 409, body: { error: `Turn "${name}" on for this bot first, after reading it.` } };
     const copy = ownCopy(bot.id, name);
-    if (!copy) return { status: 409, body: { error: `"${name}" changed outside OpenMausBot; remove it and add it again.` } };
+    if (!copy) return { status: 409, body: { error: `"${name}" changed outside Parth Lab; remove it and add it again.` } };
     const existing = sharedCopy(scope, name);
     if (existing && copyDigest(existing) !== copyDigest(copy)) {
       return { status: 409, body: { error: `A different "${name}" is already on all your bots. Remove this bot's own copy to use that one, or remove that one from all your bots first.` } };

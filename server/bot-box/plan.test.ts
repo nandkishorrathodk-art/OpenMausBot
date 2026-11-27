@@ -179,7 +179,7 @@ linuxBox("the box plan", () => {
     expect(visibleInBox(plan, join(dataDir, "providers", "key"))).toBe("none");
   });
 
-  it("MausBot's own Pi agent folder (PI_CODING_AGENT_DIR) goes back read-write, and no other instance's", () => {
+  it("Parth Lab's own Pi agent folder (PI_CODING_AGENT_DIR) goes back read-write, and no other instance's", () => {
     const own = join(dataDir, "providers", "pi-own", "a".repeat(64), "agent");
     const plan = planBox(setup(), { command: "/usr/bin/pi", args: ["--mode", "rpc"], cwd, env: { HOME: home, PI_CODING_AGENT_DIR: own } });
     expect(visibleInBox(plan, join(own, "models.json"))).toBe("rw");

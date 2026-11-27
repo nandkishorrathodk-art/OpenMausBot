@@ -1,5 +1,5 @@
 // Slack on a personal Cloud (docs/team-slack.md): a My Cloud, with no team. The Admin's part is played here: a session
-// opened for the owner through the signed pairing (label "Slack (MausBot Cloud)"), the three routes called with it,
+// opened for the owner through the signed pairing (label "Slack (Parth Lab Cloud)"), the three routes called with it,
 // and a stand-in Admin that takes the Cloud's signed reports and checks them as the real one does. A channel message
 // and a direct message each become an ordinary conversation of the owner's. Disposable homes and the synthetic Claude
 // CLI; no Slack and no real Admin are reached.
@@ -16,7 +16,7 @@ import { teamRosterSignature } from "./cloud-team-roster.ts";
 import { TEAM_SLACK_FILE, TEAM_SLACK_REPORT_PATH, teamSlackSignature } from "./team-slack.ts";
 import { hostTimeout } from "./testing/host-timeout.ts";
 
-const SLACK_LABEL = "Slack (MausBot Cloud)";
+const SLACK_LABEL = "Slack (Parth Lab Cloud)";
 const ENGINE = `const { existsSync } = process.getBuiltinModule("node:fs");
 const dir = process.env.FAKE_CLAUDE_FIXTURE_DIR;
 process.env.FAKE_CLAUDE_DUMP = dir + "/dump.json";
@@ -118,7 +118,7 @@ beforeAll(async () => {
   expect(created.status, JSON.stringify(created.body)).toBe(201);
   scout = created.body.bot as Bot;
   mausbot = (await bots()).find((bot) => bot.defaultBot)!;
-  expect(mausbot, "a My Cloud has its MausBot").toBeTruthy();
+  expect(mausbot, "a My Cloud has its Parth Lab").toBeTruthy();
 }, hostTimeout(180_000));
 
 afterEach(async () => {
@@ -193,7 +193,7 @@ it("the same id again starts nothing new and answers as the first did", async ()
   expect(statuses(first.id).filter((status) => status === "completed")).toHaveLength(1);
 }, hostTimeout(120_000));
 
-it("a direct message is an ordinary conversation too, with the owner's MausBot by default; either audience continues a conversation", async () => {
+it("a direct message is an ordinary conversation too, with the owner's Parth Lab by default; either audience continues a conversation", async () => {
   const sent = await slack(ownerSlack, { audience: "member", bot: { default: true }, text: "Private notes please" });
   expect(sent.status, JSON.stringify(sent.body)).toBe(202);
   expect(sent.body.bot).toEqual({ id: mausbot.id, name: mausbot.name });

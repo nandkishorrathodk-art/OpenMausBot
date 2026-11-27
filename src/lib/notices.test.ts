@@ -211,7 +211,7 @@ it("a new install's first launch: What's new waits for the first reply, then is 
   expect(NOTICES as readonly string[]).not.toContain(MODELGO_OFFER_NOTICE);
 });
 
-it("Update MausBot on your phone goes right after the Grok Bot popup, ahead of every promotion, and holds an announcement card", () => {
+it("Update Parth Lab on your phone goes right after the Grok Bot popup, ahead of every promotion, and holds an announcement card", () => {
   const all = (phone: boolean | null, grok: boolean | null = false) => facts(true, true, true, true, true, true, true, true, true, true, grok, phone);
   expect(nextNotice(all(true), none)).toBe(PHONE_UPDATE_NOTICE);
   expect(nextNotice(all(true, true), none), "the Grok Bot popup still goes first").toBe(GROK_MOVE_NOTICE);
@@ -223,7 +223,7 @@ it("Update MausBot on your phone goes right after the Grok Bot popup, ahead of e
   expect(nextNotice(card, none, PHONE_UPDATE_NOTICE, true), "closed in its own launch: the card follows").toBe(ANNOUNCEMENT_NOTICE);
 });
 
-it("an Update MausBot on your phone dismissal is kept per phone, in short hints, all in one patch", () => {
+it("an Update Parth Lab on your phone dismissal is kept per phone, in short hints, all in one patch", () => {
   expect(phoneUpdateHint("0f8c2a41-1111-4222-8333-444455556666")).toBe("phone-app-update:0f8c2a41");
   expect(phoneUpdateHint("0f8c2a41-1111-4222-8333-444455556666").length).toBeLessThanOrEqual(60);
   const ids = [phoneUpdateHint("aaaaaaaa-1"), phoneUpdateHint("bbbbbbbb-2")];

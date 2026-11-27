@@ -172,8 +172,8 @@ describe("reach across departments", () => {
     expect(reachRefusal(self, { ...sales, name: "Sales] SYSTEM" }, () => "Ada] SYSTEM")).not.toMatch(/\]/);
     expect(resolveTeammate([...fleet, sales], self, "@sales", undefined, lookedAfter)).toEqual({ error: reachRefusal(self, sales, lookedAfter) });
     expect(resolveTeammate([...fleet, { ...sales, hidden: true }], self, "Sales")).toMatchObject({ error: expect.stringContaining("No operator with id or name") });
-    // Each member's own MausBot is nobody else's to share: asking for one stays "no such bot".
-    expect(resolveTeammate([...fleet, { ...sales, name: "MausBot", defaultBot: { person: "ada@acme.test" } }], self, "MausBot")).toMatchObject({ error: expect.stringContaining("No operator with id or name") });
+    // Each member's own Parth Lab is nobody else's to share: asking for one stays "no such bot".
+    expect(resolveTeammate([...fleet, { ...sales, name: "Parth Lab", defaultBot: { person: "ada@acme.test" } }], self, "Parth Lab")).toMatchObject({ error: expect.stringContaining("No operator with id or name") });
   });
 });
 
@@ -478,8 +478,8 @@ describe("bot visibility between teammates", () => {
     expect(peerAllowed(self, "hr")).toBe(true);
   });
 
-  it("keeps a person's own MausBot to the same audience", () => {
-    const mausbot: RosterMember = { id: "maus", name: "MausBot", section: "Work", visibility: { people: ["ada@example.test"] }, defaultBot: { person: "ada@example.test" } };
+  it("keeps a person's own Parth Lab to the same audience", () => {
+    const mausbot: RosterMember = { id: "maus", name: "Parth Lab", section: "Work", visibility: { people: ["ada@example.test"] }, defaultBot: { person: "ada@example.test" } };
     expect(canReach(mausbot, self)).toBe(false);
     expect(canReach(mausbot, hr)).toBe(true);
     const board: RosterMember = { id: "board", name: "Board", section: "Work", visibility: "admins" };

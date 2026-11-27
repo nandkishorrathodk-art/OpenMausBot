@@ -132,7 +132,7 @@ it("a bot asking for a teammate on the person's other place hears where it lives
     "Scout lives on Work laptop, so that mention didn't reach it: operators work together only within one place. To bring your operators together on Garage server, in the desktop app, right-click Garage server's icon on the left of the app and choose \"Make Garage server my home\".",
   ]);
 
-  // The person's own MausBot, a chief, sees the same line in its roster.
+  // The person's own Parth Lab, a chief, sees the same line in its roster.
   await expect.poll(idle, { timeout: 60_000, interval: 200 }).toBe(true);
   const bots = (await garage.as("GET", "/api/bots")).body.bots as Array<{ id: string; threadId: string; name: string; defaultBot?: boolean; chiefOfStaff?: boolean }>;
   const chief = bots.find((bot) => bot.defaultBot || bot.chiefOfStaff);

@@ -11,7 +11,7 @@
 //
 // One Chief: each place crowns its own Chief when it is set up (server/default-bot.ts), so a linked pair can have two.
 // The far side's word alone never takes a Chief's role away from a computer: the computer's Chief stays the person's
-// Chief there and the Cloud's is described as "the Chief on My Cloud". On the Cloud, its seeded MausBot (the one it
+// Chief there and the Cloud's is described as "the Chief on My Cloud". On the Cloud, its seeded Parth Lab (the one it
 // made for itself) yields to a Chief a linked computer reports, keeping its tools and its place's incidents but no longer
 // calling itself the person's Chief. Nothing is written: with the link off each place's Chief is as it was.
 import type { LinkedBot } from "../bot-link/protocol.ts";
@@ -94,7 +94,7 @@ export function createLinkedRoster(deps: LinkedRosterDeps) {
   /** The far Chiefs the other places report, that take work now. */
   const farChiefs = () => known().filter((row) => row.bot.chief === true && !row.bot.paused);
   /** The far Chief that is the person's Chief instead of this place's own: only on the Cloud, only over the Cloud's own
-   * seeded MausBot, and only for a Chief a linked computer reports that takes work now. */
+   * seeded Parth Lab, and only for a Chief a linked computer reports that takes work now. */
   function personChief(): LinkedRow | null {
     if (!cloudSide()) return null;
     const mine = ownChief();

@@ -1,7 +1,7 @@
 // What a template loses before it is published to a public repository: home-folder paths, the app's own data folders,
 // email addresses, phone numbers, key- and token-shaped values, and the publisher's own names. Deterministic and
 // idempotent: scrubbing scrubbed text changes nothing. No imports: the app scrubs before anything leaves the computer
-// and the MausBot Admin scrubs again before it commits, from the same file, tested on the same vectors.
+// and the Parth Lab Admin scrubs again before it commits, from the same file, tested on the same vectors.
 
 /** How many different values of each kind were taken out. */
 export interface ScrubCounts {

@@ -1,4 +1,4 @@
-// The page's way to its own server's `/api` routes: through MausBot Relay while it holds a relay pairing (a phone
+// The page's way to its own server's `/api` routes: through Parth Lab Relay while it holds a relay pairing (a phone
 // browser away from home, src/lib/e2e/relay-link.ts), as a plain same-origin request otherwise.
 // It imports nothing: server code type-checks src/lib/composer-attachments.ts, whose uploads come through here, and
 // must not take in the browser's relay crypto (e2e/) or the live events store with it.

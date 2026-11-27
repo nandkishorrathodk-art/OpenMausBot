@@ -1,4 +1,4 @@
-// openmausbot://team/<team id>: the join page's Open in the MausBot app, after someone joined a team in their browser. An
+// openmausbot://team/<team id>: the join page's Open in the Parth Lab app, after someone joined a team in their browser. An
 // action, not a credential: it names a team by its id only, and the team is opened only as the Admin's verified session lists
 // it for whoever is signed in here. Signed out, it starts this app's own browser sign-in (its device code never leaves main);
 // signed in as someone the team isn't listed for, it says so and offers to sign in with another address. Another app that
@@ -40,7 +40,7 @@ const listed = (state, teamId) => (state?.status === "connected" && Array.isArra
  *   reveal(): void,
  *   now?(): number,
  *   log?(line: string): void,
- * }} deps `account()`: the MausBot Cloud sign-in, null where this app can't have one (a build run from source, or connected
+ * }} deps `account()`: the Parth Lab Cloud sign-in, null where this app can't have one (a build run from source, or connected
  * to another computer). `addAccount()`: Add another account's browser sign-in, which keeps the one in use waiting.
  * `open(team)`: the team's Cloud in the window, as the rail opens it. `ask`: main's own dialog, never a page's.
  */

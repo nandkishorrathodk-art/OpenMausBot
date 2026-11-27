@@ -1,6 +1,6 @@
 // `doctor --host`: can this Linux machine run the server and the bots' sandbox? It only looks: files under /proc and /sys,
 // version queries to docker, podman and timedatectl, the sockets already listening, and one HEAD request for the time. On
-// a server that runs the MausBot connector it also asks that for its own checks, which start one throwaway box probe.
+// a server that runs the Parth Lab connector it also asks that for its own checks, which start one throwaway box probe.
 import { execFile } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statfsSync } from "node:fs";
 import { arch, cpus, release, totalmem } from "node:os";
@@ -93,7 +93,7 @@ async function containerCheck(probe: HostProbe): Promise<HostCheck> {
   return fail("containers", "Neither Docker nor Podman is installed", "sudo apt-get install -y docker.io   (or podman)");
 }
 
-/** What the MausBot connector on this server says of it, when one runs there: its own checks (connector/src/host.ts). */
+/** What the Parth Lab connector on this server says of it, when one runs there: its own checks (connector/src/host.ts). */
 export interface ConnectorReport {
   checks: { id: string; ok: boolean; warning?: boolean; fix?: string }[];
 }
@@ -117,10 +117,10 @@ export async function connectorReport(probe: HostProbe): Promise<ConnectorReport
 function connectorChecks(report: ConnectorReport | null): HostCheck[] {
   if (!report) return [];
   const problems = report.checks.filter((check) => !check.ok || check.warning);
-  if (!problems.length) return [ok("connector", `MausBot connector: its ${report.checks.length} checks pass, the bots' box among them`)];
+  if (!problems.length) return [ok("connector", `Parth Lab connector: its ${report.checks.length} checks pass, the bots' box among them`)];
   return problems.map((check) => check.ok
-    ? warn(`connector-${check.id}`, `MausBot connector: ${check.id}`, check.fix)
-    : fail(`connector-${check.id}`, `MausBot connector: the ${check.id} check fails`, check.fix ?? "run MausBot's install command again"));
+    ? warn(`connector-${check.id}`, `Parth Lab connector: ${check.id}`, check.fix)
+    : fail(`connector-${check.id}`, `Parth Lab connector: the ${check.id} check fails`, check.fix ?? "run Parth Lab's install command again"));
 }
 
 function userNamespaceCheck(probe: HostProbe, connector: ConnectorReport | null): HostCheck {
@@ -130,12 +130,12 @@ function userNamespaceCheck(probe: HostProbe, connector: ConnectorReport | null)
     return fail("userns", "Bot sandbox: this kernel has no user namespaces", "use a stock Ubuntu or Debian kernel (CONFIG_USER_NS)");
   }
   if (sysctl("kernel.apparmor_restrict_unprivileged_userns") === "1") {
-    // A MausBot home runs under its own AppArmor profile (omb-home-narrow), which allows them for that container alone.
+    // A Parth Lab home runs under its own AppArmor profile (omb-home-narrow), which allows them for that container alone.
     if (connector?.checks.some((check) => check.id === "box" && check.ok)) {
-      return ok("userns", "Unprivileged user namespaces: AppArmor restricts them here, and MausBot's home has them through its own AppArmor profile");
+      return ok("userns", "Unprivileged user namespaces: AppArmor restricts them here, and Parth Lab's home has them through its own AppArmor profile");
     }
     return fail("userns", "Bot sandbox: AppArmor blocks unprivileged user namespaces", connector
-      ? "run MausBot's install command again: it loads the home's own AppArmor profile, so this server-wide switch can stay on"
+      ? "run Parth Lab's install command again: it loads the home's own AppArmor profile, so this server-wide switch can stay on"
       : keep("kernel.apparmor_restrict_unprivileged_userns=0"));
   }
   if (sysctl("kernel.unprivileged_userns_clone") === "0") {

@@ -245,7 +245,7 @@ export function mountAvatar(host: HTMLElement, initial: AvatarOptions): MountedA
     lastStill = '';
   };
 
-  /** Whether the avatar is painted with a lit finish (MausBot: fluffy, matte or metallic): on a canvas, live or still. */
+  /** Whether the avatar is painted with a lit finish (Parth Lab: fluffy, matte or metallic): on a canvas, live or still. */
   const fluffy = () => opts.material !== undefined && opts.material !== 'flat' && opts.renderer !== 'scene' && canvasSupported();
 
   const paint = (p: AvatarOptions, options: RenderOptions) => {

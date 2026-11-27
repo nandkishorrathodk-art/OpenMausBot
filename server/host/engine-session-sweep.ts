@@ -1,9 +1,9 @@
-// A Cloud home's engine session history: the Claude Code and Codex sessions MausBot itself started that no conversation
+// A Cloud home's engine session history: the Claude Code and Codex sessions Parth Lab itself started that no conversation
 // can resume any more, and the Claude CLI's own MCP logs, go once they have been untouched for a week.
 //
 // The app resumes a conversation by its engine cursor alone (bots.json resumeCursors, through resume-plan.ts; a room
 // keeps its session in memory for minutes): a session that is no conversation's cursor and no conversation's handed
-// state is never resumed again. It is a session MausBot started when a session.started line in a remaining
+// state is never resumed again. It is a session Parth Lab started when a session.started line in a remaining
 // conversation's events log names it. A session no log names (the person's own, a bot's own `claude` run in a shell,
 // one from before these logs) is never touched. A deleted conversation's sessions are delete-leftovers.ts's.
 //
@@ -142,7 +142,7 @@ async function measure(path: string): Promise<{ bytes: number; newest: number; w
 }
 
 /**
- * Session ids the conversations' events logs say MausBot started, read on from where the last pass stopped. A log
+ * Session ids the conversations' events logs say Parth Lab started, read on from where the last pass stopped. A log
  * rewritten (a new inode, or shorter) is read again from its start.
  */
 export function createLoggedSessions(eventsDir: string) {

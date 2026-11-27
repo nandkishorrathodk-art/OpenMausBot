@@ -1266,7 +1266,7 @@ describe("PiDriver turns (fake CLI)", () => {
     expect(done).toMatchObject({ ok: true, stopReason: "cancelled" });
   });
 
-  it("writes models.json and set_model for a host::model inject pick, in MausBot's own Pi folder", async () => {
+  it("writes models.json and set_model for a host::model inject pick, in Parth Lab's own Pi folder", async () => {
     const home = mkdtempSync(join(tmpdir(), "omb-pi-turn-inject-"));
     const dump = join(home, "dump.jsonl");
     // The person's own Pi setup: what a bot's turn must not load, and the login and providers it needs.
@@ -1310,7 +1310,7 @@ describe("PiDriver turns (fake CLI)", () => {
     expect(written.providers.mine).toBeDefined();
     expect(written.providers.omlx.baseUrl).toBe("http://127.0.0.1:8080/v1");
     expect(written.providers.omlx.models.some((m) => m.id === "MiniMax-M3-4bit")).toBe(true);
-    // MausBot's local model stays out of the person's own file.
+    // Parth Lab's local model stays out of the person's own file.
     expect(readFileSync(join(person, "models.json"), "utf8")).toBe(personModels);
   });
 });

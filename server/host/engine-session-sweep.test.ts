@@ -131,7 +131,7 @@ describe("the engine sessions' switch and inputs", () => {
 });
 
 describe("sweepEngineSessions", () => {
-  it("removes MausBot's ended sessions a week idle and the CLI's old logs, and nothing else", async () => {
+  it("removes Parth Lab's ended sessions a week idle and the CLI's old logs, and nothing else", async () => {
     const files = seed();
     const result = await sweepEngineSessions(await deps("on"));
     expect(result.sessions).toBe(1);

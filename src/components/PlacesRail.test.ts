@@ -277,16 +277,16 @@ it("Connect to another computer says how another computer's desktop app is opene
   await type(form.querySelector("[data-own-server-link]"), "192.168.1.30:8799");
   await settle();
   const line = form.querySelector("[data-connect-problem]")?.textContent ?? "";
-  expect(line).toContain("192.168.1.30:8799 is a MausBot desktop app. To open it from here, turn on Tailscale and Your other computers in its Settings → Devices, then use the link shown there.");
+  expect(line).toContain("192.168.1.30:8799 is a Parth Lab desktop app. To open it from here, turn on Tailscale and Your other computers in its Settings → Devices, then use the link shown there.");
   expect(line).toContain("My Cloud");
-  expect(line).not.toMatch(/can't connect to another|isn't a MausBot server/);
+  expect(line).not.toMatch(/can't connect to another|isn't a Parth Lab server/);
   expect((form.querySelector("[data-own-server-connect]") as HTMLButtonElement).disabled).toBe(true);
   await type(form.querySelector("[data-own-server-link]"), "123456");
   await settle();
   const code = form.querySelector("[data-connect-problem]")?.textContent ?? "";
   expect(code).toContain("That code is for the phone app. To open that computer from here, turn on Tailscale and Your other computers in its Settings → Devices, then use the link shown there.");
   expect(code).toContain("My Cloud");
-  expect(code).not.toMatch(/can't connect to another|older MausBot/);
+  expect(code).not.toMatch(/can't connect to another|older Parth Lab/);
 });
 
 it("an address typed key by key stays in its box; a pasted one moves on to the code", async () => {
@@ -332,7 +332,7 @@ it("Connect to another computer takes an address and a code typed apart: a code 
   await type(form.querySelector("[data-own-server-link]"), "192.168.1.20:8799");
   await settle();
   expect(probe).toHaveBeenLastCalledWith("192.168.1.20:8799", "ABCD-EFGH-JKLM");
-  expect(form.querySelector("[data-connect-found]")?.textContent).toBe("✓ kitchen-box · MausBot 0.1.147 · Private network, not encrypted. Fine on your own network or Tailscale.");
+  expect(form.querySelector("[data-connect-found]")?.textContent).toBe("✓ kitchen-box · Parth Lab 0.1.147 · Private network, not encrypted. Fine on your own network or Tailscale.");
   expect(form.querySelector("[data-connect-problem]")).toBeNull();
   const button = form.querySelector("[data-own-server-connect]") as HTMLButtonElement;
   expect([button.disabled, button.textContent]).toEqual([false, "Connect to kitchen-box"]);

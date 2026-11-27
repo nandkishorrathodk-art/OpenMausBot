@@ -13,6 +13,6 @@ const shown = (author?: string) => renderToStaticMarkup(createElement(TeamCatalo
 describe("a community template's card", () => {
   it("says who published it, and names nobody for a placeholder credit", () => {
     expect(shown("Jane Doe")).toContain("Published by Jane Doe");
-    for (const nobody of [undefined, "Community", "MausBot user"]) expect(shown(nobody)).not.toContain("Published by");
+    for (const nobody of [undefined, "Community", "Parth Lab user"]) expect(shown(nobody)).not.toContain("Published by");
   });
 });

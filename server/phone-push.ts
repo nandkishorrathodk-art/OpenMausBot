@@ -166,7 +166,7 @@ function pushableOf(value: unknown): PushableNotification | null {
  * relay takes. Reads the kind, the ids and the names; the title is the server's own line for that kind, from names. */
 export function phonePushNotification(notification: PushableNotification, room?: { id: string; name: string }): PhonePushNotification | null {
   if (!isPushKind(notification.kind) || !PUSH_ID.test(notification.botId) || !PUSH_ID.test(notification.threadId)) return null;
-  const botName = clip(notification.botName, PUSH_NAME_MAX) || "MausBot";
+  const botName = clip(notification.botName, PUSH_NAME_MAX) || "Parth Lab";
   const roomName = room && PUSH_ID.test(room.id) ? clip(room.name, PUSH_NAME_MAX) : "";
   const language = conversationLanguage(notification.threadId);
   // The lock screen shows the title: the bot's name only, never the room's, which the app shows once it is open.

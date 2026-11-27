@@ -10,7 +10,7 @@ import { SOCKET_PAD } from './socket.ts';
 /** The values of the `pass` uniform. */
 export const PASS = { body: 0, shell: 1, strand: 2 } as const;
 
-/** MausBot: the values of the `finish` uniform. Matte and metallic draw the body pass alone. */
+/** Parth Lab: the values of the `finish` uniform. Matte and metallic draw the body pass alone. */
 export const FINISH = { fluffy: 0, matte: 1, metallic: 2 } as const;
 
 /** A number as a GLSL float literal. */
@@ -48,7 +48,7 @@ float socketDistance(vec3 p, vec3 normal, out vec2 uv, out vec3 local) {
   return FAR;
 }`;
 
-// MausBot: the body with no pile. `d` is the distance to the nearer eye's contour.
+// Parth Lab: the body with no pile. `d` is the distance to the nearer eye's contour.
 const bareSurface = `
 vec3 bareSurface(vec3 n, vec3 light, float d) {
   float lambert = dot(n, light);

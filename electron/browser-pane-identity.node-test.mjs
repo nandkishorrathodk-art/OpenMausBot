@@ -12,7 +12,7 @@ test("by default a pane is Electron's own Chromium: only the app's token goes, E
   assert.equal(paneBaseUserAgent(ELECTRON, "native"), NATIVE);
   assert.equal(paneBaseUserAgent(ELECTRON, undefined), NATIVE);
   assert.equal(paneIdentityMode("anything else"), "native");
-  assert.equal(withoutAppToken(ELECTRON.replace("OpenMausBot/0.1.175", "MausBot/0.2.0 Extra/1")), NATIVE);
+  assert.equal(withoutAppToken(ELECTRON.replace("OpenMausBot/0.1.175", "Parth Lab/0.2.0 Extra/1")), NATIVE);
   assert.equal(paneBaseUserAgent(ELECTRON, "cleaned"), CLEANED);
 });
 

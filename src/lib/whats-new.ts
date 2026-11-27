@@ -11,7 +11,7 @@ import type { TeamsAction } from "@/lib/teams-whats-new";
 /** The plan slides, then the sponsor's. */
 export type PlanSlide = "pro" | "team";
 export type WhatsNewSlide = PlanSlide | "modelgo";
-/** Who the account is to MausBot Cloud: no plan, a plan of its own, in a team, or something else (being bought, needing
+/** Who the account is to Parth Lab Cloud: no plan, a plan of its own, in a team, or something else (being bought, needing
  * attention, not checked). Null until the sign-in is restored and checked. */
 export type WhatsNewAudience = "none" | "own" | "team" | "other";
 

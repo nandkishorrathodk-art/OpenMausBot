@@ -77,7 +77,7 @@ export function mac({ runOk = true, trash = true, enabled = true, desktop = "/Us
   };
   const shell = trash ? { trashItem: async (p) => { trashed.push(p); await fs.rm(p, { recursive: true }); } } : {};
   const options = { platform: "darwin", path: path.posix, home: "/Users/u", userData: "/Users/u/Library/Application Support/OpenMausBot", desktop, fs, run, shell, hostBundleId: "com.openmausbot.app", enabled };
-  return { fs, calls, trashed, options, installer: createAppInstaller(options), dir: "/Users/u/Applications/MausBot Apps", desktop };
+  return { fs, calls, trashed, options, installer: createAppInstaller(options), dir: "/Users/u/Applications/Parth Lab Apps", desktop };
 }
 
 export function windows({ executable = "C:\\Users\\u\\AppData\\Local\\Programs\\OpenMausBot\\OpenMausBot.exe", desktop = "C:\\Users\\u\\Desktop", makeDesktop = false } = {}) {
@@ -94,7 +94,7 @@ export function windows({ executable = "C:\\Users\\u\\AppData\\Local\\Programs\\
     readShortcutLink(file) { return JSON.parse(fs.text(file)); },
   };
   const options = { platform: "win32", path: path.win32, home: "C:\\Users\\u", userData: "C:\\Users\\u\\AppData\\Roaming\\OpenMausBot", appData: "C:\\Users\\u\\AppData\\Roaming", desktop, fs, shell, executable, resizePng: async (png) => png };
-  return { fs, shortcuts, options, installer: createAppInstaller(options), dir: "C:\\Users\\u\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\MausBot Apps", desktop };
+  return { fs, shortcuts, options, installer: createAppInstaller(options), dir: "C:\\Users\\u\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Parth Lab Apps", desktop };
 }
 
 /** `xdg`: what `xdg-user-dir DESKTOP` prints (null: it is not installed); `makeDesktop`: the folder that exists. */

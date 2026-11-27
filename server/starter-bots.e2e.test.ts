@@ -106,7 +106,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   /** The capability of a real turn of this Cloud's Chief, for what the bot's own tools call. */
   async chiefTurn() {
     const chief = (await this.bots()).find((bot) => bot.chiefOfStaff);
-    expect(chief, "a new Cloud's MausBot is its Chief").toBeTruthy();
+    expect(chief, "a new Cloud's Parth Lab is its Chief").toBeTruthy();
     const sent = await this.api("POST", `/api/bots/${chief.id}/messages`, { text: "Add a specialist." });
     expect(sent.status, JSON.stringify(sent.body)).toBe(202);
     await expect.poll(() => existsSync(this.dump), { timeout: 20_000 }).toBe(true);

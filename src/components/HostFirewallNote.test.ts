@@ -77,7 +77,7 @@ describe("the pairing panel when ufw likely drops the phone", () => {
     for (const html of [render({}), renderE2E({ state: e2e(false) })]) {
       expect(html).toContain("data-host-firewall");
       expect(html).toContain("This computer&#x27;s firewall (ufw) may block your phone on Wi-Fi.");
-      expect(html).toContain("turn on Anywhere, through MausBot");
+      expect(html).toContain("turn on Anywhere, through Parth Lab");
       expect(html).toContain("sudo ufw allow 8810/tcp");
     }
   });

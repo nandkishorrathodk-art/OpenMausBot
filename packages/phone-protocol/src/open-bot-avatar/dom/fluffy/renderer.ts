@@ -15,7 +15,7 @@ import { ROOT_PASSES, buildMesh, halfDepth, rootsIn, type IndexRange, type Fluff
 import { FINISH, PASS, fragmentShader, vertexShader } from './shaders.ts';
 import { SOCKET_TILE, exposedHeight, socketKey, socketRegion, socketTile } from './socket.ts';
 
-/** MausBot: how the surface is finished. Matte and metallic light the bare body and draw no pile. */
+/** Parth Lab: how the surface is finished. Matte and metallic light the bare body and draw no pile. */
 export type FluffyFinish = keyof typeof FINISH;
 
 /** The colors of a coat and the eyes set into it (none for a state mark). */

@@ -39,7 +39,7 @@ const freeOpenCode: InstanceInfo = {
 const notInstalledOpenCode = { ...freeOpenCode, snapshot: { state: "unavailable" }, aiTest: undefined,
   install: { docsUrl: "https://example.test", server: { standalone: { version: "1", downloadBytes: 1 } } } } as InstanceInfo;
 const signIn = (): InstanceInfo => ({ ...claude(false), snapshot: { state: "available", authenticated: false }, authentication: { method: "paste-code" } } as InstanceInfo);
-const maus = { id: "maus", threadId: "t", name: "MausBot", title: "", description: "", notifications: true, color: "chrome", unread: false,
+const maus = { id: "maus", threadId: "t", name: "Parth Lab", title: "", description: "", notifications: true, color: "chrome", unread: false,
   modelSelection: { instanceId: "claude", model: "m" }, messages: [], defaultBot: {}, chiefOfStaff: true };
 
 let host: HTMLDivElement, root: Root;
@@ -146,7 +146,7 @@ describe("the Chief step", () => {
     expect(chiefStep).toBe(false);
   };
 
-  it("is skipped once MausBot has met the person", async () => {
+  it("is skipped once Parth Lab has met the person", async () => {
     f.state = { ...f.state, bots: [{ ...maus, welcomed: true }] };
     await finishesAtNext();
   });
@@ -156,7 +156,7 @@ describe("the Chief step", () => {
     await finishesAtNext();
   });
 
-  it("is skipped where there is no MausBot", async () => {
+  it("is skipped where there is no Parth Lab", async () => {
     f.state = { ...f.state, bots: [] };
     await finishesAtNext();
   });

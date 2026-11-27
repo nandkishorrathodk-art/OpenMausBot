@@ -36,7 +36,7 @@ export interface StatusRouteDeps {
   threadShown?(auth: RequestAuth): (threadId: string) => boolean;
   /** On a Team Cloud: the decision and admin rows as this reader may see them (host/private-records.ts). */
   records?: Pick<PrivateRecords, "decisionRow" | "adminActionShown">;
-  /** Whether bots run in the bot box: the MausBot connector reads it on a server its owner runs, on or off and nothing more. */
+  /** Whether bots run in the bot box: the Parth Lab connector reads it on a server its owner runs, on or off and nothing more. */
   boxOn?(): boolean;
 }
 

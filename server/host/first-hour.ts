@@ -117,7 +117,7 @@ export interface FirstHourDeps {
   store: Pick<Store, "bot" | "bots" | "messagesFor" | "activePath" | "appendMessage" | "patchMessage" | "patchTask" | "patchBot" | "taskByThread" | "groupByThread">;
   dataDir: string;
   now?: () => number;
-  /** The Chief the first hour belongs to: the place's MausBot, or its main Chief. */
+  /** The Chief the first hour belongs to: the place's Parth Lab, or its main Chief. */
   chief(): BotRecord | null;
   mainThread(botId: string): string | undefined;
   threadBusy(botId: string, threadId: string): boolean;
@@ -272,7 +272,7 @@ export function createFirstHour(deps: FirstHourDeps) {
     const chief = greeter();
     return deps.store.bots.filter((bot) => bot.id !== chief && !bot.hidden && !bot.movedTo).sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0) || a.name.localeCompare(b.name));
   };
-  /** Their names for the greeting, leaving out a MausBot that came along: "MausBot is here now… I'm MausBot" says nothing. */
+  /** Their names for the greeting, leaving out a Parth Lab that came along: "Parth Lab is here now… I'm Parth Lab" says nothing. */
   const arrivals = (): string[] => {
     const own = greeter() ? deps.store.bot(greeter()!)?.name : undefined;
     return others().filter((bot) => !bot.defaultBot && (!own || (bot.name !== own && !bot.name.startsWith(`${own} (`)))).map((bot) => bot.name);

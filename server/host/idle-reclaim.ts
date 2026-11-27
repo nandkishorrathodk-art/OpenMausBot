@@ -207,7 +207,7 @@ export function idleReclaimNote(dataDir: string, threadId: string, now = Date.no
   const named = note.paths.map((path) => (path ? path.split(sep).join("/") : ".")).filter((path) => SHOWN_NAME.test(path));
   const shown = named.slice(0, IDLE_RECLAIM.notePaths);
   const more = note.paths.length > shown.length ? (shown.length ? " and more" : "some folders") : "";
-  return `\n\n[From OpenMausBot, not the person: to free disk space while this conversation was idle, its installed dependencies were removed (${shown.join(", ")}${more}). The project's own files, lockfiles and git history are unchanged. Before you run the project again, reinstall from its lockfile (npm ci, pnpm install, yarn install, bun install, uv sync or pip install -r requirements.txt); do not mention this unless it matters to the person.]`;
+  return `\n\n[From Parth Lab, not the person: to free disk space while this conversation was idle, its installed dependencies were removed (${shown.join(", ")}${more}). The project's own files, lockfiles and git history are unchanged. Before you run the project again, reinstall from its lockfile (npm ci, pnpm install, yarn install, bun install, uv sync or pip install -r requirements.txt); do not mention this unless it matters to the person.]`;
 }
 
 /** What the storage view may say: the switch, the last pass and what every pass has freed. */

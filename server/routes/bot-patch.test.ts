@@ -315,7 +315,7 @@ describe("PATCH /api/bots/:id vpsAlias relocation guard", () => {
 });
 
 describe("PATCH /api/bots/:id defaultBot: null", () => {
-  it("demotes a hidden MausBot to a regular bot that shows in the sidebar again", async () => {
+  it("demotes a hidden Parth Lab to a regular bot that shows in the sidebar again", async () => {
     const { store, bot, patch } = fixture();
     store.patchBot(bot.id, { defaultBot: {}, sidebarHidden: true });
     expect((await patch(bot.id, { defaultBot: null })).status).toBe(200);

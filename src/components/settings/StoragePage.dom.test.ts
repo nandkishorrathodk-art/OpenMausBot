@@ -102,10 +102,10 @@ describe("who gets Settings → Storage", () => {
     expect(requests.filter((request) => request.startsWith("POST /api/diagnostics/storage"))).toEqual([]);
   });
 
-  it("a Team Cloud's admin: their own MausBot keeps its name, and a bot the app isn't shown reads as a private bot", async () => {
+  it("a Team Cloud's admin: their own Parth Lab keeps its name, and a bot the app isn't shown reads as a private bot", async () => {
     const answers = { ...REPORT, storage: storageReport({ bots: [{ id: "mine", bytes: 7 * GB, files: 1 }, { id: "theirs", bytes: 3 * GB, files: 1 }] }) };
     await openSettings({ storage: answers, section: "storage", config: { ...CONFIG, team: { id: "team-1", name: "Studio" } },
-      bots: [{ id: "mine", name: "MausBot", threadId: "t1", defaultBot: { person: "ada@example.com" } }] });
+      bots: [{ id: "mine", name: "Parth Lab", threadId: "t1", defaultBot: { person: "ada@example.com" } }] });
     expect([...document.querySelectorAll("[data-storage-bot]")].map((row) => row.textContent)).toEqual(["MausBot7 GB", "Private bot3 GB", "Deleted bots1.5 GB", "Other bots512 MB"]);
   });
 

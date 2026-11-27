@@ -26,7 +26,7 @@ let browsers: ReturnType<typeof createCloudBrowser>[];
 
 beforeEach(async () => {
   fake = await startFakeComputer();
-  // MausBot Cloud's included credential, pointed at the fake relay: the only way a browser sandbox is ever made.
+  // Parth Lab Cloud's included credential, pointed at the fake relay: the only way a browser sandbox is ever made.
   vi.stubEnv("OMB_CLOUD_BOAT_URL", `${fake.base}/api/v1`);
   vi.stubEnv("OMB_CLOUD_BOAT_TOKEN", RELAY_KEY);
   vi.stubEnv("OMB_CLOUD_BROWSER", undefined);

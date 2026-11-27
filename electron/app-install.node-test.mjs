@@ -97,7 +97,7 @@ test("icons: PNG checks, a one-image .ico, and a letter tile", () => {
   assert.deepEqual(pngSize(letterTilePng({ id: L("x"), name: "日本", size: 32 })), { width: 32, height: 32 });
 });
 
-test("macOS: a bundle in ~/Applications/MausBot Apps with its plist, script and icon", async () => {
+test("macOS: a bundle in ~/Applications/Parth Lab Apps with its plist, script and icon", async () => {
   const { fs, calls, installer, dir } = mac();
   const result = await installer.installApp({ id: L("notes"), name: "Notes", iconPng: PNG });
   assert.deepEqual(result, { ok: true, app: { id: L("notes"), name: "Notes", path: `${dir}/Notes.app`, desktop: false } });
@@ -206,7 +206,7 @@ test("refusals: unavailable when off, a bad id, and an unreadable list starts ag
   assert.equal(createAppInstaller({ platform: "win32", path: path.win32, home: "C:\\h", userData: "C:\\d", appData: "C:\\a", fs, executable: "C:\\x.exe" }).available(), false);
 });
 
-test("Windows: a Start menu shortcut to MausBot's executable with the link, its own taskbar id and icon", async () => {
+test("Windows: a Start menu shortcut to Parth Lab's executable with the link, its own taskbar id and icon", async () => {
   const { fs, shortcuts, installer, dir, options } = windows({ makeDesktop: true });
   const result = await installer.installApp({ id: L("notes"), name: "Notes", iconPng: PNG });
   assert.equal(result.app.path, `${dir}\\Notes.lnk`);
@@ -242,7 +242,7 @@ test("Windows: a Start menu shortcut to MausBot's executable with the link, its 
   for (const f of fs.files()) assert.ok(f.startsWith(`${dir}\\`) || f.startsWith("C:\\Users\\u\\AppData\\Roaming\\OpenMausBot\\app-install\\"), f);
 });
 
-test("Windows: shortcuts follow MausBot's executable when it moved", async () => {
+test("Windows: shortcuts follow Parth Lab's executable when it moved", async () => {
   const first = windows();
   await first.installer.installApp({ id: L("notes"), name: "Notes" });
   const moved = createAppInstaller({ ...first.options, executable: "D:\\OpenMausBot\\OpenMausBot.exe" });

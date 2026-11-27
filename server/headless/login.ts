@@ -55,8 +55,8 @@ async function serverToSignInTo(ctx: VerbContext): Promise<string> {
   try {
     return await mcp.probeBaseUrls(DISCOVERY_PORTS.map((port) => `http://127.0.0.1:${port}`));
   } catch {
-    throw new HeadlessError("MausBot is not running on this computer", EXIT.unreachable,
-      "open the MausBot app, or name a server: openmausbot login https://maus.example.com (a Parth Lab account for --tunnel is openmausbot account login)");
+    throw new HeadlessError("Parth Lab is not running on this computer", EXIT.unreachable,
+      "open the Parth Lab app, or name a server: openmausbot login https://maus.example.com (a Parth Lab account for --tunnel is openmausbot account login)");
   }
 }
 
@@ -80,14 +80,14 @@ async function signInWithCard(ctx: VerbContext, origin: string, label: string, s
   const verifierHash = createHash("sha256").update(verifier).digest("base64url");
   const started = await call(origin, "/api/auth/cli-login", { method: "POST", body: JSON.stringify({ label, scope, verifierHash }) }, ctx.signal);
   if (started.status === 404) {
-    throw new HeadlessError("this server does not take openmausbot login yet", EXIT.failed, "update MausBot there, or use openmausbot connect URL --code CODE --out FILE");
+    throw new HeadlessError("this server does not take openmausbot login yet", EXIT.failed, "update Parth Lab there, or use openmausbot connect URL --code CODE --out FILE");
   }
   if (started.status !== 201 || typeof started.body.id !== "string") {
     throw new HeadlessError(`the server would not start a sign-in: ${started.body.error ?? started.status}`, started.status === 403 ? EXIT.notAllowed : EXIT.failed);
   }
   const code = String(started.body.code);
   if (desktopApp(environment) && LOOPBACK.test(origin)) {
-    ctx.io.err(`MausBot is asking you to allow this terminal. Check the code in the app matches, then press Allow:\n\n    ${code}\n`);
+    ctx.io.err(`Parth Lab is asking you to allow this terminal. Check the code in the app matches, then press Allow:\n\n    ${code}\n`);
   } else {
     const opened = await ctx.openBrowser(`${origin}/`);
     ctx.io.err(`${opened ? "Opened" : "Open"} ${origin}/ in your browser. Sign in there if it asks, check the code matches, then press Allow:\n\n    ${code}\n`);
@@ -103,11 +103,11 @@ async function signInWithCard(ctx: VerbContext, origin: string, label: string, s
     const polled = await call(origin, `/api/auth/cli-login/${encodeURIComponent(started.body.id)}`, { method: "POST", body: JSON.stringify({ verifier }) }, ctx.signal);
     if (polled.status === 202) continue;
     if (polled.status === 200 && typeof polled.body.token === "string") return polled.body;
-    if (polled.body.state === "denied") throw new HeadlessError("the sign-in was denied in MausBot", EXIT.notAllowed);
+    if (polled.body.state === "denied") throw new HeadlessError("the sign-in was denied in Parth Lab", EXIT.notAllowed);
     throw new HeadlessError(`the sign-in did not finish: ${polled.body.error ?? polled.status}`, polled.status === 403 ? EXIT.notAllowed : EXIT.failed,
       "run openmausbot login again");
   }
-  throw new HeadlessError("nobody allowed the sign-in within ten minutes", EXIT.failed, "run openmausbot login again, then press Allow in MausBot");
+  throw new HeadlessError("nobody allowed the sign-in within ten minutes", EXIT.failed, "run openmausbot login again, then press Allow in Parth Lab");
 }
 
 export async function loginVerb(ctx: VerbContext): Promise<VerbOutcome> {
@@ -116,7 +116,7 @@ export async function loginVerb(ctx: VerbContext): Promise<VerbOutcome> {
   const origin = await serverToSignInTo(ctx);
   const described = await call(origin, "/.well-known/openmausbot/environment", {}, ctx.signal).catch(() => null);
   if (described?.status !== 200 || typeof described.body.environmentId !== "string") {
-    throw new HeadlessError(`no MausBot server answers at ${origin}`, EXIT.unreachable, "check the address, and that MausBot is running there");
+    throw new HeadlessError(`no Parth Lab server answers at ${origin}`, EXIT.unreachable, "check the address, and that Parth Lab is running there");
   }
   const environment = described.body;
   const name = flag(ctx.flags, "name")?.trim() || defaultServerName(origin);

@@ -297,7 +297,7 @@ function applyBotFields(deps: MoveKindsDeps, id: string, raw: unknown, source: A
   if (Object.hasOwn(fields, "chiefOfStaff") && fields.chiefOfStaff !== true) patch.chiefOfStaff = fields.chiefOfStaff ?? undefined;
   if (fields.chiefOfStaff === true) delete patch.hidden;
   // A bot coming back here (bot-moves.ts) stays hidden until it arrived: its archived switch waits on its hold till then.
-  // It never takes this place's Chief's crown or MausBot mark: those stay where they are (a Chief does not move back).
+  // It never takes this place's Chief's crown or Parth Lab mark: those stay where they are (a Chief does not move back).
   const coming = (bot.movedTo as { back?: true } | undefined)?.back === true;
   if (coming) {
     if (Object.hasOwn(patch, "hidden")) (patch as Record<string, unknown>).movedTo = { ...bot.movedTo, archived: patch.hidden === true };
@@ -306,8 +306,8 @@ function applyBotFields(deps: MoveKindsDeps, id: string, raw: unknown, source: A
     return;
   }
   deps.store.patchBot(id, patch);
-  // A MausBot arriving where the person's own MausBot stays (takeArrivingDefaultBot) doesn't take the crown from this
-  // place's Chief, whichever bot that is, also when a later pass sends its Chief fields without its MausBot mark.
+  // A Parth Lab arriving where the person's own Parth Lab stays (takeArrivingDefaultBot) doesn't take the crown from this
+  // place's Chief, whichever bot that is, also when a later pass sends its Chief fields without its Parth Lab mark.
   const keepsCrown = (fields.defaultBot || source.defaultBot) && keptDefaultBot(deps.store, id)
     && deps.store.bots.some((other) => other.id !== id && other.chiefOfStaff);
   if (fields.chiefOfStaff === true && !keepsCrown) {
@@ -399,7 +399,7 @@ const putSchema = z.object({ v: z.literal(1), key: z.string().max(200), dataDir:
 
 type ArrivingSource = { computer?: string; defaultBot?: boolean };
 
-/** This computer's name as a person knows it, which a MausBot that moves away is named for when the place it goes keeps its own. */
+/** This computer's name as a person knows it, which a Parth Lab that moves away is named for when the place it goes keeps its own. */
 function thisComputerName(): string {
   return (process.env.OMB_ENVIRONMENT_LABEL?.trim() || hostname()).replace(/\.local$/iu, "").slice(0, 120);
 }

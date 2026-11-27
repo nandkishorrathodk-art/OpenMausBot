@@ -155,7 +155,7 @@ describe("openmausbot pair", () => {
   it("says how to start a server when none runs", async () => {
     fetchMock.mockImplementation(async () => { throw new Error("offline"); });
     expect(await runPair(options)).toBe(1);
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("No MausBot server is running here. Start it: openmausbot serve"));
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("No Parth Lab server is running here. Start it: openmausbot serve"));
   });
 });
 
@@ -178,7 +178,7 @@ describe("the phone-app link `openmausbot pair --phone android` scans", () => {
     expect(await runPair({ ...options, phone: "android", publicUrl: explicitOrigin })).toBe(0);
     expect(printed()).not.toContain("openmausbot://");
     expect(printed()).not.toContain(credential);
-    expect(printed()).toContain("scan this with the MausBot app");
+    expect(printed()).toContain("scan this with the Parth Lab app");
   });
 
   it("keeps a proxy path in the web link", async () => {

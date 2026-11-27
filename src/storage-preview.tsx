@@ -12,7 +12,7 @@ const page = params.get("page") ?? "storage";
 const state = params.get("state") ?? "normal";
 const USED: Record<string, number> = { first: 41, normal: 50, near: 84, full: 93 };
 const used = USED[state] ?? 50;
-/** A Team Cloud's admin: "bot-x7" is a teammate's own MausBot, which the app never lists for anyone else. */
+/** A Team Cloud's admin: "bot-x7" is a teammate's own Parth Lab, which the app never lists for anyone else. */
 const team = params.get("team") === "1";
 
 const report = state === "first"

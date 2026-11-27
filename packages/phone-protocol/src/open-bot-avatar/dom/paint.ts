@@ -171,7 +171,7 @@ export function paintCanvas(surface: CanvasSurface, frame: AvatarFrame, size: nu
     if (!sections.has(id)) sections.set(id, { box, path: new Path2D(d), rule: evenOdd ? 'evenodd' : 'nonzero' });
   }
   const { matrices, bounds } = framePlacement(frame);
-  // MausBot: matte and metallic take the fluffy path with their own lighting and no pile.
+  // Parth Lab: matte and metallic take the fluffy path with their own lighting and no pile.
   const finish = material === 'flat' ? null : material;
   const volume = finish ? surface.volume : null;
   const fluffy = volume !== null;
@@ -224,7 +224,7 @@ export function paintCanvas(surface: CanvasSurface, frame: AvatarFrame, size: nu
         ctx.drawImage(coat.canvas, coat.x, coat.y, coat.size, coat.size, coat.cx - radius, coat.cy - radius, 2 * radius, 2 * radius);
       }
     } else if (shape.kind === 'eye') {
-      // MausBot: the coat seats only the two eyes; our mouth stays a flat mark on top of it.
+      // Parth Lab: the coat seats only the two eyes; our mouth stays a flat mark on top of it.
       if (coat && shape.key !== 'mouth') continue;
       ctx.fillStyle = ink;
       paintEye(ctx, shape.mark);

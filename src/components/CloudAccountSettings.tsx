@@ -165,7 +165,7 @@ export function CloudPlanOnCloud({ bridge, usage = null, upgrade, extra }: { bri
 
 /** Security: the public native snapshot carries no credential and cannot activate a plan. */
 /** `onSignIn`: the sheet's email-code sign-in (the browser approval stays for openmausbot://cloud and Sign in again). */
-/** On a Team Cloud: its people, seats and roles live on the team's People page on MausBot Cloud, where the person signs in
+/** On a Team Cloud: its people, seats and roles live on the team's People page on Parth Lab Cloud, where the person signs in
  * with their own email. Its admins invite; only its Owner, who pays, adds seats; anyone else is told to ask an admin. */
 export function TeamPeopleCard({ team, admin, owner = false }: { team: { id: string; name: string; cloudPage?: string }; admin: boolean; owner?: boolean }) {
   const invite = admin || owner ? teamPeoplePage(team, "invite") : null, seats = owner ? teamPeoplePage(team, "seats") : null;
@@ -181,7 +181,7 @@ export function TeamPeopleCard({ team, admin, owner = false }: { team: { id: str
   </Card>;
 }
 
-/** One MausBot account, shown as two pages: `account` (who is signed in, sign in and out) and `plan` (the plan, its Cloud
+/** One Parth Lab account, shown as two pages: `account` (who is signed in, sign in and out) and `plan` (the plan, its Cloud
  * and cancelling it). */
 export function CloudAccountSettings({ linkRequest = 0, cloudHome = false, teamHome, onAddCloud, onSignIn, part = "plan", advanced = true, usage = null, upgrade, extra, avatar }: {
   /** the person's picture, for the account card's leading slot */

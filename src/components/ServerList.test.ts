@@ -51,7 +51,7 @@ async function mount() {
 
 it("each saved server says how it is reached and how it is doing, with one thing to do when it needs the person", async () => {
   await mount();
-  expect(row("cloud").querySelector("[data-server-where]")?.textContent).toBe("Managed by MausBot");
+  expect(row("cloud").querySelector("[data-server-where]")?.textContent).toBe("Managed by Parth Lab");
   expect(buttonIn(row("cloud"), "Remove My Cloud"), "My Cloud has no Remove").toBeUndefined();
   expect(row("vps").querySelector("[data-server-where]")?.textContent).toBe("maus.example.com · HTTPS");
   expect(row("mini").querySelector("[data-server-where]")?.textContent).toBe("192.168.1.50:8799 · Private network, not encrypted");
@@ -68,7 +68,7 @@ it("the update note shows only for a server behind this app, with the command th
   await mount();
   const notes = [...host.querySelectorAll("[data-server-behind]")];
   expect(notes).toHaveLength(1);
-  expect(notes[0]!.textContent).toContain("hetzner-1 runs MausBot 0.1.140. This app is 0.1.147.");
+  expect(notes[0]!.textContent).toContain("hetzner-1 runs Parth Lab 0.1.140. This app is 0.1.147.");
   expect(notes[0]!.textContent).toContain("Copy update command");
   await click(buttonIn(notes[0]!, "Hide this note"));
   expect(host.querySelector("[data-server-behind]")).toBeNull();
@@ -120,7 +120,7 @@ it("each server saved by hand has the one lend switch: one tap on, one tap off, 
   await act(async () => { await Promise.resolve(); await Promise.resolve(); });
   const lend = row("vps").querySelector("[data-lend-switch]")!;
   expect(lend.textContent).toContain("Let hetzner-1’s bots use this computer");
-  expect(lend.textContent).toContain("Its bots can then see and use the apps on your screen while MausBot is open here.");
+  expect(lend.textContent).toContain("Its bots can then see and use the apps on your screen while Parth Lab is open here.");
   expect(row("cloud").querySelector("[data-lend-switch], [data-lend-reason]"), "My Cloud lends by its own rules").toBeNull();
   expect(row("mini").querySelector("[data-lend-reason]")?.textContent).toBe("Bots on office-mini can’t use this computer: other people sign in to it too.");
   expect(row("mac").querySelector("[data-lend-reason]")?.textContent).toBe("Bots on Mac at home can’t use this computer: this app isn’t paired with it as its owner.");
@@ -129,7 +129,7 @@ it("each server saved by hand has the one lend switch: one tap on, one tap off, 
   await click(lend.querySelector("[role=switch]"));
   expect(lendComputer.set).toHaveBeenCalledWith("vps", true);
   expect(row("vps").querySelector("[role=switch]")?.getAttribute("aria-checked")).toBe("true");
-  expect(row("vps").querySelector("[data-lend-line]")?.textContent).toBe("On: hetzner-1’s bots can use the apps on your screen while MausBot is open here.");
+  expect(row("vps").querySelector("[data-lend-line]")?.textContent).toBe("On: hetzner-1’s bots can use the apps on your screen while Parth Lab is open here.");
   await click(buttonIn(row("vps"), "Choose what it can use"));
   expect(props.onComputerAccess).toHaveBeenCalledWith("vps");
   await click(row("vps").querySelector("[role=switch]"));

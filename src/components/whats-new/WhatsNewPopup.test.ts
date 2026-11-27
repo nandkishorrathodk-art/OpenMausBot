@@ -11,13 +11,13 @@ const { WhatsNewPopup } = await import("./WhatsNewPopup");
 const BOTH: WhatsNewView = { slides: ["pro", "team"], audience: "none", signedIn: true, staging: false,
   plans: { pro: { name: "Pro", terms: "Pro · $49/month + tax · 14-day money-back" }, team: { name: "Team", terms: "Free for 3 days, then $40/month + tax" } } };
 const TEAM_ONLY: WhatsNewView = { ...BOTH, slides: ["team"], audience: "own", plans: { team: BOTH.plans.team } };
-const PRO = "Meet the new MausBot Cloud", TEAM = "Shared bots for your whole team";
+const PRO = "Meet the new Parth Lab Cloud", TEAM = "Shared bots for your whole team";
 
 let host: HTMLDivElement, root: Root, opener: HTMLButtonElement;
 let steps: Array<[WhatsNewAction, WhatsNewSlide]>;
 const props = { report: vi.fn((action: WhatsNewAction, slide: WhatsNewSlide) => void steps.push([action, slide])), onBuy: vi.fn(), onAddKey: vi.fn(), onDone: vi.fn() };
 const THREE: WhatsNewView = { ...BOTH, slides: ["pro", "team", "modelgo"], addKey: true };
-const SPONSOR = "ModelGo is now in MausBot";
+const SPONSOR = "ModelGo is now in Parth Lab";
 const MODELGO_URL = "https://modelgo.ai/?utm_source=openmausbot&utm_medium=sponsorship&utm_content=app&campaign_id=openmausbot&ad_group_id=app";
 const show = async (view: WhatsNewView = BOTH) => { await act(async () => { root.render(createElement(WhatsNewPopup, { view, ...props })); }); };
 const dialog = () => host.querySelector<HTMLElement>('[role="dialog"]')!;
@@ -111,15 +111,15 @@ describe("the What's new popup", () => {
     expect(props.onDone).not.toHaveBeenCalled();
   });
 
-  it("the Team slide: shared bots first, each person's own MausBot as their inbox, what the team shares, its loop and Start a Team", async () => {
+  it("the Team slide: shared bots first, each person's own Parth Lab as their inbox, what the team shares, its loop and Start a Team", async () => {
     await show(TEAM_ONLY);
     const slide = live();
     expect(title()).toBe(TEAM);
-    expect(slide.textContent).toContain("Everyone chats with the same bots, like one Support bot and one Sales bot, and hands them work. Each person's own MausBot is their inbox: anything for them lands there.");
+    expect(slide.textContent).toContain("Everyone chats with the same bots, like one Support bot and one Sales bot, and hands them work. Each person's own Parth Lab is their inbox: anything for them lands there.");
     for (const point of ["Connected apps, set up once for everyone", "Group chats with teammates and bots together", "Team memory the bots share",
       "Bots hand work to each other across the team", "Choose who can use each bot"]) expect(slide.textContent).toContain(point);
     expect(slide.textContent).toContain("Free for 3 days, then $40/month + tax");
-    expect(slide.querySelector("video")!.getAttribute("aria-label")).toBe("A team's group chat in MausBot: messages from people and bots, each with its replies.");
+    expect(slide.querySelector("video")!.getAttribute("aria-label")).toBe("A team's group chat in Parth Lab: messages from people and bots, each with its replies.");
     expect([...slide.querySelectorAll("button")].map(item => item.textContent)).toEqual(["Start a Team"]);
     expect(button("Next")).toBeUndefined(); expect(button("Back")).toBeUndefined(); expect(button("Slide 1 of 1"), "one slide has no dots").toBeUndefined();
     expect(steps).toEqual([["seen", "team"]]);

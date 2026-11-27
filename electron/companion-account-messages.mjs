@@ -16,7 +16,7 @@ export const FRIENDLY_MESSAGES = Object.freeze({
   installation_exists: "This computer is already connected. Try again to recover it.",
   endpoint_busy: "The secure connection is still being prepared. Try again in a moment.",
   endpoint_rate_limited: "The secure connection service is busy right now. Local Wi-Fi and Tailscale pairing still work; try again in {wait}.",
-  update_required: "This version of MausBot can no longer make secure links. Update MausBot, then try again. Local Wi-Fi and Tailscale pairing still work.",
+  update_required: "This version of Parth Lab can no longer make secure links. Update Parth Lab, then try again. Local Wi-Fi and Tailscale pairing still work.",
   endpoint_capacity: "Secure HTTPS links are temporarily full. Try again in {wait}, or pair on this Wi-Fi or with Tailscale.",
   endpoint_unavailable: "The secure connection service could not finish setup. Local Wi-Fi and Tailscale pairing still work. If this keeps happening, contact support with the error reference.",
   endpoint_cleanup_pending: "The secure connection is still being removed. Try signing out again shortly.",

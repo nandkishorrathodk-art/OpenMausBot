@@ -174,7 +174,7 @@ const __APP_VERSION__: string;
       desktopProfile?: { systemName(): Promise<string | null> };
       desktopAnalytics?: import("../../electron/desktop-prefs.mjs").DesktopAnalyticsBridge;
       desktopLanguage?: import("../../electron/desktop-prefs.mjs").DesktopLanguageBridge;
-      /** This computer's page and My Cloud's own page: the one-time "Get MausBot updates?" answer. */
+      /** This computer's page and My Cloud's own page: the one-time "Get Parth Lab updates?" answer. */
       updatesConsent?: import("../../electron/updates-consent.mjs").UpdatesConsentBridge;
       companyBackups?: {
         state(): Promise<CompanyBackupState>;
@@ -211,7 +211,7 @@ const __APP_VERSION__: string;
          * address, `code` the pairing code typed apart; without `link`, the clipboard's), or type its address. With `code`
          * (even empty) it resolves with the outcome; without, false when the person cancels Connect. */
         add?: (choice: "cloud" | "link" | "address", link?: string, code?: string) => Promise<import("../../electron/server-probe.mjs").ConnectOutcome | boolean | void>;
-        /** Finds the MausBot server at what the Connect sheet holds, without connecting. Absent on an older app. */
+        /** Finds the Parth Lab server at what the Connect sheet holds, without connecting. Absent on an older app. */
         probe?: (address: string, code?: string) => Promise<import("../../electron/server-probe.mjs").ServerProbe>;
         /** The colour of the place this page is (This computer's too), and whether it can be changed here. Absent on an
          * older app. */
@@ -553,7 +553,7 @@ const __APP_VERSION__: string;
         onState(cb: (view: import("../../electron/update-all-run.mjs").UpdateAllView) => void): () => void;
       };
       /** Saved apps as launchers on this computer (electron/app-install/), this computer's own page only: a bundle in
-       * ~/Applications/MausBot Apps (macOS), a Start menu shortcut (Windows), a desktop entry (Linux), each opening
+       * ~/Applications/Parth Lab Apps (macOS), a Start menu shortcut (Windows), a desktop entry (Linux), each opening
        * openmausbot://app/<id>?window=1 (the app in its own window). Installing again replaces the launcher; a new name
        * replaces the old one. Absent in older desktop builds and on any other page. */
       appInstall?: {

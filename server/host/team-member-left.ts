@@ -1,5 +1,5 @@
 // When a person leaves a Team Cloud (an admin removes them, or they leave), what was theirs alone goes with them: their
-// own MausBot with its chats and notes, their private chats with every bot (messages, notifications, the files only
+// own Parth Lab with its chats and notes, their private chats with every bot (messages, notifications, the files only
 // those chats used, and the files they uploaded and never sent), the routines that live in those chats, their memory
 // layers, their
 // engine home (its transcripts), their "About you", their own connections and saved secrets, their own browsers, and every session and
@@ -60,7 +60,7 @@ export interface TeamMemberLeftDeps {
   stopBot(botId: string): Promise<void>;
   /** The app's own deletion of a bot's conversations (routes/tasks.ts), with everything it lets go of. */
   deleteTasks(botId: string, threadIds: string[]): { deleted: string[] } | null;
-  /** The app's own deletion of a bot (its chats, notes and folder), MausBot included; false when it could not. */
+  /** The app's own deletion of a bot (its chats, notes and folder), Parth Lab included; false when it could not. */
   deleteBot(botId: string): Promise<boolean>;
   /** Which uploads no remaining message names: one pass over the transcripts for them all (attachment-references.ts). */
   references: Pick<AttachmentReferences, "removeUnreferenced">;

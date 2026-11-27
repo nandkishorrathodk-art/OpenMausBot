@@ -1,6 +1,6 @@
 import { hintSeen, hintSeenPatch, type OnboardingStatus } from "@/lib/onboarding";
 
-/** "MausBot is better with your team": once per person whom What's new has nothing for (a Team Cloud's members), on every
+/** "Parth Lab is better with your team": once per person whom What's new has nothing for (a Team Cloud's members), on every
  * surface but a branded build or an organization's desktop. On a Team Cloud its record is each person's (TEAM_PERSONAL_HINTS). */
 export const TEAMS_NOTICE = "teams-2026-11b";
 /** What's new, the new Cloud, Team and the sponsor's slides: each person sees it once, as the launch's notice. A new id shows
@@ -27,7 +27,7 @@ export const BOAT_OFFER_NOTICE = "boat-credit-2026-11";
 export const GROK_MOVE_NOTICE = "grok-move-2026-11";
 /** The sponsor's card for ModelGo, now What's new's last slide: kept as seen with it, and listed in Announcements. */
 export const MODELGO_OFFER_NOTICE = "modelgo-offer-2026-11";
-/** Update MausBot on your phone: once per phone with an older app after this computer's secure link ended. */
+/** Update Parth Lab on your phone: once per phone with an older app after this computer's secure link ended. */
 export const PHONE_UPDATE_NOTICE = "phone-app-update";
 /** A card from the project's announcements file (src/lib/announcements.ts keeps which ones each person saw, and allows one a
  * launch): after every notice someone must act on and every built-in offer, and it may follow the launch's notice once that

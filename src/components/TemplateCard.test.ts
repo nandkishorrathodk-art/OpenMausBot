@@ -83,7 +83,7 @@ describe("a template's chat card", () => {
     const signIn = shown({ ...draft, fallback: "sign_in" });
     expect(signIn).toContain("Save folder…");
     expect(signIn).toContain("Upload on GitHub");
-    expect(signIn).toContain("Sign in to MausBot to publish");
+    expect(signIn).toContain("Sign in to Parth Lab to publish");
     expect(signIn).not.toMatch(/\bPublish\b/);
     expect(shown({ ...draft, fallback: "unavailable" })).toContain("Publishing isn't available here");
   });
@@ -161,7 +161,7 @@ describe("a template's chat card", () => {
 
   it("names nobody on a published card credited to the community", () => {
     expect(shown({ ...draft, status: "published", link: "https://github.com/x/y/tree/a/teams/q", publishedBy: "Community" })).not.toContain("Published by");
-    expect(shown({ ...draft, status: "published", link: "https://github.com/x/y/tree/a/teams/q", publishedBy: "MausBot user" })).not.toContain("Published by");
+    expect(shown({ ...draft, status: "published", link: "https://github.com/x/y/tree/a/teams/q", publishedBy: "Parth Lab user" })).not.toContain("Published by");
     expect(shown({ ...draft, publishedBy: "Sam" })).not.toContain("Published by Sam");
   });
 

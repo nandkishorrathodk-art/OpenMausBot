@@ -1,5 +1,5 @@
-// Installs a saved app as a launcher of its own on this computer: a bundle in ~/Applications/MausBot Apps on macOS, a
-// Start menu shortcut in "MausBot Apps" on Windows, a desktop entry in ~/.local/share/applications on Linux, and, when
+// Installs a saved app as a launcher of its own on this computer: a bundle in ~/Applications/Parth Lab Apps on macOS, a
+// Start menu shortcut in "Parth Lab Apps" on Windows, a desktop entry in ~/.local/share/applications on Linux, and, when
 // asked, a copy of it on the Desktop. Each one opens openmausbot://app/<id>?window=1: the app in a window of its own.
 //
 // Security invariants: nothing is written outside those folders, the Desktop folder, this app's own data folder and,
@@ -18,7 +18,7 @@ const MANIFEST = "installed.json";
 /**
  * `platform`, `path` (the platform's flavour), `home`, `userData` (this app's data folder), `appData` (Windows roaming
  * folder), `desktop` (the Desktop folder on macOS and Windows; Linux asks xdg-user-dir), `dataHome` (Linux XDG data
- * folder), `executable` (MausBot's own executable or AppImage), `hostBundleId` (MausBot's macOS bundle id), `enabled`
+ * folder), `executable` (Parth Lab's own executable or AppImage), `hostBundleId` (Parth Lab's macOS bundle id), `enabled`
  * (false in an unpackaged build), and the effects: `fs` (node:fs/promises shape), `run(file, args)` resolving
  * `{ code, stdout }`, `shell` (Electron's: `trashItem`, `writeShortcutLink`, `readShortcutLink`), `resizePng(png, side)`
  * returning a PNG or null, `log(line)`.
@@ -392,7 +392,7 @@ export function createAppInstaller(options) {
       return removed;
     }),
 
-    /** Windows and Linux launchers name MausBot's executable: after it moved (a new AppImage, another install folder)
+    /** Windows and Linux launchers name Parth Lab's executable: after it moved (a new AppImage, another install folder)
      * each one is written again with the current one. */
     refreshTargets: () => serial(async () => {
       if (!enabled || platform === "darwin") return [];

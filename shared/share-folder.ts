@@ -223,7 +223,7 @@ export function readShareFolder(input: ShareFolderFiles, slug?: string): ShareFo
     const scope: TemplateScope = bot !== undefined ? "bot" : "department";
     const { metadata } = frontmatterOf(manifest);
     if (metadata.botmrr === 1) return { kind: "package", scope, document: parsePackageDocument(manifest, { trust: "file" }) };
-    if (metadata.botmrr !== BOTMRR_FOLDER_VERSION) throw new PackageFormatError("unsupported_version", "This template was made by a newer MausBot. Update the app, then import it again.");
+    if (metadata.botmrr !== BOTMRR_FOLDER_VERSION) throw new PackageFormatError("unsupported_version", "This template was made by a newer Parth Lab. Update the app, then import it again.");
     return { kind: "package", scope, document: parsePackageDocument(packageFromFolder(metadata, files, slug), { trust: "file" }) };
   }
   const legacy = textOf(files[LEGACY_MARKDOWN]);
@@ -278,7 +278,7 @@ function readableBody(document: PackageDocument, scope: TemplateScope): string {
     `# ${pkg.name}`,
     pkg.tagline,
     "## Activation",
-    `Add this ${scope === "bot" ? "bot" : "department"} in MausBot with + → Import… and this folder's link, or give this file and its skills folder to any AI agent and ask it to work as ${scope === "bot" ? "this bot" : "these bots"}.`,
+    `Add this ${scope === "bot" ? "bot" : "department"} in Parth Lab with + → Import… and this folder's link, or give this file and its skills folder to any AI agent and ask it to work as ${scope === "bot" ? "this bot" : "these bots"}.`,
     "## Mission",
     pkg.summary,
     ...(pkg.team?.brief ? ["### Department brief", pkg.team.brief] : []),

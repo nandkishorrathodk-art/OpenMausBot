@@ -383,7 +383,7 @@ describe("a conversation that wakes, and the note", () => {
     expect([existsSync(first), existsSync(second)].filter(Boolean)).toHaveLength(1);
     expect(report.conversations.woke).toBe(1);
     const note = idleReclaimNote(f.dataDir, "older");
-    expect(note).toMatch(/^\n\n\[From OpenMausBot, not the person: to free disk space/);
+    expect(note).toMatch(/^\n\n\[From Parth Lab, not the person: to free disk space/);
     expect(note).toMatch(/[ab]\/node_modules/);
     expect(note).toMatch(/npm ci/);
     // Again only while that turn may be started again, then never.

@@ -147,7 +147,7 @@ describe("phone push switch", () => {
     expect(relay.calls).toEqual([]);
     expect(timers).toEqual([]);
     expect(push.pending()).toBe(0);
-    // The person signs in ("Anywhere, through MausBot", or `openmausbot account login`): the kept phone is registered with
+    // The person signs in ("Anywhere, through Parth Lab", or `openmausbot account login`): the kept phone is registered with
     // the relay at its first push, which the relay did not know yet.
     access = ACCESS;
     relay.answers.push({ status: 404, error: PUSH_RELAY_ERRORS.unknownDevice });

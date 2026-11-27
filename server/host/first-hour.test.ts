@@ -25,7 +25,7 @@ function setup(options: { start?: string; connected?: { gmail?: boolean; googlec
   const store = new Store(() => ({ instanceId: "claude", model: "claude-sonnet-5" }));
   // The store keeps its bots in the data folder all these tests share: each new Cloud starts with none.
   for (const id of store.bots.map((bot) => bot.id)) store.deleteBot(id);
-  const chief = store.createBot({ name: "MausBot" }, { seedMessages: false });
+  const chief = store.createBot({ name: "Parth Lab" }, { seedMessages: false });
   store.setChiefOfStaff(chief.id);
   const thread = () => store.bot(chief.id)!.threadId;
   store.appendMessage(thread(), greetingMessage(chief, {}, undefined));
@@ -91,7 +91,7 @@ function setup(options: { start?: string; connected?: { gmail?: boolean; googlec
 }
 
 describe("a new Cloud the person's own bots came to", () => {
-  const ONE = "Hi Sam! Coder is here now and keeps working while your computer is off. I'm MausBot, your Chief of Staff on this Cloud: carry on with Coder as before, or tell me what else you want off your plate.";
+  const ONE = "Hi Sam! Coder is here now and keeps working while your computer is off. I'm Parth Lab, your Chief of Staff on this Cloud: carry on with Coder as before, or tell me what else you want off your plate.";
 
   it("greets them with the bot that moved in, never offers the inbox unasked, and lets the Chief offer it only when asked", async () => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
@@ -123,7 +123,7 @@ describe("a new Cloud the person's own bots came to", () => {
     s.store.createBot({ name: "Coder" }, { seedMessages: false });
     s.store.createBot({ name: "Writer" }, { seedMessages: false });
     fh.tick();
-    expect(s.texts()[0]).toBe("Hi! Coder and Writer are here now and keep working while your computer is off. I'm MausBot, your Chief of Staff on this Cloud: carry on with them as before, or tell me what else you want off your plate.");
+    expect(s.texts()[0]).toBe("Hi! Coder and Writer are here now and keep working while your computer is off. I'm Parth Lab, your Chief of Staff on this Cloud: carry on with them as before, or tell me what else you want off your plate.");
     s.store.createBot({ name: "Scout" }, { seedMessages: false });
     fh.tick();
     expect(s.texts()[0]).toMatch(/^Hi! Your 3 bots are here now and keep working while your computer is off\./u);
@@ -166,11 +166,11 @@ describe("a new Cloud the person's own bots came to", () => {
     b.stop();
   });
 
-  it("names the bots that came, not the computer's own MausBot that came with them, and stops rewriting the greeting after the first day", () => {
+  it("names the bots that came, not the computer's own Parth Lab that came with them, and stops rewriting the greeting after the first day", () => {
     const s = setup();
     const fh = s.make();
     fh.begin();
-    s.store.createBot({ name: "MausBot (MacBook)" }, { seedMessages: false });
+    s.store.createBot({ name: "Parth Lab (MacBook)" }, { seedMessages: false });
     s.store.createBot({ name: "Coder" }, { seedMessages: false });
     fh.tick();
     expect(s.texts()[0]).toMatch(/^Hi! Coder is here now/u);
@@ -192,7 +192,7 @@ describe("a new Cloud the person's own bots came to", () => {
     fh.arrived();
     fh.tick();
     fh.stop();
-    expect(s.texts()[0]).toMatch(/^Hi! I'm MausBot/u);
+    expect(s.texts()[0]).toMatch(/^Hi! I'm Parth Lab/u);
     expect(fh.health()!.ms.movedIn).toBeUndefined();
   });
 
@@ -206,7 +206,7 @@ describe("a new Cloud the person's own bots came to", () => {
     fh.arrived();
     fh.tick();
     fh.stop();
-    expect(s.texts()[0]).toMatch(/^Hi! I'm MausBot/u);
+    expect(s.texts()[0]).toMatch(/^Hi! I'm Parth Lab/u);
     expect(fh.health()!.ms.movedIn).toBeUndefined();
   });
 
@@ -215,7 +215,7 @@ describe("a new Cloud the person's own bots came to", () => {
     const s = setup();
     const fh = s.make();
     fh.begin();
-    const arrived = s.store.createBot({ name: "MausBot (MacBook)" }, { seedMessages: false });
+    const arrived = s.store.createBot({ name: "Parth Lab (MacBook)" }, { seedMessages: false });
     s.store.setChiefOfStaff(arrived.id);
     s.world.chiefId = arrived.id;
     fh.arrived();
@@ -224,8 +224,8 @@ describe("a new Cloud the person's own bots came to", () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(s.store.messagesFor(arrived.threadId)).toEqual([]);
     expect(fh.prompt(arrived.id, arrived.threadId)).toBe("");
-    // The computer's own MausBot is no news in the greeting: it stays as it was, and no inbox offer comes.
-    expect(s.texts()[0]).toMatch(/^Hi! I'm MausBot/u);
+    // The computer's own Parth Lab is no news in the greeting: it stays as it was, and no inbox offer comes.
+    expect(s.texts()[0]).toMatch(/^Hi! I'm Parth Lab/u);
     expect(fh.health()!.ms.movedIn).toBe(0);
     fh.stop();
   });
@@ -250,12 +250,12 @@ describe("a new Cloud's first hour", () => {
     const s = setup();
     const fh = s.make();
     fh.begin();
-    expect(s.texts()[0]).toBe("Hi! I'm MausBot, your Chief of Staff. I live on the Cloud, so I keep working while your computer is off. What do you want off your plate?");
+    expect(s.texts()[0]).toBe("Hi! I'm Parth Lab, your Chief of Staff. I live on the Cloud, so I keep working while your computer is off. What do you want off your plate?");
     s.world.person = { email: "sam.lee@example.test" };
     s.world.language = "de";
     fh.arrived();
     fh.stop();
-    expect(s.texts()[0]).toBe("Hallo Sam! Ich bin MausBot, dein Chief of Staff. Ich lebe in deiner Cloud und arbeite weiter, auch wenn dein Computer aus ist. Was soll ich dir abnehmen?");
+    expect(s.texts()[0]).toBe("Hallo Sam! Ich bin Parth Lab, dein Chief of Staff. Ich lebe in deiner Cloud und arbeite weiter, auch wenn dein Computer aus ist. Was soll ich dir abnehmen?");
     s.write("Mein Postfach");
     s.world.language = "fr";
     fh.arrived();
@@ -479,7 +479,7 @@ describe("a new Cloud's first hour", () => {
     const paused = setup({ connected: { gmail: true } });
     const first = paused.make();
     first.begin();
-    paused.world.refuse = Object.assign(new Error("MausBot is paused."), { status: 409, code: "bot_paused" });
+    paused.world.refuse = Object.assign(new Error("Parth Lab is paused."), { status: 409, code: "bot_paused" });
     await paused.answer(first);
     expect(first.health()).toMatchObject({ look: "failed", lookFailure: "start", lookTries: 1 });
     expect(paused.world.turns).toHaveLength(1);

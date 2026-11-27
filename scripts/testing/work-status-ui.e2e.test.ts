@@ -78,7 +78,7 @@ async function openApp(size: readonly [string, string]) {
     evaluate, until, click, browser,
     statuses: () => evaluate<Record<string, string>>(`Object.fromEntries([...document.querySelectorAll('[data-feed-thread]')].map((row) => [row.dataset.feedThread, row.querySelector('[data-feed-work]')?.textContent ?? '']))`),
     async ready() {
-      // Rooms are on the Team side; the offer of one's own MausBot is left for later.
+      // Rooms are on the Team side; the offer of one's own Parth Lab is left for later.
       await until(`${DISMISS} && (document.querySelector('[data-team-side-option="team"]')?.click(), document.querySelector('[data-sidebar-group-row]'))`);
       for (const label of ["Skip setup", "Hide setup"]) {
         await evaluate(`[...document.querySelectorAll('button')].find((button) => button.textContent.trim() === ${JSON.stringify(label)})?.click(); true`);

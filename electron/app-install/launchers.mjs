@@ -10,8 +10,8 @@ export const MAC_ICON = "AppIcon";
 const xml = (value) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]);
 
 /**
- * LSUIElement is true: the launcher is a shell script that hands the link to MausBot and exits at once, so it never
- * shows a Dock tile or menu bar of its own; the window that opens is MausBot's and sits under MausBot's Dock tile.
+ * LSUIElement is true: the launcher is a shell script that hands the link to Parth Lab and exits at once, so it never
+ * shows a Dock tile or menu bar of its own; the window that opens is Parth Lab's and sits under Parth Lab's Dock tile.
  */
 export function macInfoPlist({ id, name, hostBundleId = HOST_BUNDLE_ID, icon = true }) {
   if (!validAppId(id)) throw new Error("invalid app id");
@@ -51,7 +51,7 @@ export function macPlistAppId(text) {
 const shellQuote = (value) => `'${String(value).replaceAll("'", "'\\''")}'`;
 
 /**
- * `open -b` finds MausBot by bundle id wherever it is installed and starts it when it is not running, so the launcher
+ * `open -b` finds Parth Lab by bundle id wherever it is installed and starts it when it is not running, so the launcher
  * outlives updates and moves; plain `open` falls back to whichever app handles the link.
  */
 export function macLauncherScript({ id, hostBundleId = HOST_BUNDLE_ID }) {
@@ -86,7 +86,7 @@ export function desktopEntryAppId(text) {
   return match ? match[1] : null;
 }
 
-/** Options for Electron's `shell.writeShortcutLink`: MausBot's own executable with the link as its one argument, which
+/** Options for Electron's `shell.writeShortcutLink`: Parth Lab's own executable with the link as its one argument, which
  * reaches the running app through `second-instance` or a new one through `process.argv`. */
 export function windowsShortcut({ id, name, executable, iconPath }) {
   if (typeof executable !== "string" || !executable) throw new Error("no executable");
@@ -100,7 +100,7 @@ export function windowsShortcut({ id, name, executable, iconPath }) {
 }
 
 /** For the app's own window (`BrowserWindow.setAppDetails` on Windows): a taskbar button of its own, with the app's
- * icon, that relaunches the app rather than MausBot. */
+ * icon, that relaunches the app rather than Parth Lab. */
 export function windowsWindowDetails({ id, name, executable, iconPath }) {
   return {
     appId: windowsAppUserModelId(id),

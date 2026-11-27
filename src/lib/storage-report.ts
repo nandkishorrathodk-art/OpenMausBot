@@ -134,12 +134,12 @@ export function storageSize(bytes: number, locale = activeLocale()): string {
 }
 
 export const BOTS_SHOWN = 5;
-/** `private`: on a Team Cloud, a bot this person is not shown (a teammate's own MausBot): counted, never named. */
+/** `private`: on a Team Cloud, a bot this person is not shown (a teammate's own Parth Lab): counted, never named. */
 export interface StorageBotRow { key: string; name: string | null; bytes: number; kind: "bot" | "private" | "gone" | "rest" }
 
-/** The names Storage may show: on a Team Cloud never another person's own MausBot (the server keeps it from an admin too;
+/** The names Storage may show: on a Team Cloud never another person's own Parth Lab (the server keeps it from an admin too;
  * this holds should one still reach the list), which then reads as a private bot. While who this person is isn't known yet
- * (`me` null) the server's list is taken as it is, so their own MausBot never reads as private. */
+ * (`me` null) the server's list is taken as it is, so their own Parth Lab never reads as private. */
 export function storageBotNames(bots: ReadonlyArray<{ id: string; name: string; defaultBot?: { person?: string } }>, team: { me: string | null } | null): Map<string, string> {
   const me = team?.me?.trim().toLowerCase() ?? "";
   return new Map(bots.filter((bot) => {

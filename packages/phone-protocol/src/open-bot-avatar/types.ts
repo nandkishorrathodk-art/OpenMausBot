@@ -65,7 +65,7 @@ export interface AvatarMotionBlend {
 }
 
 /**
- * A body's finish: a flat fill, a coat of fluffy fur, or (MausBot) the bare surface lit as matte
+ * A body's finish: a flat fill, a coat of fluffy fur, or (Parth Lab) the bare surface lit as matte
  * clay or polished metal (all but flat on a canvas, see AvatarOptions).
  */
 export type AvatarMaterial = 'flat' | 'fluffy' | 'matte' | 'metallic';

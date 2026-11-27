@@ -1,4 +1,4 @@
-// The server's side of MausBot Relay against the fake relay, driven by the reference phone: the server's own sessions
+// The server's side of Parth Lab Relay against the fake relay, driven by the reference phone: the server's own sessions
 // are the phones, and every relayed request reaches the handler as a remote one.
 import { generateKeyPairSync, randomBytes } from "node:crypto";
 import { mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -191,7 +191,7 @@ async function pairPhone(server: Server): Promise<{ token: string; id: string; k
   return { token: reply.token, id: reply.device.id, k, session };
 }
 
-describe("phones through MausBot Relay on a server", () => {
+describe("phones through Parth Lab Relay on a server", () => {
   it("stays off unless asked for, and never runs where the desktop's companion or a Cloud carries phones", () => {
     const dir = mkdtempSync(join(tmpdir(), "omb-phone-relay-off-"));
     cleanup.push(() => removeTempDir(dir));
@@ -201,8 +201,8 @@ describe("phones through MausBot Relay on a server", () => {
     const base = { dataDir: dir, sessions, handle: () => {}, upgrades: createUpgrades(), serverName: () => "VPS", publicOrigin: () => null, version: "0.1.152", log: (line: string) => logs.push(line) };
     expect(startPhoneRelay({ ...base, env: {}, refusal: null })).toBeNull();
     expect(startPhoneRelay({ ...base, env: { OMB_PHONE_RELAY: "true" }, refusal: null })).toBeNull();
-    expect(startPhoneRelay({ ...base, env: { OMB_PHONE_RELAY: "1" }, refusal: "a MausBot Cloud home" })).toBeNull();
-    expect(logs).toEqual(["phone relay: off on a MausBot Cloud home"]);
+    expect(startPhoneRelay({ ...base, env: { OMB_PHONE_RELAY: "1" }, refusal: "a Parth Lab Cloud home" })).toBeNull();
+    expect(logs).toEqual(["phone relay: off on a Parth Lab Cloud home"]);
     expect(() => statSync(join(dir, PHONE_RELAY_KEY_FILE))).toThrow();
   });
 

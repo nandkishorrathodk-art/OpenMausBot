@@ -45,7 +45,7 @@ writeFileSync(
     {
       name: "openmausbot",
       version: app.version,
-      description: "Run the OpenMausBot server anywhere and pair your devices to it",
+      description: "Run the Parth Lab server anywhere and pair your devices to it",
       license: "Apache-2.0",
       type: "module",
       bin: { openmausbot: "cli.js" },
@@ -145,7 +145,7 @@ without starting a server. Completed installs and sign-ins remain; run
 
 For a service, use \`serve --tunnel\` after \`login\` for managed HTTPS,
 \`serve --tailscale\` for your tailnet, or your own reverse proxy. The
-\`login\` command signs in to an OpenMausBot account, not an AI provider;
+\`login\` command signs in to a Parth Lab account, not an AI provider;
 it does not start the tunnel itself.
 
 Scripts, CI and other agents can drive a running workspace without a screen:

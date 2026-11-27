@@ -26,7 +26,7 @@ export interface CatalogProfile {
   team?: boolean;
   /** A Team Cloud with its board on: board_add, board_list and board_update are mounted. Absent means off. */
   board?: boolean;
-  /** The person's MausBot with a Chief's powers: its notification tools are mounted. */
+  /** The person's Parth Lab with a Chief's powers: its notification tools are mounted. */
   mausbot?: boolean;
   /** A direct chat whose bot may pick where it works (Works on is not Off and no team computer is its own): select_computer
    * is mounted, and the harness refuses a pick on any turn but a person's own message. */

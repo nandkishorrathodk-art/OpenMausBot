@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 
 export { launcherLink, validAppId } from "../app-link.mjs";
 
-export const FOLDER_NAME = "MausBot Apps";
+export const FOLDER_NAME = "Parth Lab Apps";
 export const HOST_BUNDLE_ID = "com.openmausbot.app";
 
 const BUNDLE_ID = /^[A-Za-z0-9][A-Za-z0-9.-]{0,154}$/;

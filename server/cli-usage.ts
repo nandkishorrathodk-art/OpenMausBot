@@ -11,7 +11,7 @@ export function routeCli(argv: readonly string[]): { headless: boolean; argv: st
 }
 
 export const HEADLESS_USAGE = `Drive a running workspace (scripts, CI, other agents):
-  openmausbot login [SERVER]            sign this terminal in once: MausBot shows a card to allow it (logout, whoami, use NAME, servers)
+  openmausbot login [SERVER]            sign this terminal in once: Parth Lab shows a card to allow it (logout, whoami, use NAME, servers)
   openmausbot status                    every bot at a glance: working, waiting on you, paused, failed or idle, and its computer
   openmausbot bots delete|pause|resume|stop (BOT… | --team T | --all)   act on bots; delete asks first (--yes, --dry-run)
   openmausbot stop (BOT… | --team T | --all)   stop their work now, without pausing
@@ -121,7 +121,7 @@ Ways in (pick one; --lan can join any):
              open ports 80 and 443.
 
 --relay      phones only, and it can join any of the above except --tunnel:
-             the MausBot phone app pairs by QR through MausBot Relay,
+             the Parth Lab phone app pairs by QR through Parth Lab Relay,
              end-to-end encrypted, with no address, open port or VPN. Run
              \`openmausbot account login --relay\` once on this machine first. Not on a
              machine with a tunnel address: the relay stays off there.

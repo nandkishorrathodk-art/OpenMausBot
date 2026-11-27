@@ -26,7 +26,7 @@ describe("a template's words", () => {
 
   it("shows a credit only when it names somebody", () => {
     expect(creditShown(" Jane Doe ")).toBe("Jane Doe");
-    for (const nobody of [undefined, "", " ", "Community", "MausBot community", "MausBot user", "mausbot USER"]) expect(creditShown(nobody)).toBeNull();
+    for (const nobody of [undefined, "", " ", "Community", "Parth Lab community", "Parth Lab user", "mausbot USER"]) expect(creditShown(nobody)).toBeNull();
   });
 });
 

@@ -241,7 +241,7 @@ export function createBrowserHost(deps: BrowserHostDeps) {
     const url = doorUrls.get(session);
     return url !== undefined && spec.env.AGENT_BROWSER_CDP === url;
   }
-  // A tool call that would open Reddit from MausBot Cloud is refused before it reaches the browser. My Chrome is the
+  // A tool call that would open Reddit from Parth Lab Cloud is refused before it reaches the browser. My Chrome is the
   // person's own, outside the egress gate too; on My Cloud a call that can't reach it now says why instead.
   const browserRuntime = new RuntimeRouter(agentBrowserRuntime, chromeEngine, {
     refusal: (session, spec, params) => (cloudBrowser?.attached(session) ? localSchemeRefusal(params) ?? browserEgress.callRefusal(params)
@@ -290,7 +290,7 @@ export function createBrowserHost(deps: BrowserHostDeps) {
   const computerOps = providerOps(() => cfg);
   const cloudBrowser = deps.cloudBrowser && CLOUD_HOME && !DESKTOP_MANAGED ? createCloudBrowser({
     dataDir: DATA_DIR,
-    // Only through MausBot Cloud's relay, which keeps the sandbox outside the plan under its own limits: never on a person's own key.
+    // Only through Parth Lab Cloud's relay, which keeps the sandbox outside the plan under its own limits: never on a person's own key.
     ops: () => (boatAccount(cfg)?.included === true ? computerOps : null),
     used: (owner, windowMs) => deps.cloudBrowser?.used(owner, windowMs),
     // The engine's own client of the session goes too: the next call, in the home, starts one under the home's settings.
@@ -333,7 +333,7 @@ export function createBrowserHost(deps: BrowserHostDeps) {
   const device = deps.device && lentDevice(deps.device, (session) => turnResources.holder(`browser:${session}`), mayLend);
   const egressHost = DESKTOP_MANAGED ? "desktop" : CLOUD_HOME ? "cloud" : "server";
   // Self-hosted servers only: the owner's switch for this server's own sites and its local network. A shared company
-  // workspace's network is the operator's, so its stored switch and allow-list are ignored, like MausBot Cloud's.
+  // workspace's network is the operator's, so its stored switch and allow-list are ignored, like Parth Lab Cloud's.
   const hostedServer = egressHost === "server" && Boolean(deps.HOSTED_WORKSPACE);
   const sitesSwitch = egressHost === "server" && !hostedServer;
   browserEgress.configure({ host: egressHost, config: () => (hostedServer ? undefined : cfg.browserEngine?.egress), ...(device ? { device } : {}) });

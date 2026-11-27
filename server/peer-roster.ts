@@ -118,7 +118,7 @@ export function peerStatusWords(status: PeerStatus): string {
 
 /** Security: a bot reaches only teammates everyone who sees it can also see, so a result never carries a teammate's
  * words to someone who cannot see that teammate; a bot shared with more people never reaches a narrower one. A
- * person's own MausBot reaches, and is reached, past the same audience only through personal reach. */
+ * person's own Parth Lab reaches, and is reached, past the same audience only through personal reach. */
 export const peerAllowed = (
   from: { visibility?: unknown } & Pick<DefaultBotFields, "defaultBot">,
   target: string | ({ id: string; visibility?: unknown } & Pick<DefaultBotFields, "defaultBot">),
@@ -189,7 +189,7 @@ export function namesTeammate(target: Pick<RosterMember, "id" | "name">, raw: st
 /** Their audiences alone would let `from` reach `target`, whatever its own list of peers says. */
 export const reachesInAudience = (from: RosterMember, target: RosterMember): boolean => sameAudience(from.visibility, target.visibility);
 
-/** The teammate `raw` names when `from` may not reach it. A person's own MausBot is never named to anyone else, nor a bot
+/** The teammate `raw` names when `from` may not reach it. A person's own Parth Lab is never named to anyone else, nor a bot
  * `hides` keeps from `from`. */
 export function unreachableTeammate<T extends RosterMember>(bots: readonly T[], from: RosterMember, raw: string, hides?: (bot: T) => boolean): T | null {
   const target = bots.find((bot) => bot.id === raw.trim()) ?? bots.find((bot) => namesTeammate(bot, raw));

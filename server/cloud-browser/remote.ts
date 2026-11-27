@@ -1,6 +1,6 @@
 // The Cloud's browser sandbox at the provider: one small sandbox per personal Cloud home, made the first time a bot needs
 // a browser, shared by that Cloud's bots, each with a profile and a Chrome of its own on its disk. It is not a bot's cloud
-// computer: no bot runs commands in it, the computer screens never list it, and it exists only through MausBot Cloud's
+// computer: no bot runs commands in it, the computer screens never list it, and it exists only through Parth Lab Cloud's
 // Admin relay, which keeps it out of the plan's computers and hours under limits of its own, and runs in it only the
 // fixed browser actions it builds itself (launch, quit). A person's own provider key never gets one.
 // Woken with ONE resume and then only reads, never the resume loop of boat.ts's waitReady: a refused resume is billed.

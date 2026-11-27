@@ -131,7 +131,7 @@ export function putOnAllBots(scope: string, name: string, copy: SkillCopy): Fann
   ensureAllBotsStore(scope);
   const current = readSkillLibraryIndex(root)[name];
   const existing = current ? sharedCopy(scope, name) : null;
-  if (current && !existing) return { error: `the copy of "${name}" on all your bots changed outside OpenMausBot; remove it and add it again` };
+  if (current && !existing) return { error: `the copy of "${name}" on all your bots changed outside Parth Lab; remove it and add it again` };
   try {
     if (!existing || copyDigest(existing) !== copyDigest(copy)) {
       const files = copy.files.map((file) => ({ path: file.path, content: file.content }));
@@ -175,7 +175,7 @@ export function removeFromAllBots(scope: string, name: string): Removed | { erro
   });
   const retired = retireLibrarySkill(name, current.sha256, root);
   forgetAllBotsStore(scope);
-  if (!("retired" in retired)) return { error: "stale" in retired ? `"${name}" changed outside OpenMausBot; try again` : retired.error };
+  if (!("retired" in retired)) return { error: "stale" in retired ? `"${name}" changed outside Parth Lab; try again` : retired.error };
   const fanned = fanOut(scope, name);
   return { ...fanned, removed: copy ?? { skillMd: "", files: [], source: current.source }, switches };
 }

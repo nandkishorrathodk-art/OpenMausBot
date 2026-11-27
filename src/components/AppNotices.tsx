@@ -147,7 +147,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   const branded = brandStatus().source === "file", team = Boolean(state.config?.team);
   const liveCall = Boolean(state.liveCall && state.liveCall.status !== "ended");
   // What's new, once per person on every page but a branded build's. Its plan slides: This computer's page of a desktop that
-  // sells MausBot Cloud, never one an organization runs.
+  // sells Parth Lab Cloud, never one an organization runs.
   const whatsNewSeen = noticeSeen(record, WHATS_NEW_NOTICE) || Boolean(desktopState?.seen.includes(WHATS_NEW_NOTICE));
   const whatsNewHere = !branded && !whatsNewSeen;
   const plansDue = !whatsNewHere || !bridge || !desktop || organization === true ? false : !desktopState || organization === null ? null : desktopState.cloud;
@@ -211,7 +211,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   // also for a launch after the one whose welcome just finished. Account and billing notices keep their own rules.
   // Unknown (null) until the bots have loaded, so nothing lower in the queue flashes up before them.
   const firstChat = firstReplyPending(state);
-  // MausBot's first-launch card goes first: the popup and the question wait while it is due. The popup skips a launch the
+  // Parth Lab's first-launch card goes first: the popup and the question wait while it is due. The popup skips a launch the
   // card used; the question may follow the card once it closes, as it follows the popup.
   const afterWelcome = welcomeFinishedThisLaunch() || launchDialogShown() === "mausbot" || firstChat;
   const consentWaits = welcomeFinishedThisLaunch() || firstChat;
@@ -231,10 +231,10 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   const grokNow = !grokDue ? false
     : !viewer || (desktop && !desktopState) || organization === null || firstChat === null || mausBotFirst || moving === null || grokLanding || grokBlocked ? null : true;
   // What's new: once some bot has answered, the launch a new install's welcome finished in included. Never in the launch
-  // MausBot's card took, over a first run's own screens or another dialog, during a live call or a move.
+  // Parth Lab's card took, over a first run's own screens or another dialog, during a live call or a move.
   const whatsNewNow = !whatsNewOwed || moving || firstChat === true || launchDialogShown() === "mausbot" ? false
     : whatsNewState === "loading" || !viewer || organization === null || (desktop && !desktopState) || firstChat === null || mausBotFirst || moving === null || whatsNewBlocked ? null : true;
-  // A card from the project's announcements file: never in the launch a welcome or MausBot's card took, else the built-in
+  // A card from the project's announcements file: never in the launch a welcome or Parth Lab's card took, else the built-in
   // sponsor card's exclusions, and src/lib/announcements.ts's rules for which card and for whom (once per person, one
   // sponsor card a week, none on a branded build).
   const remoteCards = useAnnouncementCards(!branded);
@@ -248,7 +248,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   });
   const announcement = picked && picked !== "wait" ? picked : null;
   // Teams: once for whom What's new has nothing, ahead of every other notice, on every page but a branded build's or an
-  // organization's desktop; never in the launch a welcome or MausBot's card took, before a first reply, over a first run's
+  // organization's desktop; never in the launch a welcome or Parth Lab's card took, before a first reply, over a first run's
   // own screens or another dialog, during a live call or a move.
   const teamsSeen = noticeSeen(record, TEAMS_NOTICE) || Boolean(desktopState?.seen.includes(TEAMS_NOTICE));
   const teamsHere = !branded && organization !== true && !teamsSeen && !whatsNewOwed;
@@ -272,7 +272,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
     [GROK_MOVE_NOTICE]: grokNow,
     [PHONE_UPDATE_NOTICE]: phoneNow,
     [WHATS_NEW_NOTICE]: whatsNewNow,
-    // Never in the launch whose welcome just finished, nor over MausBot's first-launch card.
+    // Never in the launch whose welcome just finished, nor over Parth Lab's first-launch card.
     [SIMPLE_MODE_NOTICE]: !simpleDue || afterWelcome === true ? false : afterWelcome === null || mausBotFirst || simpleBlocked ? null : true,
     [UPDATES_CONSENT_NOTICE]: consentNow,
     [TWO_PLACES_NOTICE]: twoFact,
@@ -294,7 +294,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
   useEffect(() => {
     if (!shownKey || !notice) return;
     markLaunchNotice(notice);
-    // The popups and the question own this launch: MausBot's first-launch card waits for a later one.
+    // The popups and the question own this launch: Parth Lab's first-launch card waits for a later one.
     if (shownKey === TEAMS_NOTICE || shownKey === GROK_MOVE_NOTICE || shownKey === SIMPLE_MODE_NOTICE || shownKey === WHATS_NEW_NOTICE || shownKey === UPDATES_CONSENT_NOTICE) markLaunchDialog("notices");
     if (shownKey === CLOUD_INTRO) {
       setIntroOpen(true);

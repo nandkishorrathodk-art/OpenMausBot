@@ -1,4 +1,4 @@
-// A web page's way to a `serve --relay` computer from anywhere: an end-to-end encrypted session through MausBot Relay
+// A web page's way to a `serve --relay` computer from anywhere: an end-to-end encrypted session through Parth Lab Relay
 // that carries plain HTTP to the server's own request handler (server/phone-relay.ts), as a session of its own.
 import { fromB64u, type Bytes } from "./bytes.ts";
 import { admission, credentialHash, keyId, psk } from "./credentials.ts";
@@ -64,7 +64,7 @@ export interface RelayPairing {
   descriptor: unknown;
 }
 
-/** Redeems a pairing link's credential through the relay, as the MausBot phone app does. */
+/** Redeems a pairing link's credential through the relay, as the Parth Lab phone app does. */
 export async function pairThroughRelay(route: RelayRoute, credential: string, deviceName: string): Promise<RelayPairing> {
   const session = await open(route, credential);
   try {

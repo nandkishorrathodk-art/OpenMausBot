@@ -24,7 +24,7 @@ export interface ConfigStatus {
   modelgo?: SavedKey;
   deepseek?: SavedKey;
   meta?: SavedKey;
-  /** X research comes with MausBot Cloud plans: `included` while this server holds the plan's relay credential;
+  /** X research comes with Parth Lab Cloud plans: `included` while this server holds the plan's relay credential;
    * `unavailable` when the Admin said no to this desktop's paid sign-in. */
   xResearch?: { included: boolean; unavailable?: boolean };
   /** The built-in tool groups this workspace has, the ones a bot's Settings offer to turn off. */
@@ -64,7 +64,7 @@ export interface ConfigStatus {
   newBots?: { effort?: EffortLevel };
   /** This Cloud is on the Starter plan, as the Admin last said; absent or false otherwise. */
   cloudStarter?: boolean;
-  /** The most bots this Cloud's plan makes, its MausBot aside. Sent only by servers that capped Starter's bots; absent otherwise. */
+  /** The most bots this Cloud's plan makes, its Parth Lab aside. Sent only by servers that capped Starter's bots; absent otherwise. */
   botLimit?: number;
   /** A task on this Cloud is waiting for memory right now. */
   waitingForRoom?: boolean;
@@ -185,7 +185,7 @@ export interface ConfigStatus {
   /** This server is an OMB Cloud home: it offers no "this computer" and no
    * Local VM (server/cloud-home.ts). Absent everywhere else. */
   cloudHome?: boolean;
-  /** A Team Cloud: the team this server is the home of, and the Plan page (MausBot Cloud) where its people and plan
+  /** A Team Cloud: the team this server is the home of, and the Plan page (Parth Lab Cloud) where its people and plan
    * are managed. Absent everywhere else. */
   team?: { id: string; name: string; cloudPage?: string };
 }
@@ -233,7 +233,7 @@ export interface BrowserEngineSummary {
   /** The person can import a site's sign-in from their own browsers into a bot's (the desktop app, Chrome engine). */
   cookieImport?: true;
   /** Self-hosted servers only: whether bots' browsers may open this server's own sites and its local network
-   * (browserEngine.egress.localNetwork, off by default). Absent on the desktop and on MausBot Cloud. */
+   * (browserEngine.egress.localNetwork, off by default). Absent on the desktop and on Parth Lab Cloud. */
   serverSites?: boolean;
   /** Whether an owner-configured SOCKS5 upstream is active; the endpoint is never exposed in config status. */
   proxyConfigured?: boolean;
